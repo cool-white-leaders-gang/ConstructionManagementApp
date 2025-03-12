@@ -1,4 +1,4 @@
-﻿namespace ConstructionManagementApp
+﻿namespace ConstructionManagementApp.App
 {
     internal class Program
     {
