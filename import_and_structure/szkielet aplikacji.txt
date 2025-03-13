@@ -1,0 +1,84 @@
+
+Patryk essa
+Patryk Stafecki
+ConstructionManagementSystem/
+│
+├── ConstructionManagementSystem.sln
+├── ConstructionManagementSystem/
+│   ├── Program.cs
+│   ├── Models/
+│   │   ├── User.cs
+│   │   ├── Task.cs
+│   │   ├── Material.cs
+│   │   ├── Equipment.cs
+│   │   ├── Report.cs
+│   │   ├── Budget.cs
+│   │   ├── Log.cs
+│   │   ├── Notification.cs
+│   │   ├── Issue.cs
+│   ├── Services/
+│   │   ├── AuthenticationService.cs
+│   │   ├── TaskService.cs
+│   │   ├── MaterialService.cs
+│   │   ├── EquipmentService.cs
+│   │   ├── ReportService.cs
+│   │   ├── BudgetService.cs
+│   │   ├── LogService.cs
+│   │   ├── NotificationService.cs
+│   │   ├── IssueService.cs
+│   ├── Interfaces/
+│   │   ├── ILoggable.cs
+│   │   ├── INotifiable.cs
+│   ├── Enums/
+│   │   ├── TaskStatus.cs
+│   │   ├── TaskPriority.cs
+│   │   ├── UserRole.cs
+│   ├── Utilities/
+│   │   ├── FileLogger.cs
+│   │   ├── EmailNotifier.cs
+│   ├── Database/
+│   │   ├── DatabaseContext.cs
+│   │   ├── DbInitializer.cs
+│   ├── Exceptions/
+│   │   ├── UserNotFoundException.cs
+│   │   ├── InvalidDataException.cs
+│   ├── Events/
+│   │   ├── UserLoggedInEventArgs.cs
+│   │   ├── UserLoggedInEventHandler.cs
+│   ├── Delegates/
+│   │   ├── TaskAssignedEventHandler.cs
+│   │   ├── TaskCompletedEventHandler.cs
+│   ├── Repositories/
+│   │   ├── UserRepository.cs
+│   │   ├── TaskRepository.cs
+│   │   ├── MaterialRepository.cs
+│   │   ├── EquipmentRepository.cs
+│   │   ├── ReportRepository.cs
+│   │   ├── BudgetRepository.cs
+│   │   ├── LogRepository.cs
+│   │   ├── NotificationRepository.cs
+│   │   ├── IssueRepository.cs
+│   ├── Controllers/
+│   │   ├── UserController.cs
+│   │   ├── TaskController.cs
+│   │   ├── MaterialController.cs
+│   │   ├── EquipmentController.cs
+│   │   ├── ReportController.cs
+│   │   ├── BudgetController.cs
+│   │   ├── LogController.cs
+│   │   ├── NotificationController.cs
+│   │   ├── IssueController.cs
+│   ├── Views/
+│   │   ├── UserView.cs
+│   │   ├── TaskView.cs
+│   │   ├── MaterialView.cs
+│   │   ├── EquipmentView.cs
+│   │   ├── ReportView.cs
+│   │   ├── BudgetView.cs
+│   │   ├── LogView.cs
+│   │   ├── NotificationView.cs
+│   │   ├── IssueView.cs
+│   ├── App.config
+│   ├── users.txt
+│   ├── logs.txt
+├── README.md
