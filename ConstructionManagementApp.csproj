@@ -7,4 +7,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="App\Contrllers\" />
+    <Folder Include="App\Delegates\" />
+    <Folder Include="App\Events\" />
+    <Folder Include="App\Exceptions\" />
+    <Folder Include="App\Interfaces\" />
+    <Folder Include="App\Views\" />
+    <Folder Include="App\Utilities\" />
+    <Folder Include="App\Services\" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
+	<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+  </ItemGroup>
+
 </Project>
