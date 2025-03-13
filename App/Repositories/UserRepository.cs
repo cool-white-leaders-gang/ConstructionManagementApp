@@ -41,7 +41,7 @@ namespace ConstructionManagementApp.App.Repositories
             catch (DbUpdateConcurrencyException ex)
             {
                 Console.WriteLine("Próba aktualizacji nieistniejącego użytkownika " + ex.Message);
-                //Łapanie błędu aktualizacji usuniętego użytkownika
+                //Łapanie błędu aktualizacji usuniętego użytkownika lub tego którego nie ma w bazie
             }
         }
 
