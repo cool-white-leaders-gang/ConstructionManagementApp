@@ -84,7 +84,7 @@ namespace ConstructionManagementApp.App.Repositories
         }
 
         //metoda szukająca użytkowników po emailu
-        public List<User> GetUserByEmail(string email)
+        public List<User> GetUsersByEmail(string email)
         {
             if (_context.Users.FirstOrDefault(u => u.Email == email) == null)
             {

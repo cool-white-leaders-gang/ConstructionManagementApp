@@ -27,7 +27,8 @@ namespace ConstructionManagementApp.App.Models
 
         public string GetAllData()
         {
-            return $"Username: {Username}, Email: {Email}, Role: {Role}";
+            return $"Nazwa użytkownika: {Username}, email: {Email}, rola: {Role}";
         }
+
     }
 }
