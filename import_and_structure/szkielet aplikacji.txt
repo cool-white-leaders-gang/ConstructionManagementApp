@@ -1,6 +1,4 @@
 
-Patryk essa
-Patryk Stafecki
 ConstructionManagementSystem/
 │
 ├── ConstructionManagementSystem.sln
