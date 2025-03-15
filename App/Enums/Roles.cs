@@ -12,6 +12,7 @@ namespace ConstructionManagementApp.App.Enums
         Admin = 0,
         Manager = 1,
         Worker = 2,
+        Client = 4
 
     }
 }
