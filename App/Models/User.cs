@@ -14,20 +14,20 @@ namespace ConstructionManagementApp.App.Models
         public string Username { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        public List<Role> Roles { get; set; }
+        public Role Role { get; set; }
 
         //konstruktor
-        public User(string username, string passwordHash, string email)
+        public User(string username, string passwordHash, string email, Role role)
         {
             Username = username;
             Email = email;
             PasswordHash = passwordHash;
-            Roles = new List<Role>();
+            Role = role;
         }
 
         public override string ToString()
         {
-            return $"Nazwa użytkownika: {Username}, email: {Email}, rola(e): {string.Join(", ", Roles)}";
+            return $"Nazwa użytkownika: {Username}, email: {Email}, rola: {Role}";
         }
 
     }
