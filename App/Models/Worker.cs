@@ -4,7 +4,7 @@
     {
         public string Position { get; set; }
         public Worker(string username, string passwordHash, string email, string position)
-            : base(username, passwordHash, email, Enums.Role.Admin)
+            : base(username, passwordHash, email, Enums.Role.Worker)
         {
             Position = position;
         }
