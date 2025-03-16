@@ -13,21 +13,21 @@ namespace ConstructionManagementApp.App.Models
         public int Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
-        public Role Role { get; set; }
+        public string PasswordHash { get; set; }
+        public List<Role> Roles { get; set; }
 
         //konstruktor
-        public User(string username, string password, string email, Role role)
+        public User(string username, string passwordHash, string email)
         {
             Username = username;
             Email = email;
-            Password = password;
-            Role = role;
+            PasswordHash = passwordHash;
+            Roles = new List<Role>();
         }
 
-        public string GetAllData()
+        public override string ToString()
         {
-            return $"Nazwa użytkownika: {Username}, email: {Email}, rola: {Role}";
+            return $"Nazwa użytkownika: {Username}, email: {Email}, rola(e): {string.Join(", ", Roles)}";
         }
 
     }

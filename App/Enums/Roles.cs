@@ -9,10 +9,10 @@ namespace ConstructionManagementApp.App.Enums
     //Role użytkowników
     enum Role   
     {
-        Admin = 0,
-        Manager = 1,
-        Worker = 2,
-        Client = 4
+        Admin,
+        Manager,
+        Worker,
+        Client
 
     }
 }
