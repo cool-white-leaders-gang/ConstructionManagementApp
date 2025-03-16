@@ -1,82 +1,106 @@
-
 ConstructionManagementSystem/
 │
-├── ConstructionManagementSystem.sln
+├── ConstructionManagementSystem.sln  # Plik rozwiązania dla Visual Studio
 ├── ConstructionManagementSystem/
-│   ├── Program.cs
-│   ├── Models/
-│   │   ├── User.cs
-│   │   ├── Task.cs
-│   │   ├── Material.cs
-│   │   ├── Equipment.cs
-│   │   ├── Report.cs
-│   │   ├── Budget.cs
-│   │   ├── Log.cs
-│   │   ├── Notification.cs
-│   │   ├── Issue.cs
-│   ├── Services/
-│   │   ├── AuthenticationService.cs
-│   │   ├── TaskService.cs
-│   │   ├── MaterialService.cs
-│   │   ├── EquipmentService.cs
-│   │   ├── ReportService.cs
-│   │   ├── BudgetService.cs
-│   │   ├── LogService.cs
-│   │   ├── NotificationService.cs
-│   │   ├── IssueService.cs
-│   ├── Interfaces/
-│   │   ├── ILoggable.cs
-│   │   ├── INotifiable.cs
-│   ├── Enums/
-│   │   ├── TaskStatus.cs
-│   │   ├── TaskPriority.cs
-│   │   ├── UserRole.cs
-│   ├── Utilities/
-│   │   ├── FileLogger.cs
-│   │   ├── EmailNotifier.cs
-│   ├── Database/
-│   │   ├── DatabaseContext.cs
-│   │   ├── DbInitializer.cs
-│   ├── Exceptions/
-│   │   ├── UserNotFoundException.cs
-│   │   ├── InvalidDataException.cs
-│   ├── Events/
-│   │   ├── UserLoggedInEventArgs.cs
-│   │   ├── UserLoggedInEventHandler.cs
-│   ├── Delegates/
-│   │   ├── TaskAssignedEventHandler.cs
-│   │   ├── TaskCompletedEventHandler.cs
-│   ├── Repositories/
-│   │   ├── UserRepository.cs
-│   │   ├── TaskRepository.cs
-│   │   ├── MaterialRepository.cs
-│   │   ├── EquipmentRepository.cs
-│   │   ├── ReportRepository.cs
-│   │   ├── BudgetRepository.cs
-│   │   ├── LogRepository.cs
-│   │   ├── NotificationRepository.cs
-│   │   ├── IssueRepository.cs
-│   ├── Controllers/
-│   │   ├── UserController.cs
-│   │   ├── TaskController.cs
-│   │   ├── MaterialController.cs
-│   │   ├── EquipmentController.cs
-│   │   ├── ReportController.cs
-│   │   ├── BudgetController.cs
-│   │   ├── LogController.cs
-│   │   ├── NotificationController.cs
-│   │   ├── IssueController.cs
-│   ├── Views/
-│   │   ├── UserView.cs
-│   │   ├── TaskView.cs
-│   │   ├── MaterialView.cs
-│   │   ├── EquipmentView.cs
-│   │   ├── ReportView.cs
-│   │   ├── BudgetView.cs
-│   │   ├── LogView.cs
-│   │   ├── NotificationView.cs
-│   │   ├── IssueView.cs
-│   ├── App.config
-│   ├── users.txt
-│   ├── logs.txt
-├── README.md
+│   ├── Program.cs                     # Punkt wejścia do aplikacji
+│   ├── Models/                         # Modele danych
+│   │   ├── User.cs                     # Klasa bazowa użytkownika
+│   │   ├── Admin.cs                    # Administrator (dziedziczy po User)
+│   │   ├── Manager.cs                  # Kierownik budowy (dziedziczy po User)
+│   │   ├── Worker.cs                   # Pracownik (dziedziczy po User)
+│   │   ├── Client.cs                   # Klient (dziedziczy po User)
+│   │   ├── Task.cs                     # Klasa zadań
+│   │   ├── Material.cs                 # Klasa materiałów
+│   │   ├── Equipment.cs                # Klasa sprzętu
+│   │   ├── Report.cs                   # Klasa raportów
+│   │   ├── Budget.cs                   # Klasa budżetu
+│   │   ├── Log.cs                      # Klasa logów systemowych
+│   │   ├── Notification.cs             # Powiadomienia
+│   │   ├── Issue.cs                    # Zgłoszenia problemów
+│   ├── Services/                        # Logika biznesowa
+│   │   ├── AuthenticationService.cs    # Obsługa logowania i RBAC
+│   │   ├── TaskService.cs              # Obsługa zadań
+│   │   ├── MaterialService.cs          # Obsługa magazynu
+│   │   ├── EquipmentService.cs         # Obsługa sprzętu
+│   │   ├── ReportService.cs            # Obsługa raportów
+│   │   ├── BudgetService.cs            # Obsługa budżetu
+│   │   ├── LogService.cs               # Obsługa logów
+│   │   ├── NotificationService.cs      # Obsługa powiadomień
+│   │   ├── IssueService.cs             # Obsługa zgłoszeń problemów
+│   ├── Interfaces/                      # Interfejsy
+│   │   ├── ITaskManagement.cs          # Interfejs dla zadań
+│   │   ├── IEquipmentTracking.cs       # Interfejs dla sprzętu
+│   │   ├── IReporting.cs               # Interfejs raportowania
+│   │   ├── ILoggable.cs                # Interfejs dla logów
+│   │   ├── INotifiable.cs              # Interfejs dla powiadomień
+│   │   ├── IUserRepository.cs          # Interfejs dla repozytorium użytkowników
+│   │   ├── ITaskRepository.cs          # Interfejs dla repozytorium zadań
+│   │   ├── IMaterialRepository.cs      # Interfejs dla repozytorium materiałów
+│   │   ├── IEquipmentRepository.cs     # Interfejs dla repozytorium sprzętu
+│   │   ├── IReportRepository.cs        # Interfejs dla repozytorium raportów
+│   │   ├── IBudgetRepository.cs        # Interfejs dla repozytorium budżetu
+│   │   ├── ILogRepository.cs           # Interfejs dla repozytorium logów
+│   │   ├── INotificationRepository.cs  # Interfejs dla repozytorium powiadomień
+│   │   ├── IIssueRepository.cs         # Interfejs dla repozytorium zgłoszeń
+│   ├── Enums/                           # Typy wyliczeniowe
+│   │   ├── Permissions.cs              # Permisje
+│   │   ├── TaskStatus.cs               # Statusy zadań
+│   │   ├── TaskPriority.cs             # Priorytety zadań
+│   │   ├── UserRole.cs                 # Role użytkowników
+│   ├── Utilities/                       # Narzędzia pomocnicze
+│   │   ├── FileLogger.cs               # Logowanie do pliku
+│   │   ├── EmailNotifier.cs            # Wysyłanie powiadomień e-mail
+│   ├── Threads/                         # Obsługa wielowątkowości
+│   │   ├── TaskWorker.cs               # Obsługa zadań w osobnym wątku
+│   │   ├── NotificationWorker.cs       # Obsługa powiadomień w tle
+│   │   ├── LoggingWorker.cs            # Obsługa logowania w tle
+│   ├── Database/                        # Baza danych MariaDB (przez XAMPP)
+│   │   ├── DatabaseContext.cs          # Konfiguracja ORM
+│   │   ├── DbInitializer.cs            # Inicjalizacja bazy danych
+│   ├── Exceptions/                      # Obsługa wyjątków
+│   │   ├── UserNotFoundException.cs    # Błąd użytkownika
+│   │   ├── InvalidDataException.cs     # Błąd danych wejściowych
+│   ├── Events/                          # Obsługa zdarzeń
+│   │   ├── UserLoggedInEventArgs.cs    # Argumenty zdarzeń logowania
+│   │   ├── UserLoggedInEventHandler.cs # Obsługa zdarzenia logowania
+│   │   ├── TaskAssignedEventArgs.cs    # Argumenty zdarzenia przypisania zadania
+│   │   ├── TaskCompletedEventArgs.cs   # Argumenty zdarzenia zakończenia zadania
+│   │   ├── NotificationSentEventArgs.cs# Argumenty zdarzenia wysłania powiadomienia
+│   ├── Delegates/                       # Delegaty dla zdarzeń
+│   │   ├── TaskAssignedEventHandler.cs # Delegat dla zdarzenia przypisania zadania
+│   │   ├── TaskCompletedEventHandler.cs# Delegat dla zdarzenia zakończenia zadania
+│   │   ├── NotificationSentEventHandler.cs # Delegat dla zdarzenia wysłania powiadomienia
+│   ├── Repositories/                    # Repozytoria dla operacji na danych
+│   │   ├── UserRepository.cs           # Repozytorium użytkowników
+│   │   ├── TaskRepository.cs           # Repozytorium zadań
+│   │   ├── MaterialRepository.cs       # Repozytorium materiałów
+│   │   ├── EquipmentRepository.cs      # Repozytorium sprzętu
+│   │   ├── ReportRepository.cs         # Repozytorium raportów
+│   │   ├── BudgetRepository.cs         # Repozytorium budżetu
+│   │   ├── LogRepository.cs            # Repozytorium logów
+│   │   ├── NotificationRepository.cs   # Repozytorium powiadomień
+│   │   ├── IssueRepository.cs          # Repozytorium zgłoszeń
+│   ├── Controllers/                     # Kontrolery obsługujące widoki
+│   │   ├── UserController.cs           # Kontroler użytkowników
+│   │   ├── TaskController.cs           # Kontroler zadań
+│   │   ├── MaterialController.cs       # Kontroler magazynu
+│   │   ├── EquipmentController.cs      # Kontroler sprzętu
+│   │   ├── ReportController.cs         # Kontroler raportów
+│   │   ├── BudgetController.cs         # Kontroler budżetu
+│   │   ├── LogController.cs            # Kontroler logów
+│   │   ├── NotificationController.cs   # Kontroler powiadomień
+│   │   ├── IssueController.cs          # Kontroler zgłoszeń problemów
+│   ├── Views/                           # Widoki dla użytkowników
+│   │   ├── UserView.cs                 # Widok użytkowników
+│   │   ├── TaskView.cs                 # Widok zadań
+│   │   ├── MaterialView.cs             # Widok magazynu
+│   │   ├── EquipmentView.cs            # Widok sprzętu
+│   │   ├── ReportView.cs               # Widok raportów
+│   │   ├── BudgetView.cs               # Widok budżetu
+│   │   ├── LogView.cs                  # Widok logów
+│   │   ├── NotificationView.cs         # Widok powiadomień
+│   │   ├── IssueView.cs                # Widok zgłoszeń problemów
+│   ├── App.config                      # Plik konfiguracyjny aplikacji
+│   ├── users.txt                        # Plik z danymi logowania użytkowników
+│   ├── logs.txt                         # Plik z logami systemowymi
+├── README.md                            # Dokumentacja i instrukcja obsługi
