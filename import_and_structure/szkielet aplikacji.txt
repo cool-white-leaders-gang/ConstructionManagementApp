@@ -5,10 +5,6 @@ ConstructionManagementSystem/
 │   ├── Program.cs                     # Punkt wejścia do aplikacji
 │   ├── Models/                         # Modele danych
 │   │   ├── User.cs                     # Klasa bazowa użytkownika
-│   │   ├── Admin.cs                    # Administrator (dziedziczy po User)
-│   │   ├── Manager.cs                  # Kierownik budowy (dziedziczy po User)
-│   │   ├── Worker.cs                   # Pracownik (dziedziczy po User)
-│   │   ├── Client.cs                   # Klient (dziedziczy po User)
 │   │   ├── Task.cs                     # Klasa zadań
 │   │   ├── Material.cs                 # Klasa materiałów
 │   │   ├── Equipment.cs                # Klasa sprzętu
