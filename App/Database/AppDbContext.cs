@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
+using Task = ConstructionManagementApp.App.Models.Task;
 
 namespace ConstructionManagementApp.App.Database
 {
     internal class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }      //odwołanie do tabeli Users w bazie danych
+        public DbSet<Task> Tasks {get;set;}     //odwołanie się do tabeli Tasks w bazie
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)   //elegnackie połączenie z baza danych
         {
             string server = "localhost";
@@ -29,7 +31,7 @@ namespace ConstructionManagementApp.App.Database
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Username).IsRequired();
                 entity.Property(e => e.Email).IsRequired();
-                entity.Property(e => e.Password).IsRequired();
+                entity.Property(e => e.PasswordHash).IsRequired();
                 entity.Property(e => e.Role)
                       .HasConversion
                       (
