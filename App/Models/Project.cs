@@ -15,8 +15,9 @@ namespace ConstructionManagementApp.App.Models
         public List<Equipment> Equipment { get; set; }
         public List<Report> Reports { get; set; }
         public List<Issue> Issues { get; set; }
+        public User Client { get; set; }
 
-        public Project(string name, string description, Team team, Budget budget)
+        public Project(string name, string description, Team team, Budget budget, User client)
         {
             Name = name;
             Description = description;
@@ -27,6 +28,7 @@ namespace ConstructionManagementApp.App.Models
             Equipment = new List<Equipment>();
             Reports = new List<Report>();
             Issues = new List<Issue>();
+            Client = client;
         }
 
         public void AddTask(Task task)
@@ -56,7 +58,7 @@ namespace ConstructionManagementApp.App.Models
 
         public override string ToString()
         {
-            return $"Project: {Name}, Description: {Description}, Number of Tasks: {Tasks.Count}, Team: {Team.Name}, Budget: {Budget.TotalAmount}";
+            return $"Project: {Name}, Description: {Description}, Number of Tasks: {Tasks.Count}, Team: {Team.Name}, Budget: {Budget.TotalAmount}, Client: {Client.Username}";
         }
     }
 }

@@ -13,6 +13,8 @@ ConstructionManagementSystem/
 │   │   ├── Log.cs                      # Klasa logów systemowych
 │   │   ├── Notification.cs             # Powiadomienia
 │   │   ├── Issue.cs                    # Zgłoszenia problemów
+│   │   ├── Project.cs                  # Klasa projektów
+│   │   ├── Team.cs                     # Klasa zespołów
 │   ├── Services/                        # Logika biznesowa
 │   │   ├── AuthenticationService.cs    # Obsługa logowania i RBAC
 │   │   ├── TaskService.cs              # Obsługa zadań
