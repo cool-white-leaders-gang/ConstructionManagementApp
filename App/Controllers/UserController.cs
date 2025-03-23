@@ -73,7 +73,7 @@ namespace ConstructionManagementApp.App.Controllers
             var user = _userRepository.GetUserById(userId);
             if (user != null)
             {
-                Console.WriteLine(user.GetAllData());
+                Console.WriteLine(user.ToString());
             }
             else
             {
@@ -102,7 +102,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
             foreach (var user in users)
             {
-                Console.WriteLine(user.GetAllData());
+                Console.WriteLine(user.ToString());
             }
         }
 
