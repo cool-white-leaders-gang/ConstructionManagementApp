@@ -12,6 +12,9 @@ namespace ConstructionManagementApp.App.Models
         public string PasswordHash { get; set; }
         public Role Role { get; set; }
 
+        // Lista przypisanych zadań (przez TaskAssignment)
+        public List<TaskAssignment> TaskAssignments { get; set; }
+
         //konstruktor
         public User(string username, string passwordHash, string email, Role role)
         {
@@ -19,6 +22,7 @@ namespace ConstructionManagementApp.App.Models
             Email = email;
             PasswordHash = passwordHash;
             Role = role;
+            TaskAssignments = new List<TaskAssignment>();
         }
 
         public override string ToString()

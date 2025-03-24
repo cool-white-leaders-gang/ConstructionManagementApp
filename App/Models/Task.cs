@@ -11,21 +11,22 @@ namespace ConstructionManagementApp.App.Models
         public string Description { get; set; }
         public TaskPriority Priority { get; set; }
         public TaskProgress Progress { get; set; }
-        public List<User> AssignedWorkers { get; set; }
 
-        public Task(string title, string description, TaskPriority priority, TaskProgress progress, List<User> assignedWorkers)
+        // Lista przypisanych u¿ytkowników (przez TaskAssignment)
+        public List<TaskAssignment> TaskAssignments { get; set; }
+
+        public Task(string title, string description, TaskPriority priority, TaskProgress progress)
         {
             Title = title;
             Description = description;
             Priority = priority;
             Progress = progress;
-            AssignedWorkers = assignedWorkers;
+            TaskAssignments = new List<TaskAssignment>();
         }
 
         public override string ToString()
         {
-            string workers = string.Join(", ", AssignedWorkers.Select(w => w.Username));
-            return $"Task: {Title}, Description: {Description}, Priority: {Priority}, Progress: {Progress}, Assigned Workers: {workers}";
+            return $"Task: {Title}, Description: {Description}, Priority: {Priority}, Progress: {Progress}, Assigned Workers: {1}";
         }
     }
 }
