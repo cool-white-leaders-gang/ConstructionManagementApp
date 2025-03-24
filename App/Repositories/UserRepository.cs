@@ -16,9 +16,9 @@ namespace ConstructionManagementApp.App.Repositories
         private readonly AppDbContext _context;
 
         //konstruktor
-        public UserRepository()
+        public UserRepository(AppDbContext context)
         {
-            _context = new AppDbContext();
+            _context = context;
         }
 
         //metoda dodająca użytkownika do bazy danych
