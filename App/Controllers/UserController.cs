@@ -14,9 +14,9 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private UserRepository _userRepository { get; set; }
 
-        public UserController()
+        public UserController(UserRepository userRepo)
         {
-            _userRepository = new UserRepository();
+            _userRepository = userRepo;
         }
         public void ChangeUsername(int UserId, string newUsername)
         {
@@ -26,7 +26,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine($"zmieniono nazwe użytkownika z {user.Username} na {newUsername}");
                 user.Username = newUsername;
                 _userRepository.UpdateUser(user);
-                
+
             }
             else
             {
@@ -95,7 +95,7 @@ namespace ConstructionManagementApp.App.Controllers
         public void DisplayAllUsers()
         {
             var users = _userRepository.GetAllUsers();
-            if(users.Count == 0)
+            if (users.Count == 0)
             {
                 Console.WriteLine("Brak użytkowników");
                 return;
@@ -106,5 +106,9 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        public int GetUserId(User user)
+        {
+            return user.Id;
+        }
     }
 }
