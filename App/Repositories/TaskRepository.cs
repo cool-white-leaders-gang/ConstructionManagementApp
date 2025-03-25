@@ -30,7 +30,7 @@ namespace ConstructionManagementApp.App.Repositories
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                Console.WriteLine("Pr�ba aktualizacji nieistniej�cego zadania " + ex.Message);
+                Console.WriteLine("Próba aktualizacji nieistniejącego zadania " + ex.Message);
             }
         }
 
@@ -46,7 +46,25 @@ namespace ConstructionManagementApp.App.Repositories
             task = null;
             GC.Collect();
             _context.SaveChanges();
-            Console.WriteLine("Zadanie usuni�te");
+            Console.WriteLine("Zadanie usunięte");
+        }
+
+        // Zwraca wszystkie zadania wraz z przypisanymi użytkownikami
+        public List<Task> GetAllTasks()
+        {
+            return _context.Tasks
+                .Include(t => t.TaskAssignments)
+                .ThenInclude(ta => ta.User) // Zawiera użytkowników w relacji
+                .ToList();
+        }
+
+        // Zwraca zadanie po id wraz z przypisanymi użytkownikami
+        public Task GetTaskById(int id)
+        {
+            return _context.Tasks
+                .Include(t => t.TaskAssignments)
+                .ThenInclude(ta => ta.User) // Zawiera użytkowników w relacji
+                .FirstOrDefault(t => t.Id == id);
         }
     }
 }
