@@ -6,14 +6,31 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Task
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
+        private string _title;
+        private string _description;
+
+        public int Id { get; private set; } // tylko do odczytu, baza sama ustawia id
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Tytuł zadania nie może być pusty.");
+                _title = value;
+            }
+        }
+
+        public string Description
+        {
+            get => _description;
+            set => _description = value ?? string.Empty; // Opis zadania może być pusty
+        }
+
         public TaskPriority Priority { get; set; }
         public TaskProgress Progress { get; set; }
 
-        // Lista przypisanych u�ytkownik�w (przez TaskAssignment)
-        public List<TaskAssignment> TaskAssignments { get; set; }
+        public List<TaskAssignment> TaskAssignments { get; private set; }
 
         public Task(string title, string description, TaskPriority priority, TaskProgress progress)
         {
@@ -24,9 +41,6 @@ namespace ConstructionManagementApp.App.Models
             TaskAssignments = new List<TaskAssignment>();
         }
 
-        public override string ToString()
-        {
-            return $"Task: {Title}, Description: {Description}, Priority: {Priority}, Progress: {Progress}, Assigned Workers: {1}";
-        }
+        public Task() { }
     }
 }
