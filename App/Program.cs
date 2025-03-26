@@ -119,20 +119,117 @@ namespace ConstructionManagementApp.App
             //context.SaveChanges();
 
 
-            // ---TESTY Project---
+            // ---TESTY PORJECT---
             //var context = new AppDbContext();
             //var userRepository = new UserRepository(context);
             //var userController = new UserController(userRepository);
-
-           
-
             //var project = new Project("Budowa domu", "Budowa domu jednorodzinnego", 1, 1, 10);
             //context.Add(project);
             //context.SaveChanges();
 
+
+            //---WPISYWANIE EQUIPMENT DO BAZY---
             //Equipment equipment = new Equipment("Koparka", EquipmentStatus.Available, 2);
             //context.Add(equipment);
             //context.SaveChanges();
+
+            //---WPISYWANIE ISSUE DO BAZY---
+            //var issue = new Issue("Menadzer mnie bije", 10, 2);
+            //var context = new AppDbContext();
+            //context.Add(issue);
+            //context.SaveChanges();
+
+
+            //---WPISYWANIE REPORT DO BAZY---
+            //var context = new AppDbContext();
+            //int useridexampledoitwithusercontroller = 10;
+            //var Report = new Report("Zawiadomienie", "zbyszek sie obija", useridexampledoitwithusercontroller, 2);
+            //context.Add(Report);
+            //context.SaveChanges();
+
+
+            //--WPISYWANIE EQUIPMENT ZA POMOCA REPOSITORY---
+            //var context = new AppDbContext();
+            //var equipmentRepository = new EquipmentRepository(context);
+            //var equipment = new Equipment("Koparka", EquipmentStatus.Available, 2);
+            //equipmentRepository.CreateEquipment(equipment);
+
+            //var AllEquipment = equipmentRepository.GetAllEquipment();
+            //foreach (var e in AllEquipment)
+            //{
+            //    Console.WriteLine(e.Name);
+            //}
+
+
+
+            //--WPISYWANIE ISSUE ZA POMOCA REPOSITORY---
+            //var context = new AppDbContext();
+            //var issueRepository = new IssueRepository(context);
+            ////10 to id usera(PRZYKLADOWE)
+            ////2 to id projektu(PRZYKLADOWE)
+            //var issue = new Issue("Menadzer mnie bije", 10, 2);
+            //issueRepository.CreateIssue(issue);
+            //issue.Description = "Menadzer mnie bije i kopie i obraza";
+            //issueRepository.UpdateIssue(issue);
+
+            //var AllIssues = issueRepository.GetAllIssues();
+            //foreach (var i in AllIssues)
+            //{
+            //    Console.WriteLine(i.Description);
+            //}
+
+
+            //---WPISYWANIE MATERIAL ZA POMOCA REPOSITORY---
+            //var context = new AppDbContext();
+            //var materialRepository = new MaterialRepository(context);
+            //var material = new Material("Śruby", 1000, "szt", 2);
+            //materialRepository.CreateMaterial(material);
+            //var allMaterials = materialRepository.GetAllMaterials();
+            //int i = 1;
+            //foreach (var m in allMaterials)
+            //{
+            //    Console.WriteLine($"{i}) {m.ToString()}");
+            //    i++;
+            //}
+
+            //---WPISYWANIE PROJECT ZA POMOCA REPOSITORY---
+            //var context = new AppDbContext();
+            //var projectRepository = new ProjectRepository(context);
+            //var project = new Project("Budowa wieżowca", "duzy dom ", 1, 1, 10);
+            //projectRepository.CreateProject(project);
+            //var allProjects = projectRepository.GetAllProjects();
+            //int i = 1;
+            //foreach (var p in allProjects)
+            //{
+            //    Console.WriteLine($"{i}) {p.ToString()}");
+            //    i++;
+            //}
+
+            //---WPISYWANIE RAPORTÓW ZA POMOCA REPOSITORY---
+            //var context = new AppDbContext();
+            //var reportRepository = new ReportRepository(context);
+            //var report = new Report("Raport", "wszystko w porządku zabrakjło materiałów", 10, 7);
+            //reportRepository.CreateReport(report);
+            //var allReports = reportRepository.GetAllReports();
+            //int i = 1;
+            //foreach (var r in allReports)
+            //{
+            //    Console.WriteLine($"{i}) {r.ToString()}");
+            //    i++;
+            //}
+
+            //---WPISYWANIE TEAM ZA POMOCA REPOSITORY---
+            var context = new AppDbContext();
+            var teamRepository = new TeamRepository(context);
+            var team = new Team("Zespół 1", 15);
+            teamRepository.CreateTeam(team);
+            var allTeams = teamRepository.GetAllTeams();
+            int i = 1;
+            foreach (var t in allTeams)
+            {
+                Console.WriteLine($"{i}) {t.ToString()}");
+                i++;
+            }
         }
     }
 }
