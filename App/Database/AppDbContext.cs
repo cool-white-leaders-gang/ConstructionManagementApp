@@ -21,6 +21,9 @@ namespace ConstructionManagementApp.App.Database
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMembers> TeamMembers { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Issue> Issues { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        public DbSet<Report> Reports { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)   //elegnackie połączenie z baza danych
         {
             string server = "localhost";
@@ -139,7 +142,45 @@ namespace ConstructionManagementApp.App.Database
                         .WithMany()
                         .HasForeignKey(e => e.ClientId);
             });
-                
+
+            modelBuilder.Entity<Issue>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Description).IsRequired();
+                entity.Property(e => e.ReportedAt).IsRequired();
+                entity.HasOne<User>()
+                      .WithMany()
+                      .HasForeignKey(e => e.ReportedByUserId);
+                entity.HasOne<Project>()
+                        .WithMany()
+                        .HasForeignKey(e => e.ProjectId);
+            });
+
+            modelBuilder.Entity<Material>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired();
+                entity.Property(e => e.Quantity).IsRequired();
+                entity.Property(e => e.Unit).IsRequired();
+                entity.HasOne<Project>()
+                      .WithMany()
+                      .HasForeignKey(e => e.ProjectId);
+            });
+
+            modelBuilder.Entity<Report>(entity =>
+            { 
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired();
+                entity.Property(e => e.Content).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
+                entity.HasOne<User>()
+                      .WithMany()
+                      .HasForeignKey(e => e.CreatedByUserId);
+                entity.HasOne<Project>()
+                        .WithMany()
+                        .HasForeignKey(e => e.ProjectId);
+            });
+
         }
     }
 }
