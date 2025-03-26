@@ -14,8 +14,13 @@ namespace ConstructionManagementApp.App.Database
     internal class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }      //odwołanie do tabeli Users w bazie danych
-        public DbSet<Task> Tasks {get;set;}     //odwołanie się do tabeli Tasks w bazie
+        public DbSet<Task> Tasks { get; set; }     //odwołanie się do tabeli Tasks w bazie
         public DbSet<TaskAssignment> TaskAssignments { get; set; }  //odwołanie się do tabeli TaskAssignments w bazie
+        public DbSet<Equipment> Equipment { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamMembers> TeamMembers { get; set; }
+        public DbSet<Project> Projects { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)   //elegnackie połączenie z baza danych
         {
             string server = "localhost";
@@ -42,8 +47,8 @@ namespace ConstructionManagementApp.App.Database
                       )
                       .IsRequired();
             });
-            
-            
+
+
             modelBuilder.Entity<Task>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -77,6 +82,64 @@ namespace ConstructionManagementApp.App.Database
             }
             );
 
+            modelBuilder.Entity<Equipment>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired();
+                entity.Property(e => e.Status)
+                      .HasConversion
+                      (
+                          v => v.ToString(),
+                          v => (EquipmentStatus)Enum.Parse(typeof(EquipmentStatus), v)
+                      )
+                      .IsRequired();
+                entity.HasOne<Project>()                //kluczobcy ktory jest id tabeli project
+                        .WithMany()
+                        .HasForeignKey(e => e.ProjectId);
+            });
+
+            modelBuilder.Entity<Budget>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.TotalAmount).IsRequired();
+                entity.Property(e => e.SpentAmount).IsRequired();
+            });
+            modelBuilder.Entity<Team>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired();
+                entity.HasOne<User>()                //klucz obcy ktory jest id managera z tabeli user
+                      .WithMany()
+                      .HasForeignKey(e => e.ManagerId);
+            });
+
+            modelBuilder.Entity<TeamMembers>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.TeamId });
+                entity.HasOne(e => e.user)
+                      .WithMany(e => e.TeamMembers)
+                      .HasForeignKey(e => e.UserId);                //tabela lacznikowa miedzy user a team
+                entity.HasOne(e => e.team)
+                        .WithMany(e => e.TeamMembers)
+                        .HasForeignKey(e => e.TeamId);
+            });                                    
+
+            modelBuilder.Entity<Project>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired();
+                entity.Property(e => e.Description).IsRequired();
+                entity.HasOne<Team>()
+                      .WithMany()
+                      .HasForeignKey(e => e.TeamId);                //klucze obce reprezentujące id z tabeli team, budget oraz user
+                entity.HasOne<Budget>()
+                        .WithMany()
+                        .HasForeignKey(e => e.BudgetId);
+                entity.HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey(e => e.ClientId);
+            });
+                
         }
     }
 }
