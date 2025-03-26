@@ -4,7 +4,7 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Budget
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public decimal TotalAmount { get; set; }
         public decimal SpentAmount { get; set; }
 

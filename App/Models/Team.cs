@@ -6,7 +6,7 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Team
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public string Name { get; set; }
         public int ManagerId { get; set; } // Zmieniono z user na int
 

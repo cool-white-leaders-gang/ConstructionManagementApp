@@ -4,23 +4,25 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Report
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CreatedByUserId { get; set; }
+        public int ProjectId { get; set; }
 
-        public Report(string title, string content, int createdByUserId)
+        public Report(string title, string content, int createdByUserId, int projectId)
         {
             Title = title;
             Content = content;
             CreatedAt = DateTime.Now;
             CreatedByUserId = createdByUserId;
+            ProjectId = projectId;
         }
 
         public override string ToString()
         {
-            return $"Report: {Title}, Created At: {CreatedAt}, Created By User ID: {CreatedByUserId}";
+            return $"Raport: {Title}, stworzony: {CreatedAt}, przez u¿ytkownika o ID: {CreatedByUserId}";
         }
     }
 }

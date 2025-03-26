@@ -4,7 +4,7 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Equipment
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public string Name { get; set; }
         public EquipmentStatus Status { get; set; }
         public int ProjectId { get; set; }          //dodanie klucza obcego porjectid

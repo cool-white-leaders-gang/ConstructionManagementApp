@@ -6,7 +6,7 @@ namespace ConstructionManagementApp.App.Models
     //klasa user
     internal class User
     {
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }

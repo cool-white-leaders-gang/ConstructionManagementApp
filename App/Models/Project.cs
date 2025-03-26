@@ -7,7 +7,7 @@ namespace ConstructionManagementApp.App.Models
     internal class Project
     {
 
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int TeamId { get; set; }
