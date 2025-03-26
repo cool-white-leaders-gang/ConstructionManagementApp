@@ -1,26 +1,24 @@
 using System;
+using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Models
 {
-    internal class Issue
+    internal class Issue : Report
     {
-        public int Id { get; private set; }
-        public string Description { get; set; }
-        public DateTime ReportedAt { get; set; }
-        public int ReportedByUserId { get; set; }
-        public int ProjectId { get; set; }
+        public TaskPriority Priority { get; set; } // Priorytet problemu (np. Low, Medium, High)
+        public string Status { get; private set; } // Status problemu (np. "Open", "In Progress", "Resolved")
+        public DateTime? ResolvedAt { get; private set; } // Data rozwiązania problemu (null, jeśli problem nie został rozwiązany)
 
-        public Issue(string description, int reportedByUserId, int projectId)
+        // Konstruktor
+        public IssueReport(string title, string content, User createdBy, Project project, TaskPriority priority)
+            : base(title, content, createdBy, project)
         {
-            Description = description;
-            ReportedAt = DateTime.Now;
-            ReportedByUserId = reportedByUserId;
-            ProjectId = projectId;
+            Priority = priority;
+            Status = "Open"; // Domyślny status problemu to "Open"
+            ResolvedAt = null; // Problem nie jest jeszcze rozwiązany
         }
 
-        public override string ToString()
-        {
-            return $"Issue: {Description}, Reported At: {ReportedAt}, Reported By User ID: {ReportedByUserId}";
-        }
+        // Konstruktor bezparametrowy (wymagany przez Entity Framework)
+        public IssueReport() { }
     }
 }

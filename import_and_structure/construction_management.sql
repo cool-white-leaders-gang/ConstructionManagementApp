@@ -53,11 +53,17 @@ CREATE TABLE `equipment` (
 --
 
 CREATE TABLE `issues` (
-  `id` int(11) NOT NULL,
-  `description` text NOT NULL,
-  `reportedAt` datetime NOT NULL,
-  `reportedByUserId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL
+  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+    `Title` VARCHAR(255) NOT NULL,
+    `Content` TEXT,
+    `CreatedAt` DATETIME NOT NULL,
+    `CreatedById` INT NOT NULL,
+    `ProjectId` INT NOT NULL,
+    `Priority` ENUM('Low', 'Medium', 'High') NOT NULL,
+    `Status` ENUM('Open', 'In Progress', 'Resolved') NOT NULL DEFAULT 'Open',
+    `ResolvedAt` DATETIME NULL,
+    FOREIGN KEY (`CreatedById`) REFERENCES `Users`(`Id`) ON DELETE CASCADE,
+    FOREIGN KEY (`ProjectId`) REFERENCES `Projects`(`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -121,12 +127,15 @@ CREATE TABLE `projects` (
 --
 
 CREATE TABLE `reports` (
-  `id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `content` text DEFAULT NULL,
-  `createdAt` datetime NOT NULL,
-  `createdByUserId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL
+  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+    `Title` VARCHAR(255) NOT NULL,
+    `Content` TEXT,
+    `CreatedAt` DATETIME NOT NULL,
+    `CreatedById` INT NOT NULL,
+    `ProjectId` INT NOT NULL,
+    `CompletionPercentage` INT NOT NULL,
+    FOREIGN KEY (`CreatedById`) REFERENCES `Users`(`Id`) ON DELETE CASCADE,
+    FOREIGN KEY (`ProjectId`) REFERENCES `Projects`(`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
