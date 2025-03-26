@@ -54,7 +54,7 @@ namespace ConstructionManagementApp.App.Repositories
         {
             return _context.Tasks
                 .Include(t => t.TaskAssignments)
-                .ThenInclude(ta => ta.user) // Zawiera użytkowników w relacji
+                .ThenInclude(ta => ta.user) // Zawiera użytkowników w relacji   tutaj to samo User =/= user
                 .ToList();
         }
 

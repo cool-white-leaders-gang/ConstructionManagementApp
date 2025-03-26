@@ -10,7 +10,7 @@ namespace ConstructionManagementApp.App.Models
         public string Name { get; set; }
         public int ManagerId { get; set; } // Zmieniono z user na int
 
-        public List<TeamMembers> TeamMembers { get; set; }
+        public List<TeamMembers> TeamMembers { get; set; } //tabela ³¹cnzikowa Teammembers
         public Team(string name, int managerId)
         {
             Name = name;

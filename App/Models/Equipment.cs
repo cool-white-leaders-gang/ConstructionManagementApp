@@ -7,7 +7,7 @@ namespace ConstructionManagementApp.App.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public EquipmentStatus Status { get; set; }
-        public int ProjectId { get; set; }
+        public int ProjectId { get; set; }          //dodanie klucza obcego porjectid
 
         public Equipment(string name, EquipmentStatus status, int projectId)
         {

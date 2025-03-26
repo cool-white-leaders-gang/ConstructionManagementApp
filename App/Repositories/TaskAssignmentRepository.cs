@@ -66,7 +66,7 @@ namespace ConstructionManagementApp.App.Repositories
                 // zwraca użytkownikow przypisanych do zadania o danym id
                 return _context.TaskAssignments
                     .Where(ta => ta.TaskId == taskId) // filtruje po taskid
-                    .Select(ta => ta.user) // pobiera przypisanych uzytkownikow
+                    .Select(ta => ta.user) // pobiera przypisanych uzytkownikow     stafec pamietaj o wielkosci liter User =/= user
                     .ToList(); // zamienia na liste
             }
             catch (Exception ex)

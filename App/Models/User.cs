@@ -14,7 +14,7 @@ namespace ConstructionManagementApp.App.Models
 
         // Lista przypisanych zadań (przez TaskAssignment)
         public List<TaskAssignment> TaskAssignments { get; set; }
-        public List<TeamMembers> TeamMembers { get; set; }
+        public List<TeamMembers> TeamMembers { get; set; }      //dodanie nowej tabeli laczacej
 
         //konstruktor
         public User(string username, string passwordHash, string email, Role role)

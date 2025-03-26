@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace ConstructionManagementApp.App.Models
 {
+    //gruntowna zmiana klasy project, nie ma list, zamiast tego po³¹czenia do tabel w bazie
     internal class Project
     {
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

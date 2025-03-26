@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConstructionManagementApp.App.Models
 {
-    internal class TeamMembers
+    internal class TeamMembers  //dodanie klasy ktora jest tabela laczaca
     {
         
         public int TeamId { get; set; }
