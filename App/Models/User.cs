@@ -14,6 +14,7 @@ namespace ConstructionManagementApp.App.Models
 
         // Lista przypisanych zadań (przez TaskAssignment)
         public List<TaskAssignment> TaskAssignments { get; set; }
+        public List<TeamMembers> TeamMembers { get; set; }
 
         //konstruktor
         public User(string username, string passwordHash, string email, Role role)
@@ -23,6 +24,7 @@ namespace ConstructionManagementApp.App.Models
             PasswordHash = passwordHash;
             Role = role;
             TaskAssignments = new List<TaskAssignment>();
+            TeamMembers = new List<TeamMembers>();
         }
 
         public override string ToString()

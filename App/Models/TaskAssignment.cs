@@ -14,5 +14,12 @@ namespace ConstructionManagementApp.App.Models
         public int TaskId { get; set; }
         public Task task { get; set; }
 
+        public TaskAssignment(int taskId, int userId)
+        {
+            TaskId = taskId;
+            UserId = userId;
+        }
+
     }
+
 }

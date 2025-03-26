@@ -8,31 +8,32 @@ namespace ConstructionManagementApp.App.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public User Manager { get; set; }
-        public List<User> Workers { get; set; }
+        public int ManagerId { get; set; } // Zmieniono z user na int
 
-        public Team(string name, User manager)
+        public List<TeamMembers> TeamMembers { get; set; }
+        public Team(string name, int managerId)
         {
             Name = name;
-            Manager = manager;
-            Workers = new List<User>();
+            ManagerId = managerId;
+            TeamMembers = new List<TeamMembers>();
         }
 
-        public void AddWorker(User worker)
-        {
-            if (worker.Role == Role.Worker)
-            {
-                Workers.Add(worker);
-            }
-            else
-            {
-                throw new ArgumentException("Only users with the Worker role can be added as workers.");
-            }
-        }
+        //TRZEBA ZROBIÆ INN¥ METODÊ DODANIA, POKOMBINUJ, TO TRZEBA ZROBIÆ W TABELI TEAMMEMBERS
+        //public void AddWorker(User worker)
+        //{
+        //    if (worker.Role == Role.Worker)
+        //    {
+        //        Workers.Add(worker);
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentException("Only users with the Worker role can be added as workers.");
+        //    }
+        //}
 
         public override string ToString()
         {
-            return $"Team: {Name}, Manager: {Manager.Username}, Number of Workers: {Workers.Count}";
+            return $"Team: {Name}, ManagerId: {ManagerId}";   //tu te¿ siê pobaw
         }
     }
 }
