@@ -23,7 +23,7 @@ namespace ConstructionManagementApp.App.Database
         public DbSet<Project> Projects { get; set; }
         public DbSet<Issue> Issues { get; set; }
         public DbSet<Material> Materials { get; set; }
-        public DbSet<Report> Reports { get; set; }
+        public DbSet<ProgressReport> ProgressReports { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)   //elegnackie połączenie z baza danych
         {
             string server = "localhost";
