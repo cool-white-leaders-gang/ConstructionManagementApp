@@ -8,8 +8,8 @@ namespace ConstructionManagementApp.App.Models
         public int CompletionPercentage { get; set; } // Procent ukończenia projektu
 
         // Konstruktor
-        public ProgressReport(string title, string content, User createdBy, Project project, int completionPercentage)
-            : base(title, content, createdBy, project)
+        public ProgressReport(string title, string content, int createdByUserId, int projectId, int completionPercentage)
+            : base(title, content, createdByUserId, projectId)
         {
             CompletionPercentage = completionPercentage;
         }

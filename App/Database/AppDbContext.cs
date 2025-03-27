@@ -146,14 +146,30 @@ namespace ConstructionManagementApp.App.Database
             modelBuilder.Entity<Issue>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Description).IsRequired();
-                entity.Property(e => e.ReportedAt).IsRequired();
+                entity.Property(e => e.Title).IsRequired();
+                entity.Property(e => e.Content).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
                 entity.HasOne<User>()
                       .WithMany()
-                      .HasForeignKey(e => e.ReportedByUserId);
+                      .HasForeignKey(e => e.CreatedByUserId);
                 entity.HasOne<Project>()
                         .WithMany()
                         .HasForeignKey(e => e.ProjectId);
+                entity.Property(e => e.Priority)
+                      .HasConversion
+                      (
+                          v => v.ToString(),
+                          v => (TaskPriority)Enum.Parse(typeof(TaskPriority), v)
+                      )
+                      .IsRequired();
+                entity.Property(e => e.Status)
+                      .HasConversion
+                      (
+                          v => v.ToString(),
+                          v => (IssueStatus)Enum.Parse(typeof(IssueStatus), v)
+                      )
+                      .IsRequired();
+                entity.Property(e => e.ResolvedAt).IsRequired();
             });
 
             modelBuilder.Entity<Material>(entity =>
@@ -180,7 +196,7 @@ namespace ConstructionManagementApp.App.Database
                         .WithMany()
                         .HasForeignKey(e => e.ProjectId);
             });
-
+            
         }
     }
 }

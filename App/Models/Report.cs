@@ -8,16 +8,16 @@ namespace ConstructionManagementApp.App.Models
         public string Title { get; set; } // Tytuł raportu
         public string Content { get; set; } // Treść raportu
         public DateTime CreatedAt { get; set; } // Data utworzenia raportu
-        public User CreatedBy { get; set; } // Autor raportu
-        public Project Project { get; set; } // Projekt, do którego raport należy
+        public int CreatedByUserId { get; set; } // Autor raportu
+        public int ProjectId { get; set; } // Projekt, do którego raport należy
 
-        protected Report(string title, string content, User createdBy, Project project)
+        protected Report(string title, string content, int userId, int projectId)
         {
             Title = title ?? throw new ArgumentNullException(nameof(title));
             Content = content ?? string.Empty;
             CreatedAt = DateTime.Now;
-            CreatedBy = createdBy ?? throw new ArgumentNullException(nameof(createdBy));
-            Project = project ?? throw new ArgumentNullException(nameof(project));
+            CreatedByUserId = userId;
+            ProjectId = projectId;
         }
 
         protected Report() { }

@@ -219,17 +219,20 @@ namespace ConstructionManagementApp.App
             //}
 
             //---WPISYWANIE TEAM ZA POMOCA REPOSITORY---
-            var context = new AppDbContext();
-            var teamRepository = new TeamRepository(context);
-            var team = new Team("Zespół 1", 15);
-            teamRepository.CreateTeam(team);
-            var allTeams = teamRepository.GetAllTeams();
-            int i = 1;
-            foreach (var t in allTeams)
-            {
-                Console.WriteLine($"{i}) {t.ToString()}");
-                i++;
-            }
+            //var context = new AppDbContext();
+            //var teamRepository = new TeamRepository(context);
+            //var team = new Team("Zespół 1", 15);
+            //teamRepository.CreateTeam(team);
+            //var allTeams = teamRepository.GetAllTeams();
+            //int i = 1;
+            //foreach (var t in allTeams)
+            //{
+            //    Console.WriteLine($"{i}) {t.ToString()}");
+            //    i++;
+
+            //}
+            Console.WriteLine("hello world");
+
         }
     }
 }

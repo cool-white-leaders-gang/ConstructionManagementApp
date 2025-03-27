@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Database;
+using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Repositories
 {
@@ -41,7 +42,7 @@ namespace ConstructionManagementApp.App.Repositories
                     throw new InvalidOperationException($"Użytkownik o Id {userId} jest już członkiem zespołu o Id {teamId}.");
 
                 // jeśli nie wywaliło błędu to przypisuje usera to teamu
-                var teamMember = new TeamMember(teamId, userId);
+                var teamMember = new TeamMembers(teamId, userId);
                 _context.TeamMembers.Add(teamMember);
                 _context.SaveChanges();
             }
@@ -65,7 +66,7 @@ namespace ConstructionManagementApp.App.Repositories
                 // jesli istnieje to pobieram pracownikow z danego teamu
                 return _context.TeamMembers
                     .Where(tm => tm.TeamId == teamId)
-                    .Select(tm => tm.User)
+                    .Select(tm => tm.user)
                     .ToList();
             }
             catch (Exception ex)
