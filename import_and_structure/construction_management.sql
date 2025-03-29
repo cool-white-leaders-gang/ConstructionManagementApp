@@ -90,6 +90,7 @@ CREATE TABLE `progressreports` (
   `Content` text NOT NULL,
   `CreatedAt` datetime NOT NULL,
   `CreatedByUserId` int(11) NOT NULL,
+  `CompletionPercentage` int(3) NOT NULL,
   `ProjectId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
