@@ -149,27 +149,27 @@ namespace ConstructionManagementApp.App.Database
                 entity.Property(e => e.Title).IsRequired();
                 entity.Property(e => e.Content).IsRequired();
                 entity.Property(e => e.CreatedAt).IsRequired();
-                entity.HasOne<User>()
-                      .WithMany()
-                      .HasForeignKey(e => e.CreatedByUserId);
-                entity.HasOne<Project>()
-                        .WithMany()
-                        .HasForeignKey(e => e.ProjectId);
                 entity.Property(e => e.Priority)
-                      .HasConversion
-                      (
-                          v => v.ToString(),
-                          v => (TaskPriority)Enum.Parse(typeof(TaskPriority), v)
-                      )
-                      .IsRequired();
+                    .HasConversion(
+                        v => v.ToString(),
+                        v => (TaskPriority)Enum.Parse(typeof(TaskPriority), v)
+                    )
+                    .IsRequired();
                 entity.Property(e => e.Status)
-                      .HasConversion
-                      (
-                          v => v.ToString(),
-                          v => (IssueStatus)Enum.Parse(typeof(IssueStatus), v)
-                      )
-                      .IsRequired();
-                entity.Property(e => e.ResolvedAt).IsRequired();
+                    .HasConversion(
+                        v => v.ToString(),
+                        v => (IssueStatus)Enum.Parse(typeof(IssueStatus), v)
+                    )
+                    .IsRequired();
+                entity.Property(e => e.ResolvedAt).IsRequired(false);
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(e => e.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<Project>()
+                    .WithMany()
+                    .HasForeignKey(e => e.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Material>(entity =>
@@ -183,18 +183,22 @@ namespace ConstructionManagementApp.App.Database
                       .HasForeignKey(e => e.ProjectId);
             });
 
-            modelBuilder.Entity<Report>(entity =>
-            { 
+            modelBuilder.Entity<ProgressReport>(entity =>
+            {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Title).IsRequired();
                 entity.Property(e => e.Content).IsRequired();
                 entity.Property(e => e.CreatedAt).IsRequired();
+                entity.Property(e => e.CompletionPercentage)
+                    .IsRequired(); // Ensure CompletionPercentage is required
                 entity.HasOne<User>()
-                      .WithMany()
-                      .HasForeignKey(e => e.CreatedByUserId);
+                    .WithMany()
+                    .HasForeignKey(e => e.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne<Project>()
-                        .WithMany()
-                        .HasForeignKey(e => e.ProjectId);
+                    .WithMany()
+                    .HasForeignKey(e => e.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             
         }
