@@ -13,7 +13,7 @@ namespace ConstructionManagementApp.App.Models
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("Budżet nie może być mniejszy niż 0");
+                    throw new ArgumentException("Budżet nie może być mniejszy niż 0 ");
                 if (value < SpentAmount)
                     throw new InvalidOperationException("Budżet nie może być mniejszy niż wydana wartość");
                 _totalAmount = value;
@@ -39,7 +39,10 @@ namespace ConstructionManagementApp.App.Models
             TotalAmount = totalAmount;
             SpentAmount = 0;
         }
-    
-        public Budget() { }
+
+        public override string ToString()
+        {
+            return $"Budżet: {TotalAmount}, wydano: {SpentAmount}";
+        }
     }
 }
