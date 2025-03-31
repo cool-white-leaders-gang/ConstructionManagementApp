@@ -6,8 +6,8 @@ namespace ConstructionManagementApp.App.Models
     internal class Issue : Report
     {
         public TaskPriority Priority { get; set; } // Priorytet problemu (np. Low, Medium, High)
-        public IssueStatus Status { get; private set; } // Status problemu (np. "Open", "In Progress", "Resolved")
-        public DateTime? ResolvedAt { get; private set; } // Data rozwiązania problemu (null, jeśli problem nie został rozwiązany)
+        public IssueStatus Status { get; set; } // Status problemu (np. "Open", "In Progress", "Resolved")
+        public DateTime? ResolvedAt { get; set; } // Data rozwiązania problemu (null, jeśli problem nie został rozwiązany)
 
         // Konstruktor
         public Issue(string title, string content, int userId, int projectId, TaskPriority priority)
