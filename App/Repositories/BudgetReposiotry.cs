@@ -8,10 +8,10 @@ using ConstructionManagementApp.App.Models;
 
 namespace ConstructionManagementApp.App.Repositories
 {
-    internal class BudgetReposiotry
+    internal class BudgetRepository
     {
         private readonly AppDbContext _context;
-        public BudgetReposiotry(AppDbContext context)
+        public BudgetRepository(AppDbContext context)
         {
             _context = context;
         }

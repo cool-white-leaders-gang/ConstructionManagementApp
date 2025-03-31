@@ -24,7 +24,7 @@ namespace ConstructionManagementApp.App.Models
         public decimal SpentAmount
         {
             get => _spentAmount;
-            private set
+            set
             {
                 if (value < 0)
                     throw new ArgumentException("Wydana wartość nie możę być mniejsza od 0");
