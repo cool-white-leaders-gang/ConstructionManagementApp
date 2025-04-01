@@ -11,11 +11,13 @@ namespace ConstructionManagementApp.App.Controllers
     internal class TaskController
     {
         private readonly TaskRepository _taskRepository;
+        private readonly TaskAssignmentRepository _taskAssignmentRepository;
 
-        // Konstruktor kontrolera, przyjmuje repozytorium jako zależność
-        public TaskController(TaskRepository taskRepository)
+        // Konstruktor kontrolera, przyjmuje repozytoria jako zależności
+        public TaskController(TaskRepository taskRepository, TaskAssignmentRepository taskAssignmentRepository)
         {
             _taskRepository = taskRepository;
+            _taskAssignmentRepository = taskAssignmentRepository;
         }
 
         // Metoda do tworzenia nowego zadania
@@ -121,6 +123,58 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 // Obsługa błędów
                 Console.WriteLine($"Błąd podczas pobierania zadania: {ex.Message}");
+            }
+        }
+
+        // Metoda do przypisywania użytkownika do zadania
+        public void AssignUserToTask(int taskId, int userId)
+        {
+            try
+            {
+                _taskAssignmentRepository.AssignWorkerToTask(taskId, userId);
+                Console.WriteLine($"Użytkownik o Id {userId} został przypisany do zadania o Id {taskId}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd podczas przypisywania użytkownika do zadania: {ex.Message}");
+            }
+        }
+
+        // Metoda do usuwania przypisania użytkownika do zadania
+        public void RemoveUserFromTask(int taskId, int userId)
+        {
+            try
+            {
+                _taskAssignmentRepository.RemoveWorkerFromTask(taskId, userId);
+                Console.WriteLine($"Użytkownik o Id {userId} został usunięty z zadania o Id {taskId}.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd podczas usuwania użytkownika z zadania: {ex.Message}");
+            }
+        }
+
+        // Metoda do wyświetlania użytkowników przypisanych do zadania
+        public void DisplayUsersAssignedToTask(int taskId)
+        {
+            try
+            {
+                var users = _taskAssignmentRepository.GetWorkersAssignedToTask(taskId);
+                if (users.Count == 0)
+                {
+                    Console.WriteLine($"Brak użytkowników przypisanych do zadania o Id {taskId}.");
+                    return;
+                }
+
+                Console.WriteLine($"Użytkownicy przypisani do zadania o Id {taskId}:");
+                foreach (var user in users)
+                {
+                    Console.WriteLine(user.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd podczas pobierania użytkowników przypisanych do zadania: {ex.Message}");
             }
         }
     }
