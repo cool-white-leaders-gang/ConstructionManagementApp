@@ -5,8 +5,34 @@ namespace ConstructionManagementApp.App.Models
     internal class Budget
     {
         public int Id { get; private set; }
-        public decimal TotalAmount { get; set; }
-        public decimal SpentAmount { get; set; }
+
+        private decimal _totalAmount;
+        public decimal TotalAmount
+        {
+            get => _totalAmount;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("Budżet nie może być mniejszy niż 0 ");
+                if (value < SpentAmount)
+                    throw new InvalidOperationException("Budżet nie może być mniejszy niż wydana wartość");
+                _totalAmount = value;
+            }
+        }
+
+        private decimal _spentAmount;
+        public decimal SpentAmount
+        {
+            get => _spentAmount;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("Wydana wartość nie możę być mniejsza od 0");
+                if (value > TotalAmount)
+                    throw new InvalidOperationException("Wydana wartośc nie może być wyższa niż budżet");
+                _spentAmount = value;
+            }
+        }
 
         public Budget(decimal totalAmount)
         {
@@ -14,14 +40,9 @@ namespace ConstructionManagementApp.App.Models
             SpentAmount = 0;
         }
 
-        public void Spend(decimal amount)
-        {
-            SpentAmount += amount;
-        }
-
         public override string ToString()
         {
-            return $"Budget: Total Amount: {TotalAmount}, Spent Amount: {SpentAmount}";
+            return $"Budżet: {TotalAmount}, wydano: {SpentAmount}";
         }
     }
 }
