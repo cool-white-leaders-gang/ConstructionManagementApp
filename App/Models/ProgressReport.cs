@@ -5,16 +5,25 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class ProgressReport : Report
     {
-        public int CompletionPercentage { get; set; } // Procent ukończenia projektu
+        private int _completionPercentage;
 
-        // Konstruktor
+        public int CompletionPercentage
+        {
+            get => _completionPercentage;
+            set
+            {
+                if (value < 0 || value > 100)
+                    throw new ArgumentException("Procent ukończenia musi być w zakresie od 0 do 100.");
+                _completionPercentage = value;
+            }
+        }
+
         public ProgressReport(string title, string content, int createdByUserId, int projectId, int completionPercentage)
             : base(title, content, createdByUserId, projectId)
         {
             CompletionPercentage = completionPercentage;
         }
 
-        // Konstruktor bezparametrowy (wymagany przez EF)
         public ProgressReport() { }
     }
 }

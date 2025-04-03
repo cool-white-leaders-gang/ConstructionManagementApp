@@ -1,25 +1,65 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConstructionManagementApp.App.Models
 {
-    internal class TeamMembers  //dodanie klasy ktora jest tabela laczaca
+    internal class TeamMembers
     {
-        
-        public int TeamId { get; set; }
-        public Team team { get; set; }
-        public int UserId { get; set; }
-        public User user { get; set; }
+        private int _teamId;
+        private Team _team;
+        private int _userId;
+        private User _user;
 
-        public TeamMembers(int teamId, int userId)
+        public int TeamId
         {
-            TeamId = teamId;
-            UserId = userId;
+            get => _teamId;
+            private set
+            {
+                if (value <= 0)
+                    throw new ArgumentException("Id zespołu musi być większe od zera.");
+                _teamId = value;
+            }
         }
 
-        public TeamMembers() { }
+        public Team Team
+        {
+            get => _team;
+            private set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(Team), "Zespół nie może być null.");
+                _team = value;
+            }
+        }
+
+        public int UserId
+        {
+            get => _userId;
+            private set
+            {
+                if (value <= 0)
+                    throw new ArgumentException("Id użytkownika musi być większe od zera.");
+                _userId = value;
+            }
+        }
+
+        public User User
+        {
+            get => _user;
+            private set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(User), "Użytkownik nie może być null.");
+                _user = value;
+            }
+        }
+
+        public TeamMembers(int teamId, Team team, int userId, User user)
+        {
+            TeamId = teamId;
+            Team = team;
+            UserId = userId;
+            User = user;
+        }
+
     }
 }
