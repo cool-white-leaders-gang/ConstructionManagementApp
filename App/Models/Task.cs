@@ -1,15 +1,18 @@
 using System;
-using System.Collections.Generic;
 using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Models
 {
     internal class Task
     {
+        public int Id { get; private set; } // Id zadania
+
         private string _title;
         private string _description;
+        private TaskPriority _priority;
+        private TaskProgress _progress;
+        private readonly DateTime _createdAt; // Prywatne pole dla daty utworzenia
 
-        public int Id { get; private set; } // tylko do odczytu, baza sama ustawia id
         public string Title
         {
             get => _title;
@@ -24,13 +27,32 @@ namespace ConstructionManagementApp.App.Models
         public string Description
         {
             get => _description;
-            set => _description = value ?? string.Empty; // Opis zadania może być pusty
+            set => _description = value ?? string.Empty; 
         }
 
-        public TaskPriority Priority { get; set; }
-        public TaskProgress Progress { get; set; }
+        public TaskPriority Priority
+        {
+            get => _priority;
+            set
+            {
+                if (!Enum.IsDefined(typeof(TaskPriority), value))
+                    throw new ArgumentException("Nieprawidłowy priorytet zadania.");
+                _priority = value;
+            }
+        }
 
-        public List<TaskAssignment> TaskAssignments { get; private set; }
+        public TaskProgress Progress
+        {
+            get => _progress;
+            set
+            {
+                if (!Enum.IsDefined(typeof(TaskProgress), value))
+                    throw new ArgumentException("Nieprawidłowy status zadania.");
+                _progress = value;
+            }
+        }
+
+        public DateTime CreatedAt => _createdAt; 
 
         public Task(string title, string description, TaskPriority priority, TaskProgress progress)
         {
@@ -38,9 +60,14 @@ namespace ConstructionManagementApp.App.Models
             Description = description;
             Priority = priority;
             Progress = progress;
-            TaskAssignments = new List<TaskAssignment>();
+            _createdAt = DateTime.Now; 
         }
 
         public Task() { }
+
+        public override string ToString()
+        {
+            return $"Task: {Title}, Priority: {Priority}, Progress: {Progress}, CreatedAt: {CreatedAt}";
+        }
     }
 }
