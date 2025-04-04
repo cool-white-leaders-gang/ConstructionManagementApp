@@ -26,7 +26,12 @@ namespace ConstructionManagementApp.App.Models
         public string Description
         {
             get => _description;
-            set => _description = value ?? string.Empty;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Opis projektu nie może być pusty.");
+                _description = value;
+            }
         }
 
         public int TeamId
