@@ -43,8 +43,8 @@ namespace ConstructionManagementApp.App.Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException("Hasło nie może być puste.");
-                if (value.Length < 6)
-                    throw new ArgumentException("Hasło musi mieć co najmniej 6 znaków.");
+                if (value.Length != 64)
+                    throw new ArgumentException("Hash hasła musi mieć długośc 64 znaków");
                 _passwordHash = value;
             }
         }

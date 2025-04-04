@@ -26,7 +26,12 @@ namespace ConstructionManagementApp.App.Models
         public string Content
         {
             get => _content;
-            set => _content = value ?? string.Empty; // Treść raportu może być pusta, ale nie null
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Opis raportu nie może być pusty.");
+                _title = value;
+            }
         }
 
         public DateTime CreatedAt
