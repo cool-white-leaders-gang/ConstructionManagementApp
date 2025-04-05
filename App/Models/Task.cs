@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Models
@@ -31,7 +32,7 @@ namespace ConstructionManagementApp.App.Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException("Opis zadania nie może być pusty.");
-                _title = value;
+                _description = value;
             }
         }
 
@@ -57,7 +58,10 @@ namespace ConstructionManagementApp.App.Models
             }
         }
 
-        public DateTime CreatedAt => _createdAt; 
+        public DateTime CreatedAt => _createdAt;
+
+        // Relacja wiele do wielu z użytkownikami (przez TaskAssignment)
+        public List<TaskAssignment> TaskAssignments { get; private set; }
 
         public Task(string title, string description, TaskPriority priority, TaskProgress progress)
         {
@@ -65,10 +69,14 @@ namespace ConstructionManagementApp.App.Models
             Description = description;
             Priority = priority;
             Progress = progress;
-            _createdAt = DateTime.Now; 
+            _createdAt = DateTime.Now;
+            TaskAssignments = new List<TaskAssignment>();
         }
 
-        public Task() { }
+        public Task()
+        {
+            TaskAssignments = new List<TaskAssignment>();
+        }
 
         public override string ToString()
         {

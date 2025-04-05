@@ -12,7 +12,7 @@ namespace ConstructionManagementApp.App.Models
         public int TaskId
         {
             get => _taskId;
-            private set
+            set
             {
                 if (value <= 0)
                     throw new ArgumentException("Id zadania musi być większe od zera.");
@@ -23,7 +23,7 @@ namespace ConstructionManagementApp.App.Models
         public Task Task
         {
             get => _task;
-            private set
+            set
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(Task), "Zadanie nie może być null.");
@@ -34,7 +34,7 @@ namespace ConstructionManagementApp.App.Models
         public int UserId
         {
             get => _userId;
-            private set
+            set
             {
                 if (value <= 0)
                     throw new ArgumentException("Id użytkownika musi być większe od zera.");
@@ -45,7 +45,7 @@ namespace ConstructionManagementApp.App.Models
         public User User
         {
             get => _user;
-            private set
+            set
             {
                 if (value == null)
                     throw new ArgumentNullException(nameof(User), "Użytkownik nie może być null.");
@@ -53,12 +53,10 @@ namespace ConstructionManagementApp.App.Models
             }
         }
 
-        public TaskAssignment(int taskId, Task task, int userId, User user)
+        public TaskAssignment(int taskId, int userId)
         {
             TaskId = taskId;
-            Task = task;
             UserId = userId;
-            User = user;
         }
 
     }

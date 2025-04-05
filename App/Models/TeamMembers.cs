@@ -53,12 +53,10 @@ namespace ConstructionManagementApp.App.Models
             }
         }
 
-        public TeamMembers(int teamId, Team team, int userId, User user)
+        public TeamMembers(int teamId, int userId)
         {
             TeamId = teamId;
-            Team = team;
             UserId = userId;
-            User = user;
         }
 
     }

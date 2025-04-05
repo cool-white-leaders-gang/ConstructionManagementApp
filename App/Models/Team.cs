@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Models
 {
@@ -33,11 +32,19 @@ namespace ConstructionManagementApp.App.Models
             }
         }
 
+        // Relacja jeden do wielu z użytkownikami (przez TeamMembers)
+        public List<TeamMembers> TeamMembers { get; private set; }
 
         public Team(string name, int managerId)
         {
             Name = name;
             ManagerId = managerId;
+            TeamMembers = new List<TeamMembers>();
+        }
+
+        public Team()
+        {
+            TeamMembers = new List<TeamMembers>();
         }
 
         public override string ToString()
