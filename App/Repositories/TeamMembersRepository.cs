@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Database;
-using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Repositories
 {
@@ -16,87 +15,41 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        // Dodaj użytkownika do zespołu
-        public void AddUserToTeam(int teamId, int userId)
+        public void AddMemberToTeam(int teamId, int userId)
         {
-            try
-            {
-                // sprawdzam czy istnieje team
-                var team = _context.Teams.FirstOrDefault(t => t.Id == teamId);
-                if (team == null)
-                    throw new ArgumentException($"Zespół o Id {teamId} nie istnieje.");
+            var team = _context.Teams.FirstOrDefault(t => t.Id == teamId);
+            if (team == null)
+                throw new KeyNotFoundException($"Zespół o Id {teamId} nie istnieje.");
 
-                // sprawdzam czy istnieje user
-                var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-                if (user == null)
-                    throw new ArgumentException($"Użytkownik o Id {userId} nie istnieje.");
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                throw new KeyNotFoundException($"Użytkownik o Id {userId} nie istnieje.");
 
-                // sprawdzam czy user ma role Worker
-                if (user.Role != Role.Worker)
-                    throw new InvalidOperationException($"Użytkownik o Id {userId} nie ma roli Worker i nie może być dodany do zespołu.");
+            // Sprawdzenie, czy użytkownik już jest członkiem zespołu
+            if (_context.TeamMembers.Any(tm => tm.TeamId == teamId && tm.UserId == userId))
+                throw new InvalidOperationException($"Użytkownik o Id {userId} jest już członkiem zespołu o Id {teamId}.");
 
-                // sprawdzam czy jest juz nie ma pracownika w teamie
-                var existingAssignment = _context.TeamMembers
-                    .FirstOrDefault(tm => tm.TeamId == teamId && tm.UserId == userId);
-                if (existingAssignment != null)
-                    throw new InvalidOperationException($"Użytkownik o Id {userId} jest już członkiem zespołu o Id {teamId}.");
-
-                // jeśli nie wywaliło błędu to przypisuje usera to teamu
-                var teamMember = new TeamMembers(teamId, userId);
-                _context.TeamMembers.Add(teamMember);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas dodawania użytkownika do zespołu: {ex.Message}");
-                throw;
-            }
+            var teamMember = new TeamMembers(teamId, userId);
+            _context.TeamMembers.Add(teamMember);
+            _context.SaveChanges();
         }
 
-        // Pobiera listę użytkowników w zespole
-        public List<User> GetUsersInTeam(int teamId)
+        public void RemoveMemberFromTeam(int teamId, int userId)
         {
-            try
-            {
-                // sprawdza czy zespol w ogole istnieje
-                var team = _context.Teams.FirstOrDefault(t => t.Id == teamId);
-                if (team == null)
-                    throw new ArgumentException($"Zespół o Id {teamId} nie istnieje.");
+            var teamMember = _context.TeamMembers.FirstOrDefault(tm => tm.TeamId == teamId && tm.UserId == userId);
+            if (teamMember == null)
+                throw new KeyNotFoundException($"Nie znaleziono członka zespołu o Id użytkownika {userId} w zespole o Id {teamId}.");
 
-                // jesli istnieje to pobieram pracownikow z danego teamu
-                return _context.TeamMembers
-                    .Where(tm => tm.TeamId == teamId)
-                    .Select(tm => tm.user)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania użytkowników w zespole: {ex.Message}");
-                throw;
-            }
+            _context.TeamMembers.Remove(teamMember);
+            _context.SaveChanges();
         }
 
-        // Usuń użytkownika z zespołu
-        public void RemoveUserFromTeam(int teamId, int userId)
+        public List<User> GetMembersOfTeam(int teamId)
         {
-            try
-            {
-                // Znajduje przypisanie uzytkownika
-                var teamMember = _context.TeamMembers
-                    .FirstOrDefault(tm => tm.TeamId == teamId && tm.UserId == userId);
-
-                if (teamMember == null)
-                    throw new ArgumentException($"Przypisanie użytkownika o Id {userId} do zespołu o Id {teamId} nie istnieje.");
-
-                // usuwa przypisanie
-                _context.TeamMembers.Remove(teamMember);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas usuwania użytkownika z zespołu: {ex.Message}");
-                throw;
-            }
+            return _context.TeamMembers
+                .Where(tm => tm.TeamId == teamId)
+                .Select(tm => tm.User)
+                .ToList();
         }
     }
 }

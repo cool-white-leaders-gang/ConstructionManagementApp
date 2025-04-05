@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
 
@@ -11,6 +8,7 @@ namespace ConstructionManagementApp.App.Repositories
     internal class BudgetRepository
     {
         private readonly AppDbContext _context;
+
         public BudgetRepository(AppDbContext context)
         {
             _context = context;
@@ -20,48 +18,36 @@ namespace ConstructionManagementApp.App.Repositories
         {
             _context.Budgets.Add(budget);
             _context.SaveChanges();
-            Console.WriteLine("Dodano nowy budżet");
         }
 
         public void UpdateBudget(Budget budget)
         {
-            try
-            {
-                _context.Budgets.Update(budget);
-                _context.SaveChanges();
-                Console.WriteLine("Budżet zaktualizowany");
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Próba aktualizacji nieistniejącego budżetu: " + ex.Message);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            var existingBudget = GetBudgetById(budget.Id);
+            if (existingBudget == null)
+                throw new KeyNotFoundException("Nie znaleziono budżetu o podanym Id.");
+
+            _context.Budgets.Update(budget);
+            _context.SaveChanges();
         }
 
         public void DeleteBudget(int budgetId)
         {
-            var budgetToDelete = _context.Budgets.FirstOrDefault(e => budgetId == e.Id);
-            if (budgetToDelete == null)
-            {
-                Console.WriteLine("Nie ma takiego budżetu");
-                return;
-            }
-            _context.Budgets.Remove(budgetToDelete);
-            budgetToDelete = null;
-            GC.Collect();
+            var budget = GetBudgetById(budgetId);
+            if (budget == null)
+                throw new KeyNotFoundException("Nie znaleziono budżetu o podanym Id.");
+
+            _context.Budgets.Remove(budget);
             _context.SaveChanges();
-            Console.WriteLine("Budżet usunięty");
+        }
+
+        public Budget GetBudgetById(int budgetId)
+        {
+            return _context.Budgets.FirstOrDefault(b => b.Id == budgetId);
         }
 
         public List<Budget> GetAllBudgets()
         {
             return _context.Budgets.ToList();
-        }
-
-        public Budget GetBudgetById(int budgetId)
-        {
-            return _context.Budgets.FirstOrDefault(e => budgetId == e.Id);
         }
     }
 }

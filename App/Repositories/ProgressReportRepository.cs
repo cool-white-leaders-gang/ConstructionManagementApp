@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
 
@@ -11,56 +8,46 @@ namespace ConstructionManagementApp.App.Repositories
     internal class ProgressReportRepository
     {
         private readonly AppDbContext _context;
+
         public ProgressReportRepository(AppDbContext context)
         {
             _context = context;
         }
-        public void CreateProgressReport(ProgressReport progressReport)
+
+        public void CreateProgressReport(ProgressReport report)
         {
-            _context.ProgressReports.Add(progressReport);
+            _context.ProgressReports.Add(report);
             _context.SaveChanges();
-            Console.WriteLine("Dodano nowy raport");
         }
-        public void UpdateProgressReport(ProgressReport progressReport)
+
+        public void UpdateProgressReport(ProgressReport report)
         {
-            try
-            {
-                _context.ProgressReports.Update(progressReport);
-                _context.SaveChanges();
-                Console.WriteLine("Raport zaktualizowany");
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Próba aktualizacji nieistniejącego raportu: " + ex.Message);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            var existingReport = GetProgressReportById(report.Id);
+            if (existingReport == null)
+                throw new KeyNotFoundException("Nie znaleziono raportu postępu o podanym Id.");
+
+            _context.ProgressReports.Update(report);
+            _context.SaveChanges();
         }
-        
 
         public void DeleteProgressReport(int reportId)
         {
-            var report = _context.ProgressReports.FirstOrDefault(e => reportId == e.Id);
+            var report = GetProgressReportById(reportId);
             if (report == null)
-            {
-                Console.WriteLine("Nie ma takiego raportu");
-                return;
-            }
+                throw new KeyNotFoundException("Nie znaleziono raportu postępu o podanym Id.");
+
             _context.ProgressReports.Remove(report);
-            report = null;
-            GC.Collect();
             _context.SaveChanges();
-            Console.WriteLine("Raport usunięty");
         }
 
-        public List<ProgressReport> GetAllReports()
+        public ProgressReport GetProgressReportById(int reportId)
+        {
+            return _context.ProgressReports.FirstOrDefault(r => r.Id == reportId);
+        }
+
+        public List<ProgressReport> GetAllProgressReports()
         {
             return _context.ProgressReports.ToList();
-        }
-
-        public ProgressReport GetReportById(int reportId)
-        {
-            return _context.ProgressReports.FirstOrDefault(e => reportId == e.Id);
         }
     }
 }

@@ -1,105 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace ConstructionManagementApp.App.Repositories
 {
-    //klasa UserRepository zarządzająca użytkownikami w bazie danych
     internal class UserRepository
     {
-        //właściwość tylko do odczytu, któa jest kontkstem do bazy danych
         private readonly AppDbContext _context;
 
-        //konstruktor
         public UserRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        //metoda dodająca użytkownika do bazy danych
+        // Tworzenie nowego użytkownika
         public void CreateUser(User user)
         {
+            if (IsEmailTaken(user.Email))
+                throw new ArgumentException("Podany adres email jest już zajęty.");
+            
+            if (IsUsernameTaken(user.Username))
+                throw new ArgumentException("Podana nazwa użytkownika jest już zajęta.");
+
             _context.Users.Add(user);
             _context.SaveChanges();
-            Console.WriteLine("Użytkownik dodany do bazy danych");
         }
 
-        //metoda aktualizująca użytkownika w bazie danych
+        // Aktualizacja istniejącego użytkownika
         public void UpdateUser(User user)
         {
-            try
-            {
-                _context.Users.Update(user);
-                _context.SaveChanges();
-                Console.WriteLine("Użytkownik zaktualizowany");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                Console.WriteLine("Próba aktualizacji nieistniejącego użytkownika " + ex.Message);
-                //Łapanie błędu aktualizacji usuniętego użytkownika lub tego którego nie ma w bazie
-            }
+            var existingUser = GetUserById(user.Id);
+            if (existingUser == null)
+                throw new KeyNotFoundException("Nie znaleziono użytkownika o podanym Id.");
+
+            if (existingUser.Email != user.Email && IsEmailTaken(user.Email))
+                throw new ArgumentException("Podany adres email jest już zajęty.");
+
+            if (existingUser.Username != user.Username && IsUsernameTaken(user.Username))
+                throw new ArgumentException("Podana nazwa użytkownika jest już zajęta.");
+
+            _context.Users.Update(user);
+            _context.SaveChanges();
         }
 
-        //metoda usuwająca użytkownika z bazy danych, jeśli nie ma użytkownika to wypisuje komunikat
+        // Usuwanie użytkownika po Id
         public void DeleteUserById(int userId)
         {
-            User user = GetUserById(userId);
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-                Console.WriteLine("Użytkownik usunięty");
-                user = null;         //nadawanie użytkownikowi wartości null, żeby usunąć go z pamięci
-                GC.Collect();         //wywołanie Garbage Collectora, żeby usunąć użytkownika z pamięci
-            }
-            return;
+            var user = GetUserById(userId);
+            if (user == null)
+                throw new KeyNotFoundException("Nie znaleziono użytkownika o podanym Id.");
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
         }
 
-        //metoda szukająca użytkownika po id
+        // Pobieranie użytkownika po Id
         public User GetUserById(int id)
         {
-            if(_context.Users.FirstOrDefault(u => u.Id == id) == null)
-            {
-                Console.WriteLine("Nie znaleziono użytkownika");
-                return null;
-            }
             return _context.Users.FirstOrDefault(u => u.Id == id);
-
         }
 
-        //metoda szukająca użytkowników po nazwie
+        // Pobieranie użytkowników po nazwie użytkownika
         public List<User> GetUsersByUsername(string username)
         {
-            if (_context.Users.FirstOrDefault(u => u.Username == username) == null)
-            {
-                Console.WriteLine("Nie znaleziono użytkownika");
-                return null;
-            }
-            return _context.Users.ToList().FindAll(u => u.Username == username);
+            return _context.Users.Where(u => u.Username == username).ToList();
         }
 
-        //metoda szukająca użytkowników po emailu
+        // Pobieranie użytkowników po adresie email
         public List<User> GetUsersByEmail(string email)
         {
-            if (_context.Users.FirstOrDefault(u => u.Email == email) == null)
-            {
-                Console.WriteLine("Nie znaleziono użytkownika");
-                return null;
-            }
-            return _context.Users.ToList().FindAll(u => u.Email == email);
+            return _context.Users.Where(u => u.Email == email).ToList();
         }
 
-        //metoda zwracająca wszystkich użytkowników
+        // Pobieranie wszystkich użytkowników
         public List<User> GetAllUsers()
         {
             return _context.Users.ToList();
         }
 
+        // Sprawdzenie, czy nazwa użytkownika jest zajęta
+        public bool IsUsernameTaken(string username)
+        {
+            return _context.Users.Any(u => u.Username == username);
+        }
 
+        // Sprawdzenie, czy adres email jest zajęty
+        public bool IsEmailTaken(string email)
+        {
+            return _context.Users.Any(u => u.Email == email);
+        }
     }
 }

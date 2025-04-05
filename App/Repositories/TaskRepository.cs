@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,53 +20,45 @@ namespace ConstructionManagementApp.App.Repositories
         {
             _context.Tasks.Add(task);
             _context.SaveChanges();
-            Console.WriteLine("Zadanie dodane do bazy danych");
         }
+
         public void UpdateTask(Task task)
         {
-            try
-            {
-                _context.Tasks.Update(task);
-                _context.SaveChanges();
-                Console.WriteLine("Zadanie zaktualizowane");
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                Console.WriteLine("Próba aktualizacji nieistniejącego zadania " + ex.Message);
-            }
+            var existingTask = GetTaskById(task.Id);
+            if (existingTask == null)
+                throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
+
+            _context.Tasks.Update(task);
+            _context.SaveChanges();
         }
 
         public void DeleteTask(int taskId)
         {
-            var task = _context.Tasks.FirstOrDefault(t => taskId == t.Id);
+            var task = GetTaskById(taskId);
             if (task == null)
-            {
-                Console.WriteLine("Nie ma takiego zadania");
-                return;
-            }
+                throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
+
             _context.Tasks.Remove(task);
-            task = null;
-            GC.Collect();
             _context.SaveChanges();
-            Console.WriteLine("Zadanie usunięte");
         }
 
-        // Zwraca wszystkie zadania wraz z przypisanymi użytkownikami
+        public Task GetTaskById(int id)
+        {
+            var task =  _context.Tasks
+                .Include(t => t.TaskAssignments)
+                .ThenInclude(ta => ta.User)
+                .FirstOrDefault(t => t.Id == id);
+            if (task == null)
+                throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
+            return task;
+        }
+
         public List<Task> GetAllTasks()
         {
             return _context.Tasks
                 .Include(t => t.TaskAssignments)
-                .ThenInclude(ta => ta.user) // Zawiera użytkowników w relacji   tutaj to samo User =/= user
+                .ThenInclude(ta => ta.User)
                 .ToList();
-        }
-
-        // Zwraca zadanie po id wraz z przypisanymi użytkownikami
-        public Task GetTaskById(int id)
-        {
-            return _context.Tasks
-                .Include(t => t.TaskAssignments)
-                .ThenInclude(ta => ta.user) // Zawiera użytkowników w relacji
-                .FirstOrDefault(t => t.Id == id);
         }
     }
 }
