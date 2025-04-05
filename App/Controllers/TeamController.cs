@@ -75,7 +75,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                _teamMembersRepository.AddUserToTeam(teamId, userId);
+                _teamMembersRepository.AddMemberToTeam(teamId, userId);
                 Console.WriteLine($"Użytkownik o Id {userId} został dodany do zespołu o Id {teamId}.");
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                _teamMembersRepository.RemoveUserFromTeam(teamId, userId);
+                _teamMembersRepository.RemoveMemberFromTeam(teamId, userId);
                 Console.WriteLine($"Użytkownik o Id {userId} został usunięty z zespołu o Id {teamId}.");
             }
             catch (Exception ex)
@@ -146,7 +146,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                var users = _teamMembersRepository.GetUsersInTeam(teamId);
+                var users = _teamMembersRepository.GetMembersOfTeam(teamId);
                 if (users.Count == 0)
                 {
                     Console.WriteLine($"Brak użytkowników w zespole o Id {teamId}.");

@@ -18,43 +18,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             _userRepository = userRepo;
         }
-        public void ChangeUsername(int UserId, string newUsername)
-        {
-            var user = _userRepository.GetUserById(UserId);
-            if (user != null)
-            {
-                Console.WriteLine($"zmieniono nazwe użytkownika z {user.Username} na {newUsername}");
-                user.Username = newUsername;
-                _userRepository.UpdateUser(user);
-
-            }
-            else
-            {
-                return;
-            }
-        }
-        public void ChangeRole(int userId, Role newRole)
-        {
-            var user = _userRepository.GetUserById(userId);
-            if (user != null)
-            {
-                if (user.Role == newRole)
-                {
-                    Console.WriteLine("Użytkownik już ma tę rolę");
-                    return;
-                }
-                else
-                {
-                    Console.WriteLine($"Rola użytkownika zmieniona z {user.Role} na {newRole}");
-                    user.Role = newRole;
-                    _userRepository.UpdateUser(user);
-                }
-            }
-            else
-            {
-                return;
-            }
-        }
+        
 
         public void AddUser(User user)
         {

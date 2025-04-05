@@ -35,7 +35,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                var progressReport = _progressReportRepository.GetReportById(reportId);
+                var progressReport = _progressReportRepository.GetProgressReportById(reportId);
                 if (progressReport == null)
                 {
                     Console.WriteLine($"Raport postępu o Id {reportId} nie został znaleziony.");
@@ -74,7 +74,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                var progressReports = _progressReportRepository.GetAllReports();
+                var progressReports = _progressReportRepository.GetAllProgressReports();
                 if (progressReports.Count == 0)
                 {
                     Console.WriteLine("Brak raportów postępu do wyświetlenia.");
@@ -97,7 +97,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                var progressReport = _progressReportRepository.GetReportById(reportId);
+                var progressReport = _progressReportRepository.GetProgressReportById(reportId);
                 if (progressReport == null)
                 {
                     Console.WriteLine($"Raport postępu o Id {reportId} nie został znaleziony.");
