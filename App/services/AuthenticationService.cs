@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
+using ConstructionManagementApp.App.Utilities;
 
 namespace ConstructionManagementApp.App.Services
 {
@@ -15,6 +16,10 @@ namespace ConstructionManagementApp.App.Services
         {
             _userRepository = userRepository;
             _currentSession = null;
+        }
+
+        public AuthenticationService(){
+
         }
 
         public bool Login(string email, string password)
@@ -54,18 +59,9 @@ namespace ConstructionManagementApp.App.Services
             return _currentSession?.User;
         }
 
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
-        }
-
         private bool VerifyPassword(string password, string hashedPassword)
         {
-            return HashPassword(password) == hashedPassword;
+            return PasswordHasher.HashPassword(password) == hashedPassword;
         }
     }
 }
