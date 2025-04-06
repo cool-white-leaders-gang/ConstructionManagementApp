@@ -69,9 +69,9 @@ namespace ConstructionManagementApp.App.Repositories
         }
 
         // Pobieranie użytkowników po adresie email
-        public List<User> GetUsersByEmail(string email)
+        public User GetUserByEmail(string email)
         {
-            return _context.Users.Where(u => u.Email == email).ToList();
+            return _context.Users.FirstOrDefault(u => u.Email == email);
         }
 
         // Pobieranie wszystkich użytkowników

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Services;
@@ -18,28 +19,24 @@ namespace ConstructionManagementApp.App.Views
             _userController = userController;
         }
 
-        public void ShowView(User user)
+        public void ShowView(User currentUser)
         {
-            bool loggedIn = true;
+            bool isRunning = true;
 
-            while (loggedIn)
+            while (isRunning)
             {
                 Console.Clear();
-                Console.WriteLine($"Zalogowano jako: {user.Username}");
+                Console.WriteLine($"Zalogowano jako: {currentUser.Username} ({currentUser.Role})");
                 Console.WriteLine("\nWybierz opcję:");
                 Console.WriteLine("1. Wyświetl listę użytkowników");
-
-                if (_rbacService.HasPermission(user, Permission.CreateUser))
-                    Console.WriteLine("2. Dodaj nowego użytkownika");
-
-                if (_rbacService.HasPermission(user, Permission.UpdateUser))
-                    Console.WriteLine("3. Zaktualizuj dane użytkownika");
-
-                if (_rbacService.HasPermission(user, Permission.DeleteUser))
-                    Console.WriteLine("4. Usuń użytkownika");
-
-                Console.WriteLine("5. Wyloguj się");
-                Console.WriteLine("6. Wyjdź z programu");
+                Console.WriteLine("2. Wyszukaj użytkownika");
+                if (_rbacService.HasPermission(currentUser, Permission.CreateUser))
+                    Console.WriteLine("3. Dodaj nowego użytkownika");
+                if (_rbacService.HasPermission(currentUser, Permission.UpdateUser))
+                    Console.WriteLine("4. Zaktualizuj dane użytkownika");
+                if (_rbacService.HasPermission(currentUser, Permission.DeleteUser))
+                    Console.WriteLine("5. Usuń użytkownika");
+                Console.WriteLine("6. Wyloguj się");
 
                 Console.Write("\nTwój wybór: ");
                 if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -49,42 +46,63 @@ namespace ConstructionManagementApp.App.Views
                     continue;
                 }
 
-                switch (choice)
+                try
                 {
-                    case 1:
-                        DisplayAllUsers();
-                        break;
-                    case 2:
-                        if (_rbacService.HasPermission(user, Permission.CreateUser))
-                            AddUser();
-                        else
-                            ShowNoPermissionMessage();
-                        break;
-                    case 3:
-                        if (_rbacService.HasPermission(user, Permission.UpdateUser))
-                            UpdateUser();
-                        else
-                            ShowNoPermissionMessage();
-                        break;
-                    case 4:
-                        if (_rbacService.HasPermission(user, Permission.DeleteUser))
-                            DeleteUser();
-                        else
-                            ShowNoPermissionMessage();
-                        break;
-                    case 5:
-                        Console.WriteLine("Wylogowano.");
-                        loggedIn = false;
-                        break;
-                    case 6:
-                        Console.WriteLine("Zamykanie programu...");
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
-                        Console.ReadKey();
-                        break;
+                    switch (choice)
+                    {
+                        case 1:
+                            DisplayAllUsers();
+                            break;
+                        case 2:
+                            SearchUser();
+                            break;
+                        case 3:
+                            if (_rbacService.HasPermission(currentUser, Permission.CreateUser))
+                                AddUser();
+                            else
+                                ShowNoPermissionMessage();
+                            break;
+                        case 4:
+                            if (_rbacService.HasPermission(currentUser, Permission.UpdateUser))
+                                UpdateUser();
+                            else
+                                ShowNoPermissionMessage();
+                            break;
+                        case 5:
+                            if (_rbacService.HasPermission(currentUser, Permission.DeleteUser))
+                                DeleteUser();
+                            else
+                                ShowNoPermissionMessage();
+                            break;
+                        case 6:
+                            Console.WriteLine("Wylogowano.");
+                            isRunning = false;
+                            break;
+                        default:
+                            Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
+                            Console.ReadKey();
+                            break;
+                    }
                 }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine($"Błąd: {ex.Message}");
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    Console.WriteLine($"Błąd: {ex.Message}");
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Błąd: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
+                }
+
+                Console.WriteLine("\nNaciśnij dowolny klawisz, aby kontynuować.");
+                Console.ReadKey();
             }
         }
 
@@ -93,6 +111,64 @@ namespace ConstructionManagementApp.App.Views
             Console.Clear();
             Console.WriteLine("--- Lista użytkowników ---");
             _userController.DisplayAllUsers();
+            Console.WriteLine("\nNaciśnij dowolny klawisz, aby wrócić do menu.");
+            Console.ReadKey();
+        }
+
+        private void SearchUser()
+        {
+            Console.Clear();
+            Console.WriteLine("--- Wyszukaj użytkownika ---");
+            Console.WriteLine("1. Wyszukaj po ID");
+            Console.WriteLine("2. Wyszukaj po nazwie użytkownika");
+            Console.WriteLine("3. Wyszukaj po adresie e-mail");
+            Console.Write("\nTwój wybór: ");
+
+            if (!int.TryParse(Console.ReadLine(), out int choice))
+            {
+                Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby wrócić do menu.");
+                Console.ReadKey();
+                return;
+            }
+
+            try
+            {
+                switch (choice)
+                {
+                    case 1:
+                        Console.Write("Podaj ID użytkownika: ");
+                        if (int.TryParse(Console.ReadLine(), out int id))
+                        {
+                            var user = _userController.GetUserById(id);
+                            DisplayUser(user);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Niepoprawne ID.");
+                        }
+                        break;
+                    case 2:
+                        Console.Write("Podaj nazwę użytkownika: ");
+                        var username = Console.ReadLine();
+                        var usersByUsername = _userController.GetUserByUsername(username);
+                        DisplayUsers(usersByUsername);
+                        break;
+                    case 3:
+                        Console.Write("Podaj adres e-mail: ");
+                        var email = Console.ReadLine();
+                        var userByEmail = _userController.GetUserByEmail(email);
+                        DisplayUser(userByEmail);
+                        break;
+                    default:
+                        Console.WriteLine("Niepoprawny wybór.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+
             Console.WriteLine("\nNaciśnij dowolny klawisz, aby wrócić do menu.");
             Console.ReadKey();
         }
@@ -128,10 +204,15 @@ namespace ConstructionManagementApp.App.Views
                 _userController.AddUser(user);
                 Console.WriteLine("Użytkownik został pomyślnie dodany.");
             }
+            catch(ArgumentException ex){
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Błąd: {ex.Message}");
             }
+            
+            
 
             Console.WriteLine("\nNaciśnij dowolny klawisz, aby wrócić do menu.");
             Console.ReadKey();
@@ -141,7 +222,14 @@ namespace ConstructionManagementApp.App.Views
         {
             Console.Clear();
             Console.WriteLine("--- Zaktualizuj dane użytkownika ---");
-            
+            Console.Write("Podaj ID użytkownika: ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Niepoprawne ID.");
+                Console.ReadKey();
+                return;
+            }
+
             Console.Write("Podaj nową nazwę użytkownika: ");
             var username = Console.ReadLine();
 
@@ -183,16 +271,16 @@ namespace ConstructionManagementApp.App.Views
             Console.Clear();
             Console.WriteLine("--- Usuń użytkownika ---");
             Console.Write("Podaj ID użytkownika: ");
-            if (!int.TryParse(Console.ReadLine(), out var userId))
+            if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                Console.WriteLine("Nieprawidłowe ID.");
+                Console.WriteLine("Niepoprawne ID.");
                 Console.ReadKey();
                 return;
             }
 
             try
             {
-                _userController.DeleteUser(userId);
+                _userController.DeleteUser(id);
                 Console.WriteLine("Użytkownik został pomyślnie usunięty.");
             }
             catch (Exception ex)
@@ -202,6 +290,38 @@ namespace ConstructionManagementApp.App.Views
 
             Console.WriteLine("\nNaciśnij dowolny klawisz, aby wrócić do menu.");
             Console.ReadKey();
+        }
+
+        private void DisplayUser(User user)
+        {
+            if (user == null)
+            {
+                Console.WriteLine("Nie znaleziono użytkownika.");
+            }
+            else
+            {
+                Console.WriteLine("\n--- Szczegóły użytkownika ---");
+                Console.WriteLine($"ID: {user.Id}");
+                Console.WriteLine($"Nazwa użytkownika: {user.Username}");
+                Console.WriteLine($"E-mail: {user.Email}");
+                Console.WriteLine($"Rola: {user.Role}");
+            }
+        }
+
+        private void DisplayUsers(List<User> users)
+        {
+            if (users == null || users.Count == 0)
+            {
+                Console.WriteLine("Nie znaleziono użytkowników.");
+            }
+            else
+            {
+                Console.WriteLine("\n--- Lista użytkowników ---");
+                foreach (var user in users)
+                {
+                    Console.WriteLine($"ID: {user.Id}, Nazwa: {user.Username}, E-mail: {user.Email}, Rola: {user.Role}");
+                }
+            }
         }
 
         private void ShowNoPermissionMessage()

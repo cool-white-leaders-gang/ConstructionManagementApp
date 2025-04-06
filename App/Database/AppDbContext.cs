@@ -76,10 +76,10 @@ namespace ConstructionManagementApp.App.Database
             modelBuilder.Entity<TaskAssignment>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.TaskId });
-                entity.HasOne(e => e.user)
+                entity.HasOne(e => e.User)
                       .WithMany(e => e.TaskAssignments)
                       .HasForeignKey(e => e.UserId);
-                entity.HasOne(e => e.task)
+                entity.HasOne(e => e.Task)
                         .WithMany(e => e.TaskAssignments)
                         .HasForeignKey(e => e.TaskId);
             }
@@ -119,10 +119,10 @@ namespace ConstructionManagementApp.App.Database
             modelBuilder.Entity<TeamMembers>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.TeamId });
-                entity.HasOne(e => e.user)
+                entity.HasOne(e => e.User)
                       .WithMany(e => e.TeamMembers)
                       .HasForeignKey(e => e.UserId);                //tabela lacznikowa miedzy user a team
-                entity.HasOne(e => e.team)
+                entity.HasOne(e => e.Team)
                         .WithMany(e => e.TeamMembers)
                         .HasForeignKey(e => e.TeamId);
             });                                    
