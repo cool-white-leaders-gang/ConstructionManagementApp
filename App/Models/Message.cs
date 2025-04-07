@@ -57,7 +57,7 @@ namespace ConstructionManagementApp.App.Models
             ReceiverId = receiverId;
             Content = content;
             SentAt = DateTime.Now;
-            IsRead = False;
+            IsRead = false;
         }
     }
 }

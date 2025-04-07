@@ -31,7 +31,7 @@ namespace ConstructionManagementApp.App.Repositories
                 throw new KeyNotFoundException("Nie znaleziono zespołu o podanym Id.");
 
             existingTeam.Name = team.Name;
-            existingTeam.Description = team.Description;
+            existingTeam.ManagerId = team.ManagerId;
 
             _context.Teams.Update(existingTeam);
             _context.SaveChanges();

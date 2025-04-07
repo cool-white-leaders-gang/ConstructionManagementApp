@@ -16,14 +16,22 @@ namespace ConstructionManagementApp.App.Controllers
 
         public Budget GetBudgetById(int budgetId)
         {
-            var budget = _budgetRepository.GetBudgetById(budgetId);
-            if (budget == null)
+            try
             {
-                Console.WriteLine($"Budżet o Id {budgetId} nie został znaleziony.");
+                var budget = _budgetRepository.GetBudgetById(budgetId);
+                if (budget == null)
+                {
+                    Console.WriteLine($"Budżet o Id {budgetId} nie został znaleziony.");
+                    return null;
+                }
+
+                return budget;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
                 return null;
             }
-
-            return budget;
         }
 
         public void SpendBudget(int budgetId, decimal amount)
@@ -37,13 +45,13 @@ namespace ConstructionManagementApp.App.Controllers
                 if (amount <= 0)
                     throw new ArgumentException("Kwota do wydania musi być większa od zera.");
 
-                if (budget.Amount < amount)
+                if (budget.TotalAmount - budget.SpentAmount < amount)
                     throw new InvalidOperationException("Nie można wydać więcej niż dostępna kwota w budżecie.");
 
-                budget.Amount -= amount;
+                budget.SpentAmount += amount;
                 _budgetRepository.UpdateBudget(budget);
 
-                Console.WriteLine($"Kwota {amount:C} została wydana z budżetu '{budget.Name}'. Pozostała kwota: {budget.Amount:C}");
+                Console.WriteLine($"Kwota {amount:C} została wydana z budżetu. Pozostała kwota: {budget.TotalAmount - budget.SpentAmount:C}");
             }
             catch (KeyNotFoundException ex)
             {
@@ -63,12 +71,12 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void AddBudget(string name, decimal amount)
+        public void AddBudget(decimal totalAmount)
         {
             try
             {
-                var budget = new Budget(name, amount);
-                _budgetRepository.CreateBudget(budget);
+                var budget = new Budget(totalAmount);
+                _budgetRepository.AddBudget(budget);
                 Console.WriteLine("Budżet został pomyślnie dodany.");
             }
             catch (ArgumentException ex)
@@ -81,7 +89,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateBudget(int budgetId, string name, decimal amount)
+        public void UpdateBudget(int budgetId, decimal totalAmount, decimal spentAmount)
         {
             try
             {
@@ -89,8 +97,8 @@ namespace ConstructionManagementApp.App.Controllers
                 if (budget == null)
                     throw new KeyNotFoundException($"Nie znaleziono budżetu o ID {budgetId}.");
 
-                budget.Name = name;
-                budget.Amount = amount;
+                budget.TotalAmount = totalAmount;
+                budget.SpentAmount = spentAmount;
 
                 _budgetRepository.UpdateBudget(budget);
                 Console.WriteLine("Budżet został pomyślnie zaktualizowany.");
@@ -140,7 +148,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista budżetów ---");
                 foreach (var budget in budgets)
                 {
-                    Console.WriteLine($"ID: {budget.Id}, Nazwa: {budget.Name}, Kwota: {budget.Amount:C}");
+                    Console.WriteLine($"ID: {budget.Id}, Całkowita kwota: {budget.TotalAmount:C}, Wydano: {budget.SpentAmount:C}");
                 }
             }
             catch (Exception ex)

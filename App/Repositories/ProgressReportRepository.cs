@@ -31,8 +31,8 @@ namespace ConstructionManagementApp.App.Repositories
                 throw new KeyNotFoundException("Nie znaleziono raportu postępu o podanym Id.");
 
             existingReport.Title = report.Title;
-            existingReport.Description = report.Description;
-            existingReport.Date = report.Date;
+            existingReport.Content = report.Content;
+            existingReport.CompletionPercentage = report.CompletionPercentage;
 
             _context.ProgressReports.Update(existingReport);
             _context.SaveChanges();

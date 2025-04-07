@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class EquipmentView
     {
         private readonly EquipmentController _equipmentController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public EquipmentView(EquipmentController equipmentController)
+        public EquipmentView(EquipmentController equipmentController, RBACService rbacService, User currentUser)
         {
             _equipmentController = equipmentController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -37,16 +44,16 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllEquipments();
+                        if (HasPermission(Permission.ViewEquipment)) DisplayAllEquipments();
                         break;
                     case 2:
-                        AddEquipment();
+                        if (HasPermission(Permission.CreateEquipment)) AddEquipment();
                         break;
                     case 3:
-                        UpdateEquipment();
+                        if (HasPermission(Permission.UpdateEquipment)) UpdateEquipment();
                         break;
                     case 4:
-                        DeleteEquipment();
+                        if (HasPermission(Permission.DeleteEquipment)) DeleteEquipment();
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
@@ -57,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllEquipments()
@@ -76,14 +94,23 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nazwę sprzętu: ");
                 var name = Console.ReadLine();
 
-                Console.Write("Podaj ilość sprzętu: ");
-                if (!int.TryParse(Console.ReadLine(), out var quantity))
+                Console.WriteLine("Wybierz status sprzętu: 1. Dostępny, 2. Niedostępny");
+                var statusChoice = Console.ReadLine();
+                EquipmentStatus status = statusChoice switch
                 {
-                    Console.WriteLine("Niepoprawna ilość.");
+                    "1" => EquipmentStatus.Available,
+                    "2" => EquipmentStatus.Unavailable,
+                    _ => throw new ArgumentException("Nieprawidłowy status sprzętu.")
+                };
+
+                Console.Write("Podaj ID projektu: ");
+                if (!int.TryParse(Console.ReadLine(), out var projectId))
+                {
+                    Console.WriteLine("Niepoprawne ID projektu.");
                     return;
                 }
 
-                _equipmentController.AddEquipment(name, quantity);
+                _equipmentController.AddEquipment(name, status, projectId);
             }
             catch (Exception ex)
             {
@@ -112,14 +139,23 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nową nazwę sprzętu: ");
                 var name = Console.ReadLine();
 
-                Console.Write("Podaj nową ilość sprzętu: ");
-                if (!int.TryParse(Console.ReadLine(), out var quantity))
+                Console.WriteLine("Wybierz nowy status sprzętu: 1. Dostępny, 2. Niedostępny");
+                var statusChoice = Console.ReadLine();
+                EquipmentStatus status = statusChoice switch
                 {
-                    Console.WriteLine("Niepoprawna ilość.");
+                    "1" => EquipmentStatus.Available,
+                    "2" => EquipmentStatus.Unavailable,
+                    _ => throw new ArgumentException("Nieprawidłowy status sprzętu.")
+                };
+
+                Console.Write("Podaj nowy ID projektu: ");
+                if (!int.TryParse(Console.ReadLine(), out var projectId))
+                {
+                    Console.WriteLine("Niepoprawne ID projektu.");
                     return;
                 }
 
-                _equipmentController.UpdateEquipment(equipmentId, name, quantity);
+                _equipmentController.UpdateEquipment(equipmentId, name, status, projectId);
             }
             catch (Exception ex)
             {

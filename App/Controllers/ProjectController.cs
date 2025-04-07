@@ -14,14 +14,11 @@ namespace ConstructionManagementApp.App.Controllers
             _projectRepository = projectRepository;
         }
 
-        public void CreateProject(string name, string description, DateTime startDate, DateTime endDate)
+        public void CreateProject(string name, string description, int teamId, int budgetId, int clientId)
         {
             try
             {
-                if (endDate <= startDate)
-                    throw new ArgumentException("Data zakończenia projektu musi być późniejsza niż data rozpoczęcia.");
-
-                var project = new Project(name, description, startDate, endDate);
+                var project = new Project(name, description, teamId, budgetId, clientId);
                 _projectRepository.CreateProject(project);
                 Console.WriteLine("Projekt został pomyślnie utworzony.");
             }
@@ -31,7 +28,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateProject(int projectId, string name, string description, DateTime startDate, DateTime endDate)
+        public void UpdateProject(int projectId, string name, string description, int teamId, int budgetId, int clientId)
         {
             try
             {
@@ -41,8 +38,9 @@ namespace ConstructionManagementApp.App.Controllers
 
                 project.Name = name;
                 project.Description = description;
-                project.StartDate = startDate;
-                project.EndDate = endDate;
+                project.BudgetId = budgetId;
+                project.TeamId = teamId;
+                project.ClientId = clientId;
 
                 _projectRepository.UpdateProject(project);
                 Console.WriteLine("Projekt został pomyślnie zaktualizowany.");
@@ -80,7 +78,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista projektów ---");
                 foreach (var project in projects)
                 {
-                    Console.WriteLine($"ID: {project.Id}, Nazwa: {project.Name}, Opis: {project.Description}, Start: {project.StartDate}, Koniec: {project.EndDate}");
+                    Console.WriteLine($"ID: {project.Id}, Nazwa: {project.Name}, Opis: {project.Description}");
                 }
             }
             catch (Exception ex)

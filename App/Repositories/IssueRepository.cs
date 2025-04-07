@@ -15,7 +15,7 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void CreateIssue(Issue issue)
+        public void AddIssue(Issue issue)
         {
             if (issue == null)
                 throw new ArgumentNullException(nameof(issue), "Zgłoszenie nie może być null.");
@@ -30,9 +30,9 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingIssue == null)
                 throw new KeyNotFoundException("Nie znaleziono zgłoszenia o podanym Id.");
 
-            existingIssue.Title = issue.Title;
-            existingIssue.Description = issue.Description;
+            existingIssue.Priority = issue.Priority;
             existingIssue.Status = issue.Status;
+            existingIssue.ResolvedAt = issue.ResolvedAt;
 
             _context.Issues.Update(existingIssue);
             _context.SaveChanges();

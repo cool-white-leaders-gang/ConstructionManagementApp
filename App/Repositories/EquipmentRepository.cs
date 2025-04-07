@@ -20,7 +20,7 @@ namespace ConstructionManagementApp.App.Repositories
             if (equipment == null)
                 throw new ArgumentNullException(nameof(equipment), "Sprzęt nie może być null.");
 
-            _context.Equipments.Add(equipment);
+            _context.Equipment.Add(equipment);
             _context.SaveChanges();
         }
 
@@ -31,9 +31,10 @@ namespace ConstructionManagementApp.App.Repositories
                 throw new KeyNotFoundException("Nie znaleziono sprzętu o podanym Id.");
 
             existingEquipment.Name = equipment.Name;
-            existingEquipment.Quantity = equipment.Quantity;
+            existingEquipment.Status = equipment.Status;
+            existingEquipment.ProjectId = equipment.ProjectId;
 
-            _context.Equipments.Update(existingEquipment);
+            _context.Equipment.Update(existingEquipment);
             _context.SaveChanges();
         }
 
@@ -43,18 +44,18 @@ namespace ConstructionManagementApp.App.Repositories
             if (equipment == null)
                 throw new KeyNotFoundException("Nie znaleziono sprzętu o podanym Id.");
 
-            _context.Equipments.Remove(equipment);
+            _context.Equipment.Remove(equipment);
             _context.SaveChanges();
         }
 
         public Equipment GetEquipmentById(int id)
         {
-            return _context.Equipments.FirstOrDefault(e => e.Id == id);
+            return _context.Equipment.FirstOrDefault(e => e.Id == id);
         }
 
         public List<Equipment> GetAllEquipments()
         {
-            return _context.Equipments.ToList();
+            return _context.Equipment.ToList();
         }
     }
 }

@@ -14,14 +14,14 @@ namespace ConstructionManagementApp.App.Controllers
             _materialRepository = materialRepository;
         }
 
-        public void AddMaterial(string name, int quantity)
+        public void AddMaterial(string name, int quantity, string unit, int projectId)
         {
             try
             {
                 if (quantity <= 0)
                     throw new ArgumentException("Ilość materiału musi być większa od zera.");
 
-                var material = new Material(name, quantity);
+                var material = new Material(name, quantity, unit, projectId);
                 _materialRepository.AddMaterial(material);
                 Console.WriteLine("Materiał został pomyślnie dodany.");
             }

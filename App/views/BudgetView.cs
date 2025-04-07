@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class BudgetView
     {
         private readonly BudgetController _budgetController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public BudgetView(BudgetController budgetController)
+        public BudgetView(BudgetController budgetController, RBACService rbacService, User currentUser)
         {
             _budgetController = budgetController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -24,8 +31,7 @@ namespace ConstructionManagementApp.App.Views
                 Console.WriteLine("2. Dodaj nowy budżet");
                 Console.WriteLine("3. Zaktualizuj budżet");
                 Console.WriteLine("4. Usuń budżet");
-                Console.WriteLine("5. Wydaj budżet");
-                Console.WriteLine("6. Powrót do menu głównego");
+                Console.WriteLine("5. Powrót do menu głównego");
 
                 Console.Write("\nTwój wybór: ");
                 if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -38,21 +44,18 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllBudgets();
+                        if (HasPermission(Permission.ViewBudget)) DisplayAllBudgets();
                         break;
                     case 2:
-                        AddBudget();
+                        if (HasPermission(Permission.CreateBudget)) AddBudget();
                         break;
                     case 3:
-                        UpdateBudget();
+                        if (HasPermission(Permission.UpdateBudget)) UpdateBudget();
                         break;
                     case 4:
-                        DeleteBudget();
+                        if (HasPermission(Permission.DeleteBudget)) DeleteBudget();
                         break;
                     case 5:
-                        SpendBudget();
-                        break;
-                    case 6:
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:
@@ -61,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllBudgets()
@@ -77,17 +91,14 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Dodaj nowy budżet ---");
 
-                Console.Write("Podaj nazwę budżetu: ");
-                var name = Console.ReadLine();
-
-                Console.Write("Podaj kwotę budżetu: ");
-                if (!decimal.TryParse(Console.ReadLine(), out var amount))
+                Console.Write("Podaj całkowitą kwotę budżetu: ");
+                if (!decimal.TryParse(Console.ReadLine(), out var totalAmount))
                 {
                     Console.WriteLine("Niepoprawna kwota.");
                     return;
                 }
 
-                _budgetController.AddBudget(name, amount);
+                _budgetController.AddBudget(totalAmount);
             }
             catch (Exception ex)
             {
@@ -113,17 +124,21 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                Console.Write("Podaj nową nazwę budżetu: ");
-                var name = Console.ReadLine();
-
-                Console.Write("Podaj nową kwotę budżetu: ");
-                if (!decimal.TryParse(Console.ReadLine(), out var amount))
+                Console.Write("Podaj nową całkowitą kwotę budżetu: ");
+                if (!decimal.TryParse(Console.ReadLine(), out var totalAmount))
                 {
                     Console.WriteLine("Niepoprawna kwota.");
                     return;
                 }
 
-                _budgetController.UpdateBudget(budgetId, name, amount);
+                Console.Write("Podaj nową wydaną kwotę budżetu: ");
+                if (!decimal.TryParse(Console.ReadLine(), out var spentAmount))
+                {
+                    Console.WriteLine("Niepoprawna kwota.");
+                    return;
+                }
+
+                _budgetController.UpdateBudget(budgetId, totalAmount, spentAmount);
             }
             catch (Exception ex)
             {
@@ -150,39 +165,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.DeleteBudget(budgetId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd: {ex.Message}");
-            }
-            finally
-            {
-                ReturnToMenu();
-            }
-        }
-
-        private void SpendBudget()
-        {
-            try
-            {
-                Console.Clear();
-                Console.WriteLine("--- Wydaj budżet ---");
-
-                Console.Write("Podaj ID budżetu: ");
-                if (!int.TryParse(Console.ReadLine(), out var budgetId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
-
-                Console.Write("Podaj kwotę do wydania: ");
-                if (!decimal.TryParse(Console.ReadLine(), out var amount))
-                {
-                    Console.WriteLine("Niepoprawna kwota.");
-                    return;
-                }
-
-                _budgetController.SpendBudget(budgetId, amount);
             }
             catch (Exception ex)
             {

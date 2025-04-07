@@ -60,7 +60,7 @@ namespace ConstructionManagementApp.App.Repositories
 
         public User GetUserByUsername(string username)
         {
-            return _context.Users.Where(u => u.Username == username);
+            return (User)_context.Users.Where(u => u.Username == username);
         }
 
         public User GetUserByEmail(string email)

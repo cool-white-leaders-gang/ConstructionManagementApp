@@ -29,7 +29,7 @@ namespace ConstructionManagementApp.App.Repositories
             if (_context.TeamMembers.Any(tm => tm.TeamId == teamId && tm.UserId == userId))
                 throw new InvalidOperationException($"Użytkownik o ID {userId} jest już członkiem zespołu o ID {teamId}.");
 
-            var teamMember = new TeamMember(teamId, userId);
+            var teamMember = new TeamMembers(teamId, userId);
             _context.TeamMembers.Add(teamMember);
             _context.SaveChanges();
         }

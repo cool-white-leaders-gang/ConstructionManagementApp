@@ -15,7 +15,7 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void CreateBudget(Budget budget)
+        public void AddBudget(Budget budget)
         {
             if (budget == null)
                 throw new ArgumentNullException(nameof(budget), "Budżet nie może być null.");
@@ -30,8 +30,8 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingBudget == null)
                 throw new KeyNotFoundException("Nie znaleziono budżetu o podanym Id.");
 
-            existingBudget.Name = budget.Name;
-            existingBudget.Amount = budget.Amount;
+            existingBudget.TotalAmount = budget.TotalAmount;
+            existingBudget.SpentAmount = budget.SpentAmount;
 
             _context.Budgets.Update(existingBudget);
             _context.SaveChanges();

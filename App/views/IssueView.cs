@@ -1,5 +1,7 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Views
@@ -7,10 +9,14 @@ namespace ConstructionManagementApp.App.Views
     internal class IssueView
     {
         private readonly IssueController _issueController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public IssueView(IssueController issueController)
+        public IssueView(IssueController issueController, RBACService rbacService, User currentUser)
         {
             _issueController = issueController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -38,16 +44,16 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllIssues();
+                        if (HasPermission(Permission.ViewIssues)) DisplayAllIssues();
                         break;
                     case 2:
-                        AddIssue();
+                        if (HasPermission(Permission.CreateIssue)) AddIssue();
                         break;
                     case 3:
-                        UpdateIssue();
+                        if (HasPermission(Permission.UpdateIssue)) UpdateIssue();
                         break;
                     case 4:
-                        DeleteIssue();
+                        if (HasPermission(Permission.DeleteIssue)) DeleteIssue();
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
@@ -58,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllIssues()
@@ -77,20 +94,34 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj tytuł zgłoszenia: ");
                 var title = Console.ReadLine();
 
-                Console.Write("Podaj opis zgłoszenia: ");
-                var description = Console.ReadLine();
+                Console.Write("Podaj treść zgłoszenia: ");
+                var content = Console.ReadLine();
 
-                Console.WriteLine("Wybierz status zgłoszenia: 1. Open, 2. In Progress, 3. Resolved");
-                var statusChoice = Console.ReadLine();
-                IssueStatus status = statusChoice switch
+                Console.Write("Podaj ID użytkownika: ");
+                if (!int.TryParse(Console.ReadLine(), out var userId))
                 {
-                    "1" => IssueStatus.Open,
-                    "2" => IssueStatus.InProgress,
-                    "3" => IssueStatus.Resolved,
-                    _ => throw new ArgumentException("Wybrano nieprawidłowy status.")
+                    Console.WriteLine("Niepoprawne ID użytkownika.");
+                    return;
+                }
+
+                Console.Write("Podaj ID projektu: ");
+                if (!int.TryParse(Console.ReadLine(), out var projectId))
+                {
+                    Console.WriteLine("Niepoprawne ID projektu.");
+                    return;
+                }
+
+                Console.WriteLine("Wybierz priorytet zgłoszenia: 1. Niski, 2. Średni, 3. Wysoki");
+                var priorityChoice = Console.ReadLine();
+                TaskPriority priority = priorityChoice switch
+                {
+                    "1" => TaskPriority.Low,
+                    "2" => TaskPriority.Medium,
+                    "3" => TaskPriority.High,
+                    _ => throw new ArgumentException("Nieprawidłowy priorytet zgłoszenia.")
                 };
 
-                _issueController.AddIssue(title, description, status);
+                _issueController.AddIssue(title, content, userId, projectId, priority);
             }
             catch (Exception ex)
             {
@@ -116,23 +147,33 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                Console.Write("Podaj nowy tytuł zgłoszenia: ");
-                var title = Console.ReadLine();
+                Console.WriteLine("Wybierz nowy priorytet zgłoszenia: 1. Niski, 2. Średni, 3. Wysoki");
+                var priorityChoice = Console.ReadLine();
+                TaskPriority priority = priorityChoice switch
+                {
+                    "1" => TaskPriority.Low,
+                    "2" => TaskPriority.Medium,
+                    "3" => TaskPriority.High,
+                    _ => throw new ArgumentException("Nieprawidłowy priorytet zgłoszenia.")
+                };
 
-                Console.Write("Podaj nowy opis zgłoszenia: ");
-                var description = Console.ReadLine();
-
-                Console.WriteLine("Wybierz nowy status zgłoszenia: 1. Open, 2. In Progress, 3. Resolved");
+                Console.WriteLine("Wybierz nowy status zgłoszenia: 1. Otwarte, 2. W trakcie, 3. Zamknięte");
                 var statusChoice = Console.ReadLine();
                 IssueStatus status = statusChoice switch
                 {
                     "1" => IssueStatus.Open,
                     "2" => IssueStatus.InProgress,
                     "3" => IssueStatus.Resolved,
-                    _ => throw new ArgumentException("Wybrano nieprawidłowy status.")
+                    _ => throw new ArgumentException("Nieprawidłowy status zgłoszenia.")
                 };
 
-                _issueController.UpdateIssue(issueId, title, description, status);
+                Console.Write("Podaj datę rozwiązania zgłoszenia (yyyy-MM-dd) lub pozostaw puste: ");
+                var resolvedAtInput = Console.ReadLine();
+                DateTime? resolvedAt = string.IsNullOrWhiteSpace(resolvedAtInput)
+                    ? null
+                    : DateTime.Parse(resolvedAtInput);
+
+                _issueController.UpdateIssue(issueId, priority, status, resolvedAt);
             }
             catch (Exception ex)
             {

@@ -32,8 +32,9 @@ namespace ConstructionManagementApp.App.Repositories
 
             existingProject.Name = project.Name;
             existingProject.Description = project.Description;
-            existingProject.StartDate = project.StartDate;
-            existingProject.EndDate = project.EndDate;
+            existingProject.TeamId = project.TeamId;
+            existingProject.BudgetId = project.BudgetId;
+            existingProject.ClientId = project.ClientId;
 
             _context.Projects.Update(existingProject);
             _context.SaveChanges();
