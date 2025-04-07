@@ -8,6 +8,7 @@ namespace ConstructionManagementApp.App.Controllers
     internal class MessageController
     {
         private readonly MessageRepository _messageRepository;
+        private readonly UserRepository _userRepository;
 
         public MessageController(MessageRepository messageRepository)
         {
@@ -75,7 +76,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 foreach (var message in messages)
                 {
-                    Console.WriteLine($"Od: {message.Sender?.Username ?? "Nieznany"}, Treść: {message.Content}, Data: {message.SentAt}");
+                    Console.WriteLine($"Od: {_userRepository.GetUserById(message.SenderId)}, Treść: {message.Content}, Data: {message.SentAt}");
                 }
             }
             catch (ArgumentException ex)

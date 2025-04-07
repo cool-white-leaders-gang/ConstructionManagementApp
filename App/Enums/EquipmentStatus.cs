@@ -9,6 +9,7 @@ namespace ConstructionManagementApp.App.Enums
     enum EquipmentStatus
     {
         Available,
+        Unavailable,
         InUse,
         UnderMaintenance,
         Broken

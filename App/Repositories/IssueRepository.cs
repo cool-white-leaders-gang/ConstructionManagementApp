@@ -15,8 +15,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void CreateIssue(Issue issue)
+        public void AddIssue(Issue issue)
         {
+            if (issue == null)
+                throw new ArgumentNullException(nameof(issue), "Zgłoszenie nie może być null.");
+
             _context.Issues.Add(issue);
             _context.SaveChanges();
         }
@@ -25,25 +28,29 @@ namespace ConstructionManagementApp.App.Repositories
         {
             var existingIssue = GetIssueById(issue.Id);
             if (existingIssue == null)
-                throw new KeyNotFoundException("Nie znaleziono zgłoszenia problemu o podanym Id.");
+                throw new KeyNotFoundException("Nie znaleziono zgłoszenia o podanym Id.");
 
-            _context.Issues.Update(issue);
+            existingIssue.Priority = issue.Priority;
+            existingIssue.Status = issue.Status;
+            existingIssue.ResolvedAt = issue.ResolvedAt;
+
+            _context.Issues.Update(existingIssue);
             _context.SaveChanges();
         }
 
-        public void DeleteIssue(int issueId)
+        public void DeleteIssueById(int issueId)
         {
             var issue = GetIssueById(issueId);
             if (issue == null)
-                throw new KeyNotFoundException("Nie znaleziono zgłoszenia problemu o podanym Id.");
+                throw new KeyNotFoundException("Nie znaleziono zgłoszenia o podanym Id.");
 
             _context.Issues.Remove(issue);
             _context.SaveChanges();
         }
 
-        public Issue GetIssueById(int issueId)
+        public Issue GetIssueById(int id)
         {
-            return _context.Issues.FirstOrDefault(i => i.Id == issueId);
+            return _context.Issues.FirstOrDefault(i => i.Id == id);
         }
 
         public List<Issue> GetAllIssues()

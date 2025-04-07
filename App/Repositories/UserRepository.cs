@@ -15,12 +15,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        // Tworzenie nowego użytkownika
         public void CreateUser(User user)
         {
             if (IsEmailTaken(user.Email))
                 throw new ArgumentException("Podany adres email jest już zajęty.");
-            
+
             if (IsUsernameTaken(user.Username))
                 throw new ArgumentException("Podana nazwa użytkownika jest już zajęta.");
 
@@ -28,7 +27,6 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        // Aktualizacja istniejącego użytkownika
         public void UpdateUser(User user)
         {
             var existingUser = GetUserById(user.Id);
@@ -45,7 +43,6 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        // Usuwanie użytkownika po Id
         public void DeleteUserById(int userId)
         {
             var user = GetUserById(userId);
@@ -56,37 +53,31 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        // Pobieranie użytkownika po Id
         public User GetUserById(int id)
         {
             return _context.Users.FirstOrDefault(u => u.Id == id);
         }
 
-        // Pobieranie użytkowników po nazwie użytkownika
-        public List<User> GetUsersByUsername(string username)
+        public User GetUserByUsername(string username)
         {
-            return _context.Users.Where(u => u.Username == username).ToList();
+            return (User)_context.Users.Where(u => u.Username == username);
         }
 
-        // Pobieranie użytkowników po adresie email
         public User GetUserByEmail(string email)
         {
             return _context.Users.FirstOrDefault(u => u.Email == email);
         }
 
-        // Pobieranie wszystkich użytkowników
         public List<User> GetAllUsers()
         {
             return _context.Users.ToList();
         }
 
-        // Sprawdzenie, czy nazwa użytkownika jest zajęta
         public bool IsUsernameTaken(string username)
         {
             return _context.Users.Any(u => u.Username == username);
         }
 
-        // Sprawdzenie, czy adres email jest zajęty
         public bool IsEmailTaken(string email)
         {
             return _context.Users.Any(u => u.Email == email);

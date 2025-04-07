@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
@@ -16,6 +17,9 @@ namespace ConstructionManagementApp.App.Repositories
 
         public void CreateTeam(Team team)
         {
+            if (team == null)
+                throw new ArgumentNullException(nameof(team), "Zespół nie może być null.");
+
             _context.Teams.Add(team);
             _context.SaveChanges();
         }
@@ -26,11 +30,14 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingTeam == null)
                 throw new KeyNotFoundException("Nie znaleziono zespołu o podanym Id.");
 
-            _context.Teams.Update(team);
+            existingTeam.Name = team.Name;
+            existingTeam.ManagerId = team.ManagerId;
+
+            _context.Teams.Update(existingTeam);
             _context.SaveChanges();
         }
 
-        public void DeleteTeam(int teamId)
+        public void DeleteTeamById(int teamId)
         {
             var team = GetTeamById(teamId);
             if (team == null)
@@ -40,9 +47,9 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public Team GetTeamById(int teamId)
+        public Team GetTeamById(int id)
         {
-            return _context.Teams.FirstOrDefault(t => t.Id == teamId);
+            return _context.Teams.FirstOrDefault(t => t.Id == id);
         }
 
         public List<Team> GetAllTeams()

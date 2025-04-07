@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
+using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Controllers
@@ -15,14 +15,11 @@ namespace ConstructionManagementApp.App.Controllers
             _equipmentRepository = equipmentRepository;
         }
 
-        public void AddEquipment(string name, int quantity)
+        public void AddEquipment(string name, EquipmentStatus status, int projectId)
         {
             try
             {
-                if (quantity <= 0)
-                    throw new ArgumentException("Ilość sprzętu musi być większa od zera.");
-
-                var equipment = new Equipment(name, quantity);
+                var equipment = new Equipment(name, status, projectId);
                 _equipmentRepository.AddEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie dodany.");
             }
@@ -36,19 +33,17 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateEquipment(int equipmentId, string name, int quantity)
+        public void UpdateEquipment(int equipmentId, string name, EquipmentStatus status, int projectId)
         {
             try
             {
-                if (quantity <= 0)
-                    throw new ArgumentException("Ilość sprzętu musi być większa od zera.");
-
                 var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
                 if (equipment == null)
                     throw new KeyNotFoundException($"Nie znaleziono sprzętu o ID {equipmentId}.");
 
                 equipment.Name = name;
-                equipment.Quantity = quantity;
+                equipment.Status = status;
+                equipment.ProjectId = projectId;
 
                 _equipmentRepository.UpdateEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie zaktualizowany.");
@@ -98,7 +93,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista sprzętu ---");
                 foreach (var equipment in equipments)
                 {
-                    Console.WriteLine($"ID: {equipment.Id}, Nazwa: {equipment.Name}, Ilość: {equipment.Quantity}");
+                    Console.WriteLine($"ID: {equipment.Id}, Nazwa: {equipment.Name}, Status: {equipment.Status}, Projekt ID: {equipment.ProjectId}");
                 }
             }
             catch (Exception ex)

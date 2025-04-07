@@ -61,7 +61,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                _teamRepository.DeleteTeam(teamId);
+                _teamRepository.DeleteTeamById(teamId);
                 Console.WriteLine("Zespół został pomyślnie usunięty.");
             }
             catch (Exception ex)

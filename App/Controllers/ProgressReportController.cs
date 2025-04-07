@@ -14,11 +14,11 @@ namespace ConstructionManagementApp.App.Controllers
             _progressReportRepository = progressReportRepository;
         }
 
-        public void AddProgressReport(string title, string description, DateTime date)
+        public void AddProgressReport(string title, string content, int userId, int projectId, int completionPercentage)
         {
             try
             {
-                var report = new ProgressReport(title, description, date);
+                var report = new ProgressReport(title, content, userId, projectId, completionPercentage);
                 _progressReportRepository.AddProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie dodany.");
             }
@@ -32,7 +32,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateProgressReport(int reportId, string title, string description, DateTime date)
+        public void UpdateProgressReport(int reportId, string title, string description, int completionPercentage)
         {
             try
             {
@@ -41,8 +41,8 @@ namespace ConstructionManagementApp.App.Controllers
                     throw new KeyNotFoundException($"Nie znaleziono raportu postępu o ID {reportId}.");
 
                 report.Title = title;
-                report.Description = description;
-                report.Date = date;
+                report.Content = description;
+                report.CompletionPercentage = completionPercentage;
 
                 _progressReportRepository.UpdateProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie zaktualizowany.");
@@ -92,7 +92,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista raportów postępu ---");
                 foreach (var report in reports)
                 {
-                    Console.WriteLine($"ID: {report.Id}, Tytuł: {report.Title}, Data: {report.Date}, Opis: {report.Description}");
+                    Console.WriteLine($"ID: {report.Id}, Tytuł: {report.Title}, Data: {report.CreatedAt}, Opis: {report.Content}");
                 }
             }
             catch (Exception ex)

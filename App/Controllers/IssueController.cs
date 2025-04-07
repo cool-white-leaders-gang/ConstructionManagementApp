@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -14,12 +15,12 @@ namespace ConstructionManagementApp.App.Controllers
             _issueRepository = issueRepository;
         }
 
-        public void AddIssue(string title, string description, IssueStatus status)
+        public void AddIssue(string title, string content, int userId, int projectId, TaskPriority priority)
         {
             try
             {
-                var issue = new Issue(title, description, status);
-                _issueRepository.CreateIssue(issue);
+                var issue = new Issue(title, content, userId, projectId, priority);
+                _issueRepository.AddIssue(issue);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie dodane.");
             }
             catch (ArgumentException ex)
@@ -32,7 +33,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateIssue(int issueId, string title, string description, IssueStatus status)
+        public void UpdateIssue(int issueId, TaskPriority priority, IssueStatus status, DateTime? resolvedAt)
         {
             try
             {
@@ -40,9 +41,9 @@ namespace ConstructionManagementApp.App.Controllers
                 if (issue == null)
                     throw new KeyNotFoundException($"Nie znaleziono zgłoszenia o ID {issueId}.");
 
-                issue.Title = title;
-                issue.Description = description;
+                issue.Priority = priority;
                 issue.Status = status;
+                issue.ResolvedAt = resolvedAt;
 
                 _issueRepository.UpdateIssue(issue);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie zaktualizowane.");
@@ -92,7 +93,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista zgłoszeń ---");
                 foreach (var issue in issues)
                 {
-                    Console.WriteLine($"ID: {issue.Id}, Tytuł: {issue.Title}, Status: {issue.Status}, Opis: {issue.Description}");
+                    Console.WriteLine($"ID: {issue.Id}, Tytuł: {issue.Title}, Priorytet: {issue.Priority}, Status: {issue.Status}, Rozwiązano: {issue.ResolvedAt}");
                 }
             }
             catch (Exception ex)

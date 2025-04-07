@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
-using ConstructionManagementApp.App.Models;
+using Task =  ConstructionManagementApp.App.Models.Task;
 using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Controllers

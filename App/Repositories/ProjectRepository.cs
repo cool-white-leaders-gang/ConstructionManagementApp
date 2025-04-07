@@ -17,6 +17,9 @@ namespace ConstructionManagementApp.App.Repositories
 
         public void CreateProject(Project project)
         {
+            if (project == null)
+                throw new ArgumentNullException(nameof(project), "Projekt nie może być null.");
+
             _context.Projects.Add(project);
             _context.SaveChanges();
         }
@@ -27,11 +30,17 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingProject == null)
                 throw new KeyNotFoundException("Nie znaleziono projektu o podanym Id.");
 
-            _context.Projects.Update(project);
+            existingProject.Name = project.Name;
+            existingProject.Description = project.Description;
+            existingProject.TeamId = project.TeamId;
+            existingProject.BudgetId = project.BudgetId;
+            existingProject.ClientId = project.ClientId;
+
+            _context.Projects.Update(existingProject);
             _context.SaveChanges();
         }
 
-        public void DeleteProject(int projectId)
+        public void DeleteProjectById(int projectId)
         {
             var project = GetProjectById(projectId);
             if (project == null)
@@ -41,9 +50,9 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public Project GetProjectById(int projectId)
+        public Project GetProjectById(int id)
         {
-            return _context.Projects.FirstOrDefault(p => p.Id == projectId);
+            return _context.Projects.FirstOrDefault(p => p.Id == id);
         }
 
         public List<Project> GetAllProjects()

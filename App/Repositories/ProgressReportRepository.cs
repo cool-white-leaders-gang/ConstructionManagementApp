@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
@@ -14,8 +15,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void CreateProgressReport(ProgressReport report)
+        public void AddProgressReport(ProgressReport report)
         {
+            if (report == null)
+                throw new ArgumentNullException(nameof(report), "Raport postępu nie może być null.");
+
             _context.ProgressReports.Add(report);
             _context.SaveChanges();
         }
@@ -26,11 +30,15 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingReport == null)
                 throw new KeyNotFoundException("Nie znaleziono raportu postępu o podanym Id.");
 
-            _context.ProgressReports.Update(report);
+            existingReport.Title = report.Title;
+            existingReport.Content = report.Content;
+            existingReport.CompletionPercentage = report.CompletionPercentage;
+
+            _context.ProgressReports.Update(existingReport);
             _context.SaveChanges();
         }
 
-        public void DeleteProgressReport(int reportId)
+        public void DeleteProgressReportById(int reportId)
         {
             var report = GetProgressReportById(reportId);
             if (report == null)
@@ -40,9 +48,9 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public ProgressReport GetProgressReportById(int reportId)
+        public ProgressReport GetProgressReportById(int id)
         {
-            return _context.ProgressReports.FirstOrDefault(r => r.Id == reportId);
+            return _context.ProgressReports.FirstOrDefault(r => r.Id == id);
         }
 
         public List<ProgressReport> GetAllProgressReports()
