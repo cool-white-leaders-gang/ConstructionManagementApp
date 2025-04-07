@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
+using ConstructionManagementApp.App.Models;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -9,106 +9,95 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly ProgressReportRepository _progressReportRepository;
 
-        // Konstruktor kontrolera
         public ProgressReportController(ProgressReportRepository progressReportRepository)
         {
             _progressReportRepository = progressReportRepository;
         }
 
-        // Dodaj nowy raport postępu
-        public void CreateProgressReport(string title, string content, int createdByUserId, int projectId, int completionPercentage)
+        public void AddProgressReport(string title, string description, DateTime date)
         {
             try
             {
-                var progressReport = new ProgressReport(title, content, createdByUserId, projectId, completionPercentage);
-                _progressReportRepository.CreateProgressReport(progressReport);
+                var report = new ProgressReport(title, description, date);
+                _progressReportRepository.AddProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie dodany.");
             }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas dodawania raportu postępu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Zaktualizuj raport postępu
-        public void UpdateProgressReport(int reportId, string title, string content, int completionPercentage)
+        public void UpdateProgressReport(int reportId, string title, string description, DateTime date)
         {
             try
             {
-                var progressReport = _progressReportRepository.GetProgressReportById(reportId);
-                if (progressReport == null)
-                {
-                    Console.WriteLine($"Raport postępu o Id {reportId} nie został znaleziony.");
-                    return;
-                }
+                var report = _progressReportRepository.GetProgressReportById(reportId);
+                if (report == null)
+                    throw new KeyNotFoundException($"Nie znaleziono raportu postępu o ID {reportId}.");
 
-                progressReport.Title = title;
-                progressReport.Content = content;
-                progressReport.CompletionPercentage = completionPercentage;
+                report.Title = title;
+                report.Description = description;
+                report.Date = date;
 
-                _progressReportRepository.UpdateProgressReport(progressReport);
+                _progressReportRepository.UpdateProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie zaktualizowany.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas aktualizacji raportu postępu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Usuń raport postępu
         public void DeleteProgressReport(int reportId)
         {
             try
             {
-                _progressReportRepository.DeleteProgressReport(reportId);
+                _progressReportRepository.DeleteProgressReportById(reportId);
                 Console.WriteLine("Raport postępu został pomyślnie usunięty.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas usuwania raportu postępu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Wyświetl wszystkie raporty postępu
         public void DisplayAllProgressReports()
         {
             try
             {
-                var progressReports = _progressReportRepository.GetAllProgressReports();
-                if (progressReports.Count == 0)
+                var reports = _progressReportRepository.GetAllProgressReports();
+                if (reports.Count == 0)
                 {
-                    Console.WriteLine("Brak raportów postępu do wyświetlenia.");
+                    Console.WriteLine("Brak raportów postępu w systemie.");
                     return;
                 }
 
-                foreach (var report in progressReports)
+                Console.WriteLine("--- Lista raportów postępu ---");
+                foreach (var report in reports)
                 {
-                    Console.WriteLine(report.ToString());
+                    Console.WriteLine($"ID: {report.Id}, Tytuł: {report.Title}, Data: {report.Date}, Opis: {report.Description}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas pobierania raportów postępu: {ex.Message}");
-            }
-        }
-
-        // Wyświetl raport postępu po Id
-        public void DisplayProgressReportById(int reportId)
-        {
-            try
-            {
-                var progressReport = _progressReportRepository.GetProgressReportById(reportId);
-                if (progressReport == null)
-                {
-                    Console.WriteLine($"Raport postępu o Id {reportId} nie został znaleziony.");
-                    return;
-                }
-
-                Console.WriteLine(progressReport.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania raportu postępu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
     }
