@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
+using ConstructionManagementApp.App.Models;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -9,69 +9,63 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly ProjectRepository _projectRepository;
 
-        // Konstruktor kontrolera
         public ProjectController(ProjectRepository projectRepository)
         {
             _projectRepository = projectRepository;
         }
 
-        // Dodaj nowy projekt
-        public void CreateProject(string name, string description, int teamId, int budgetId, int clientId)
+        public void CreateProject(string name, string description, DateTime startDate, DateTime endDate)
         {
             try
             {
-                var project = new Project(name, description, teamId, budgetId, clientId);
+                if (endDate <= startDate)
+                    throw new ArgumentException("Data zakończenia projektu musi być późniejsza niż data rozpoczęcia.");
+
+                var project = new Project(name, description, startDate, endDate);
                 _projectRepository.CreateProject(project);
                 Console.WriteLine("Projekt został pomyślnie utworzony.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas tworzenia projektu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
 
-        // Zaktualizuj projekt
-        public void UpdateProject(int projectId, string name, string description, int teamId, int budgetId, int clientId)
+        public void UpdateProject(int projectId, string name, string description, DateTime startDate, DateTime endDate)
         {
             try
             {
                 var project = _projectRepository.GetProjectById(projectId);
                 if (project == null)
-                {
-                    Console.WriteLine($"Projekt o Id {projectId} nie został znaleziony.");
-                    return;
-                }
+                    throw new KeyNotFoundException($"Nie znaleziono projektu o ID {projectId}.");
 
                 project.Name = name;
                 project.Description = description;
-                project.TeamId = teamId;
-                project.BudgetId = budgetId;
-                project.ClientId = clientId;
+                project.StartDate = startDate;
+                project.EndDate = endDate;
 
                 _projectRepository.UpdateProject(project);
                 Console.WriteLine("Projekt został pomyślnie zaktualizowany.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas aktualizacji projektu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
 
-        // Usuń projekt
         public void DeleteProject(int projectId)
         {
             try
             {
-                _projectRepository.DeleteProject(projectId);
+                _projectRepository.DeleteProjectById(projectId);
                 Console.WriteLine("Projekt został pomyślnie usunięty.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas usuwania projektu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
 
-        // Wyświetl wszystkie projekty
         public void DisplayAllProjects()
         {
             try
@@ -79,38 +73,19 @@ namespace ConstructionManagementApp.App.Controllers
                 var projects = _projectRepository.GetAllProjects();
                 if (projects.Count == 0)
                 {
-                    Console.WriteLine("Brak projektów do wyświetlenia.");
+                    Console.WriteLine("Brak projektów w systemie.");
                     return;
                 }
 
+                Console.WriteLine("--- Lista projektów ---");
                 foreach (var project in projects)
                 {
-                    Console.WriteLine(project.ToString());
+                    Console.WriteLine($"ID: {project.Id}, Nazwa: {project.Name}, Opis: {project.Description}, Start: {project.StartDate}, Koniec: {project.EndDate}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas pobierania projektów: {ex.Message}");
-            }
-        }
-
-        // Wyświetl szczegóły projektu po Id
-        public void DisplayProjectById(int projectId)
-        {
-            try
-            {
-                var project = _projectRepository.GetProjectById(projectId);
-                if (project == null)
-                {
-                    Console.WriteLine($"Projekt o Id {projectId} nie został znaleziony.");
-                    return;
-                }
-
-                Console.WriteLine(project.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania szczegółów projektu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
     }

@@ -10,106 +10,100 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly EquipmentRepository _equipmentRepository;
 
-        // Konstruktor kontrolera
         public EquipmentController(EquipmentRepository equipmentRepository)
         {
             _equipmentRepository = equipmentRepository;
         }
 
-        // Dodaj nowy sprzęt
-        public void CreateEquipment(string name, EquipmentStatus status, int projectId)
+        public void AddEquipment(string name, int quantity)
         {
             try
             {
-                var equipment = new Equipment(name, status, projectId);
-                _equipmentRepository.CreateEquipment(equipment);
+                if (quantity <= 0)
+                    throw new ArgumentException("Ilość sprzętu musi być większa od zera.");
+
+                var equipment = new Equipment(name, quantity);
+                _equipmentRepository.AddEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie dodany.");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas dodawania sprzętu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Zaktualizuj sprzęt
-        public void UpdateEquipment(int equipmentId, string name, EquipmentStatus status, int projectId)
+        public void UpdateEquipment(int equipmentId, string name, int quantity)
         {
             try
             {
+                if (quantity <= 0)
+                    throw new ArgumentException("Ilość sprzętu musi być większa od zera.");
+
                 var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
                 if (equipment == null)
-                {
-                    Console.WriteLine($"Sprzęt o Id {equipmentId} nie został znaleziony.");
-                    return;
-                }
+                    throw new KeyNotFoundException($"Nie znaleziono sprzętu o ID {equipmentId}.");
 
                 equipment.Name = name;
-                equipment.Status = status;
-                equipment.ProjectId = projectId;
+                equipment.Quantity = quantity;
 
                 _equipmentRepository.UpdateEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie zaktualizowany.");
             }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas aktualizacji sprzętu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Usuń sprzęt
         public void DeleteEquipment(int equipmentId)
         {
             try
             {
-                _equipmentRepository.DeleteEquipment(equipmentId);
+                _equipmentRepository.DeleteEquipmentById(equipmentId);
                 Console.WriteLine("Sprzęt został pomyślnie usunięty.");
             }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas usuwania sprzętu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Pobierz wszystkie sprzęty
-        public void DisplayAllEquipment()
+        public void DisplayAllEquipments()
         {
             try
             {
-                var equipmentList = _equipmentRepository.GetAllEquipment();
-                if (equipmentList.Count == 0)
+                var equipments = _equipmentRepository.GetAllEquipments();
+                if (equipments.Count == 0)
                 {
-                    Console.WriteLine("Brak sprzętu do wyświetlenia.");
+                    Console.WriteLine("Brak sprzętu w systemie.");
                     return;
                 }
 
-                foreach (var equipment in equipmentList)
+                Console.WriteLine("--- Lista sprzętu ---");
+                foreach (var equipment in equipments)
                 {
-                    Console.WriteLine(equipment.ToString());
+                    Console.WriteLine($"ID: {equipment.Id}, Nazwa: {equipment.Name}, Ilość: {equipment.Quantity}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas pobierania sprzętu: {ex.Message}");
-            }
-        }
-
-        // Pobierz sprzęt po Id
-        public void DisplayEquipmentById(int equipmentId)
-        {
-            try
-            {
-                var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
-                if (equipment == null)
-                {
-                    Console.WriteLine($"Sprzęt o Id {equipmentId} nie został znaleziony.");
-                    return;
-                }
-
-                Console.WriteLine(equipment.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania sprzętu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
     }

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
-using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -10,128 +9,75 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly IssueRepository _issueRepository;
 
-        // Konstruktor
         public IssueController(IssueRepository issueRepository)
         {
             _issueRepository = issueRepository;
         }
 
-        // Utwórz nowy problem
-        public void CreateIssue(string title, string content, int userId, int projectId, TaskPriority priority)
+        public void AddIssue(string title, string description, IssueStatus status)
         {
             try
             {
-                var issue = new Issue(title, content, userId, projectId, priority)
-                {
-                    Status = IssueStatus.Open // Domyślny status to "Open"
-                };
+                var issue = new Issue(title, description, status);
                 _issueRepository.CreateIssue(issue);
-                Console.WriteLine("Problem został pomyślnie utworzony.");
+                Console.WriteLine("Zgłoszenie zostało pomyślnie dodane.");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas tworzenia problemu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Zaktualizuj istniejący problem
-        public void UpdateIssue(int issueId, string title, string content, TaskPriority priority)
+        public void UpdateIssue(int issueId, string title, string description, IssueStatus status)
         {
             try
             {
                 var issue = _issueRepository.GetIssueById(issueId);
                 if (issue == null)
-                {
-                    Console.WriteLine($"Problem o Id {issueId} nie został znaleziony.");
-                    return;
-                }
+                    throw new KeyNotFoundException($"Nie znaleziono zgłoszenia o ID {issueId}.");
 
                 issue.Title = title;
-                issue.Content = content;
-                issue.Priority = priority;
+                issue.Description = description;
+                issue.Status = status;
 
                 _issueRepository.UpdateIssue(issue);
-                Console.WriteLine("Problem został pomyślnie zaktualizowany.");
+                Console.WriteLine("Zgłoszenie zostało pomyślnie zaktualizowane.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas aktualizacji problemu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Zmień status problemu na "InProgress"
-        public void StartProgress(int issueId)
-        {
-            try
-            {
-                var issue = _issueRepository.GetIssueById(issueId);
-                if (issue == null)
-                {
-                    Console.WriteLine($"Problem o Id {issueId} nie został znaleziony.");
-                    return;
-                }
-
-                if (issue.Status == IssueStatus.Resolved)
-                {
-                    Console.WriteLine("Nie można zmienić statusu na 'InProgress', ponieważ problem został już rozwiązany.");
-                    return;
-                }
-
-                issue.Status = IssueStatus.InProgress;
-                _issueRepository.UpdateIssue(issue);
-                Console.WriteLine("Status problemu został zmieniony na 'InProgress'.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas zmiany statusu problemu: {ex.Message}");
-            }
-        }
-
-        // Rozwiąż problem
-        public void ResolveIssue(int issueId)
-        {
-            try
-            {
-                var issue = _issueRepository.GetIssueById(issueId);
-                if (issue == null)
-                {
-                    Console.WriteLine($"Problem o Id {issueId} nie został znaleziony.");
-                    return;
-                }
-
-                if (issue.Status == IssueStatus.Resolved)
-                {
-                    Console.WriteLine("Problem został już rozwiązany.");
-                    return;
-                }
-
-                issue.Status = IssueStatus.Resolved;
-                issue.ResolvedAt = DateTime.Now;
-
-                _issueRepository.UpdateIssue(issue);
-                Console.WriteLine("Problem został pomyślnie rozwiązany.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas rozwiązywania problemu: {ex.Message}");
-            }
-        }
-
-        // Usuń problem
         public void DeleteIssue(int issueId)
         {
             try
             {
-                _issueRepository.DeleteIssue(issueId);
-                Console.WriteLine("Problem został pomyślnie usunięty.");
+                _issueRepository.DeleteIssueById(issueId);
+                Console.WriteLine("Zgłoszenie zostało pomyślnie usunięte.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas usuwania problemu: {ex.Message}");
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
         }
 
-        // Wyświetl wszystkie problemy
         public void DisplayAllIssues()
         {
             try
@@ -139,38 +85,19 @@ namespace ConstructionManagementApp.App.Controllers
                 var issues = _issueRepository.GetAllIssues();
                 if (issues.Count == 0)
                 {
-                    Console.WriteLine("Brak problemów do wyświetlenia.");
+                    Console.WriteLine("Brak zgłoszeń w systemie.");
                     return;
                 }
 
+                Console.WriteLine("--- Lista zgłoszeń ---");
                 foreach (var issue in issues)
                 {
-                    Console.WriteLine(issue.ToString());
+                    Console.WriteLine($"ID: {issue.Id}, Tytuł: {issue.Title}, Status: {issue.Status}, Opis: {issue.Description}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas pobierania problemów: {ex.Message}");
-            }
-        }
-
-        // Wyświetl problem po Id
-        public void DisplayIssueById(int issueId)
-        {
-            try
-            {
-                var issue = _issueRepository.GetIssueById(issueId);
-                if (issue == null)
-                {
-                    Console.WriteLine($"Problem o Id {issueId} nie został znaleziony.");
-                    return;
-                }
-
-                Console.WriteLine(issue.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania problemu: {ex.Message}");
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
     }
