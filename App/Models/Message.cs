@@ -16,7 +16,7 @@ namespace ConstructionManagementApp.App.Models
             set
             {
                 if (value <= 0)
-                    throw new ArgumentException("Id nadawcy musi być większe od zera.");
+                    throw new ArgumentException("Id nadawcy musi być większe od zera");
                 _senderId = value;
             }
         }

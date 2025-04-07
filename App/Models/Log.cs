@@ -11,7 +11,7 @@ public class Log
         set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Wiadomość nie może być pusta.");
+                throw new ArgumentException("Wiadomość nie może być pusta");
             _message = value;
         }
     }
