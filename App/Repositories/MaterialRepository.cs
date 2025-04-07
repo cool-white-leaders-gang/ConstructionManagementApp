@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
@@ -14,8 +15,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void CreateMaterial(Material material)
+        public void AddMaterial(Material material)
         {
+            if (material == null)
+                throw new ArgumentNullException(nameof(material), "Materiał nie może być null.");
+
             _context.Materials.Add(material);
             _context.SaveChanges();
         }
@@ -26,11 +30,14 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingMaterial == null)
                 throw new KeyNotFoundException("Nie znaleziono materiału o podanym Id.");
 
-            _context.Materials.Update(material);
+            existingMaterial.Name = material.Name;
+            existingMaterial.Quantity = material.Quantity;
+
+            _context.Materials.Update(existingMaterial);
             _context.SaveChanges();
         }
 
-        public void DeleteMaterial(int materialId)
+        public void DeleteMaterialById(int materialId)
         {
             var material = GetMaterialById(materialId);
             if (material == null)
@@ -40,9 +47,9 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public Material GetMaterialById(int materialId)
+        public Material GetMaterialById(int id)
         {
-            return _context.Materials.FirstOrDefault(m => m.Id == materialId);
+            return _context.Materials.FirstOrDefault(m => m.Id == id);
         }
 
         public List<Material> GetAllMaterials()

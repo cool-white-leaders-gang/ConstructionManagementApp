@@ -1,9 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
-using Microsoft.EntityFrameworkCore;
-using Task = ConstructionManagementApp.App.Models.Task;
 
 namespace ConstructionManagementApp.App.Repositories
 {
@@ -16,8 +15,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void CreateTask(Task task)
+        public void AddTask(Task task)
         {
+            if (task == null)
+                throw new ArgumentNullException(nameof(task), "Zadanie nie może być null.");
+
             _context.Tasks.Add(task);
             _context.SaveChanges();
         }
@@ -28,11 +30,16 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingTask == null)
                 throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
 
-            _context.Tasks.Update(task);
+            existingTask.Title = task.Title;
+            existingTask.Description = task.Description;
+            existingTask.Priority = task.Priority;
+            existingTask.Progress = task.Progress;
+
+            _context.Tasks.Update(existingTask);
             _context.SaveChanges();
         }
 
-        public void DeleteTask(int taskId)
+        public void DeleteTaskById(int taskId)
         {
             var task = GetTaskById(taskId);
             if (task == null)
@@ -44,21 +51,12 @@ namespace ConstructionManagementApp.App.Repositories
 
         public Task GetTaskById(int id)
         {
-            var task =  _context.Tasks
-                .Include(t => t.TaskAssignments)
-                .ThenInclude(ta => ta.User)
-                .FirstOrDefault(t => t.Id == id);
-            if (task == null)
-                throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
-            return task;
+            return _context.Tasks.FirstOrDefault(t => t.Id == id);
         }
 
         public List<Task> GetAllTasks()
         {
-            return _context.Tasks
-                .Include(t => t.TaskAssignments)
-                .ThenInclude(ta => ta.User)
-                .ToList();
+            return _context.Tasks.ToList();
         }
     }
 }
