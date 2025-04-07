@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Models;
@@ -16,6 +17,9 @@ namespace ConstructionManagementApp.App.Repositories
 
         public void CreateBudget(Budget budget)
         {
+            if (budget == null)
+                throw new ArgumentNullException(nameof(budget), "Budżet nie może być null.");
+
             _context.Budgets.Add(budget);
             _context.SaveChanges();
         }
@@ -26,11 +30,14 @@ namespace ConstructionManagementApp.App.Repositories
             if (existingBudget == null)
                 throw new KeyNotFoundException("Nie znaleziono budżetu o podanym Id.");
 
-            _context.Budgets.Update(budget);
+            existingBudget.Name = budget.Name;
+            existingBudget.Amount = budget.Amount;
+
+            _context.Budgets.Update(existingBudget);
             _context.SaveChanges();
         }
 
-        public void DeleteBudget(int budgetId)
+        public void DeleteBudgetById(int budgetId)
         {
             var budget = GetBudgetById(budgetId);
             if (budget == null)
@@ -40,9 +47,9 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public Budget GetBudgetById(int budgetId)
+        public Budget GetBudgetById(int id)
         {
-            return _context.Budgets.FirstOrDefault(b => b.Id == budgetId);
+            return _context.Budgets.FirstOrDefault(b => b.Id == id);
         }
 
         public List<Budget> GetAllBudgets()

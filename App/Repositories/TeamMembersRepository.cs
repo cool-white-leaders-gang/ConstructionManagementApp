@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Database;
+using ConstructionManagementApp.App.Models;
 
 namespace ConstructionManagementApp.App.Repositories
 {
@@ -19,17 +19,17 @@ namespace ConstructionManagementApp.App.Repositories
         {
             var team = _context.Teams.FirstOrDefault(t => t.Id == teamId);
             if (team == null)
-                throw new KeyNotFoundException($"Zespół o Id {teamId} nie istnieje.");
+                throw new KeyNotFoundException($"Nie znaleziono zespołu o ID {teamId}.");
 
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
-                throw new KeyNotFoundException($"Użytkownik o Id {userId} nie istnieje.");
+                throw new KeyNotFoundException($"Nie znaleziono użytkownika o ID {userId}.");
 
             // Sprawdzenie, czy użytkownik już jest członkiem zespołu
             if (_context.TeamMembers.Any(tm => tm.TeamId == teamId && tm.UserId == userId))
-                throw new InvalidOperationException($"Użytkownik o Id {userId} jest już członkiem zespołu o Id {teamId}.");
+                throw new InvalidOperationException($"Użytkownik o ID {userId} jest już członkiem zespołu o ID {teamId}.");
 
-            var teamMember = new TeamMembers(teamId, userId);
+            var teamMember = new TeamMember(teamId, userId);
             _context.TeamMembers.Add(teamMember);
             _context.SaveChanges();
         }
@@ -38,7 +38,7 @@ namespace ConstructionManagementApp.App.Repositories
         {
             var teamMember = _context.TeamMembers.FirstOrDefault(tm => tm.TeamId == teamId && tm.UserId == userId);
             if (teamMember == null)
-                throw new KeyNotFoundException($"Nie znaleziono członka zespołu o Id użytkownika {userId} w zespole o Id {teamId}.");
+                throw new KeyNotFoundException($"Nie znaleziono użytkownika o ID {userId} w zespole o ID {teamId}.");
 
             _context.TeamMembers.Remove(teamMember);
             _context.SaveChanges();
