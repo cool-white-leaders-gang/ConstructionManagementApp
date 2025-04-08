@@ -69,10 +69,13 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nazwę zespołu: ");
                 var name = Console.ReadLine();
 
-                Console.Write("Podaj opis zespołu: ");
-                var description = Console.ReadLine();
-
-                _teamController.CreateTeam(name, description);
+                Console.Write("Id managera zespołu: ");
+                if(!int.TryParse(Console.ReadLine(), out int managerId))
+                {
+                    Console.WriteLine("Niepoprawne ID managera.");
+                    return;
+                }
+                _teamController.CreateTeam(name, managerId);
             }
             catch (Exception ex)
             {
@@ -105,7 +108,7 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                _teamController.AddMemberToTeam(teamId, userId);
+                _teamController.AddUserToTeam(teamId, userId);
             }
             catch (Exception ex)
             {
@@ -138,7 +141,7 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                _teamController.RemoveMemberFromTeam(teamId, userId);
+                _teamController.RemoveUserFromTeam(teamId, userId);
             }
             catch (Exception ex)
             {
@@ -164,7 +167,7 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                _teamController.DisplayTeamMembers(teamId);
+                _teamController.DisplayUsersInTeam(teamId);
             }
             catch (Exception ex)
             {

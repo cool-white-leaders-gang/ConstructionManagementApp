@@ -77,16 +77,35 @@ namespace ConstructionManagementApp.App.Views
                 var title = Console.ReadLine();
 
                 Console.Write("Podaj opis raportu: ");
-                var description = Console.ReadLine();
+                var content = Console.ReadLine();
 
-                Console.Write("Podaj datę raportu (yyyy-MM-dd): ");
-                if (!DateTime.TryParse(Console.ReadLine(), out var date))
+               
+                Console.WriteLine("Podaj Id użytkownika: ");
+                if (!int.TryParse(Console.ReadLine(), out var userId))
                 {
-                    Console.WriteLine("Niepoprawny format daty.");
+                    Console.WriteLine("Niepoprawne ID użytkownika.");
+                    return;
+
+                }
+                Console.WriteLine("Podaj Id projektu: ");
+                if (!int.TryParse(Console.ReadLine(), out var projectId))
+                {
+                    Console.WriteLine("Niepoprawne ID.");
+                    return;
+                }
+                Console.WriteLine("Podaj procent ukończenia: ");
+                if (!int.TryParse(Console.ReadLine(), out var completionPercentage))
+                {
+                    Console.WriteLine("Niepoprawny procent ukończenia.");
+                    return;
+                }
+                if (completionPercentage < 0 || completionPercentage > 100)
+                {
+                    Console.WriteLine("Procent ukończenia musi być w zakresie 0-100.");
                     return;
                 }
 
-                _progressReportController.AddProgressReport(title, description, date);
+                _progressReportController.AddProgressReport(title, content, userId, projectId, completionPercentage );
             }
             catch (Exception ex)
             {
@@ -116,16 +135,16 @@ namespace ConstructionManagementApp.App.Views
                 var title = Console.ReadLine();
 
                 Console.Write("Podaj nowy opis raportu: ");
-                var description = Console.ReadLine();
+                var content = Console.ReadLine();
 
-                Console.Write("Podaj nową datę raportu (yyyy-MM-dd): ");
-                if (!DateTime.TryParse(Console.ReadLine(), out var date))
+                Console.WriteLine("Podaj procent ukończenia: ");
+                if (!int.TryParse(Console.ReadLine(), out var completionPercentage))
                 {
-                    Console.WriteLine("Niepoprawny format daty.");
+                    Console.WriteLine("Niepoprawny procent ukończenia.");
                     return;
                 }
 
-                _progressReportController.UpdateProgressReport(reportId, title, description, date);
+                _progressReportController.UpdateProgressReport(reportId, title, content, completionPercentage);
             }
             catch (Exception ex)
             {

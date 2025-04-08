@@ -4,11 +4,11 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Message
     {
+        public int Id { get; private set; } // Id wiadomości
         private string _content;
         private int _senderId;
         private int _receiverId;
-
-        public int Id { get; set; } // Id wiadomości
+        private DateTime _sentAt;
 
         public int SenderId
         {
