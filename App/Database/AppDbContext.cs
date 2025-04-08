@@ -24,6 +24,8 @@ namespace ConstructionManagementApp.App.Database
         public DbSet<Issue> Issues { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<ProgressReport> ProgressReports { get; set; }
+        public DbSet<Log> Logs { get; set; }
+        public DbSet<Message> Messages { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)   //elegnackie połączenie z baza danych
         {
             string server = "localhost";
@@ -200,7 +202,24 @@ namespace ConstructionManagementApp.App.Database
                     .HasForeignKey(e => e.ProjectId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
-            
+
+            modelBuilder.Entity<Log>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Message).IsRequired();
+                entity.Property(e => e.Timestamp).IsRequired();
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.SenderId).IsRequired();
+                entity.Property(e => e.ReceiverId).IsRequired();
+                entity.Property(e => e.Content).IsRequired();
+                entity.Property(e => e.SentAt).IsRequired();
+            });
+
+
         }
     }
 }
