@@ -83,7 +83,16 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                _materialController.AddMaterial(name, quantity);
+                Console.Write("Podaj jednostkę materiału: ");
+                var unit = Console.ReadLine();
+
+                Console.Write("Podaj ID projektu do którego materiał zostanie przypisany: ");
+                if(!int.TryParse(Console.ReadLine(), out var projectId))
+                {
+                    Console.WriteLine("Niepoprawne ID projektu.");
+                    return;
+                }
+                _materialController.AddMaterial(name, quantity, unit, projectId);
             }
             catch (Exception ex)
             {

@@ -23,7 +23,7 @@ namespace ConstructionManagementApp.App.Views
             while (isRunning)
             {
                 Console.Clear();
-                Console.WriteLine($"Witaj, {_session.User.Username}!");
+                Console.WriteLine($"Witaj!");
                 Console.WriteLine("Wybierz opcję:");
                 Console.WriteLine("1. Zarządzanie użytkownikami");
                 Console.WriteLine("2. Zarządzanie projektami");
@@ -47,7 +47,7 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        _userView.ShowView(_session.User);
+                        _userView.ShowView();
                         break;
                     case 2:
                         Console.WriteLine("Funkcjonalność zarządzania projektami nie jest jeszcze zaimplementowana.");

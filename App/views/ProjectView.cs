@@ -79,21 +79,26 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj opis projektu: ");
                 var description = Console.ReadLine();
 
-                Console.Write("Podaj datę rozpoczęcia projektu (yyyy-MM-dd): ");
-                if (!DateTime.TryParse(Console.ReadLine(), out var startDate))
+                Console.Write("Podaj Id zespołu zajmującego się projektem: ");
+                if (!int.TryParse(Console.ReadLine(), out var teamId))
                 {
-                    Console.WriteLine("Niepoprawny format daty.");
+                    Console.WriteLine("Niepoprawne ID zespołu.");
+                    return;
+                }
+                Console.Write("Podaj Id budżetu projektu: ");
+                if (!int.TryParse(Console.ReadLine(), out var budgetId))
+                {
+                    Console.WriteLine("Niepoprawne ID budżetu.");
+                    return;
+                }
+                Console.Write("Podaj Id klienta: ");
+                if (!int.TryParse(Console.ReadLine(), out var clientId))
+                {
+                    Console.WriteLine("Niepoprawne ID klienta.");
                     return;
                 }
 
-                Console.Write("Podaj datę zakończenia projektu (yyyy-MM-dd): ");
-                if (!DateTime.TryParse(Console.ReadLine(), out var endDate))
-                {
-                    Console.WriteLine("Niepoprawny format daty.");
-                    return;
-                }
-
-                _projectController.CreateProject(name, description, startDate, endDate);
+                _projectController.CreateProject(name, description, teamId, budgetId, clientId);
             }
             catch (Exception ex)
             {
@@ -125,21 +130,27 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nowy opis projektu: ");
                 var description = Console.ReadLine();
 
-                Console.Write("Podaj nową datę rozpoczęcia projektu (yyyy-MM-dd): ");
-                if (!DateTime.TryParse(Console.ReadLine(), out var startDate))
+                Console.Write("Podaj Id zespołu zajmującego się projektem: ");
+                if (!int.TryParse(Console.ReadLine(), out var teamId))
                 {
-                    Console.WriteLine("Niepoprawny format daty.");
+                    Console.WriteLine("Niepoprawne ID zespołu.");
+                    return;
+                }
+                Console.Write("Podaj Id budżetu projektu: ");
+                if (!int.TryParse(Console.ReadLine(), out var budgetId))
+                {
+                    Console.WriteLine("Niepoprawne ID budżetu.");
+                    return;
+                }
+                Console.Write("Podaj Id klienta: ");
+                if (!int.TryParse(Console.ReadLine(), out var clientId))
+                {
+                    Console.WriteLine("Niepoprawne ID klienta.");
                     return;
                 }
 
-                Console.Write("Podaj nową datę zakończenia projektu (yyyy-MM-dd): ");
-                if (!DateTime.TryParse(Console.ReadLine(), out var endDate))
-                {
-                    Console.WriteLine("Niepoprawny format daty.");
-                    return;
-                }
 
-                _projectController.UpdateProject(projectId, name, description, startDate, endDate);
+                _projectController.UpdateProject(projectId, name, description, teamId, budgetId, clientId);
             }
             catch (Exception ex)
             {
