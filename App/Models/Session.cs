@@ -4,13 +4,14 @@ namespace ConstructionManagementApp.App.Models
 {
     internal class Session
     {
-        public User User { get; private set; }
+        public User User { get; set; }
         public DateTime LoginTime { get; private set; }
 
         public Session(User user)
         {
-            user = user;
+            this.User = user;
             LoginTime = DateTime.Now;
         }
+
     }
 }
