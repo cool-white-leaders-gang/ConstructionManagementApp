@@ -50,10 +50,9 @@ namespace ConstructionManagementApp.App.Enums
         CreateLog,          // Tworzenie logu (np. ręczne dodanie logu)
         ViewLogs,           // Przeglądanie logów
 
-        // Powiadomienia
-        CreateNotification, // Tworzenie powiadomienia
-        SendNotification,   // Wysyłanie powiadomienia
-        ViewNotifications,  // Przeglądanie powiadomień
+        // Powiadomienia 
+        SendMessage,   // Wysyłanie powiadomienia
+        ViewMessages,  // Przeglądanie powiadomień
 
         // Zgłoszenia problemów
         CreateIssue,        // Tworzenie zgłoszenia problemu
@@ -69,8 +68,10 @@ namespace ConstructionManagementApp.App.Enums
 
         // Zespoły
         CreateTeam,         // Tworzenie zespołu
-        UpdateTeam,         // Aktualizowanie zespołu
-        DeleteTeam,         // Usuwanie zespołu
-        ViewTeams           // Przeglądanie listy zespołów
+        AddMember,         // Aktualizowanie zespołu
+        RemoveMember,         // Usuwanie zespołu
+        ViewTeam,       // Przeglądanie listy zespołów
+        DeleteTeam,
+        UpdateTeam
     }
 }
