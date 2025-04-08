@@ -9,7 +9,7 @@ namespace ConstructionManagementApp.App.Models
 
         public Session(User user)
         {
-            User = user;
+            user = user;
             LoginTime = DateTime.Now;
         }
     }

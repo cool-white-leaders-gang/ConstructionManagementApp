@@ -2,6 +2,7 @@ using System;
 
 public class Log
 {
+    public int Id { get; private set; } // Id logu
     private string _message;
     private DateTime _timestamp;
 

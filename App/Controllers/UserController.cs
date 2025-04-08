@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Utilities;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -71,7 +72,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                var user = new User(username, email, passwordHash, role);
+                var user = new User(username, email,PasswordHasher.HashPassword(passwordHash), role);
                 _userRepository.CreateUser(user);
                 Console.WriteLine("Użytkownik został pomyślnie dodany.");
             }

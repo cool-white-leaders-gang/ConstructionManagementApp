@@ -11,6 +11,8 @@ namespace ConstructionManagementApp.App.Models
         private string _email;
         private string _passwordHash;
         private Role _role;
+        public List<TaskAssignment> TaskAssignments;
+        public List<TeamMembers> TeamMembers;
 
         public string Username
         {
@@ -43,8 +45,8 @@ namespace ConstructionManagementApp.App.Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException("Hasło nie może być puste.");
-                if (value.Length != 64)
-                    throw new ArgumentException("Hash hasła musi mieć długośc 64 znaków");
+                //if (value.Length != 64)
+                //    throw new ArgumentException("Hash hasła musi mieć długośc 64 znaków");
                 _passwordHash = value;
             }
         }
@@ -66,6 +68,8 @@ namespace ConstructionManagementApp.App.Models
             Email = email;
             PasswordHash = passwordHash;
             Role = role;
+            TaskAssignments = new List<TaskAssignment>();
+            TeamMembers = new List<TeamMembers>();
         }
 
         public override string ToString()

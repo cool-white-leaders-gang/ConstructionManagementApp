@@ -10,12 +10,12 @@ namespace ConstructionManagementApp.App.Services
     internal class AuthenticationService
     {
         private readonly UserRepository _userRepository;
-        private Session _currentSession;
+        public Session CurrentSession { get; private set; }
 
         public AuthenticationService(UserRepository userRepository)
         {
             _userRepository = userRepository;
-            _currentSession = null;
+            CurrentSession = null;
         }
 
         public AuthenticationService(){
@@ -24,7 +24,7 @@ namespace ConstructionManagementApp.App.Services
 
         public bool Login(string email, string password)
         {
-            var user = _userRepository.GetUsersByEmail(email).FirstOrDefault();
+            var user = _userRepository.GetUserByEmail(email);
             if (user == null)
             {
                 Console.WriteLine("Nie znaleziono użytkownika o podanym adresie email.");
@@ -37,26 +37,26 @@ namespace ConstructionManagementApp.App.Services
                 return false;
             }
 
-            _currentSession = new Session(user);
+            CurrentSession = new Session(user);
             Console.WriteLine($"Zalogowano pomyślnie jako {user.Username}.");
             return true;
         }
 
         public void Logout()
         {
-            if (_currentSession == null)
+            if (CurrentSession == null)
             {
                 Console.WriteLine("Brak aktywnej sesji.");
                 return;
             }
 
-            Console.WriteLine($"Wylogowano użytkownika {_currentSession.User.Username}.");
-            _currentSession = null;
+            Console.WriteLine($"Wylogowano użytkownika {CurrentSession.User.Username}.");
+            CurrentSession = null;
         }
 
         public User GetCurrentUser()
         {
-            return _currentSession?.User;
+            return CurrentSession?.User;
         }
 
         private bool VerifyPassword(string password, string hashedPassword)
