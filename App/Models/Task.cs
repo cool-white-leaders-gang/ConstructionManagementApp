@@ -12,6 +12,7 @@ namespace ConstructionManagementApp.App.Models
         private string _description;
         private TaskPriority _priority;
         private TaskProgress _progress;
+        private int _projectId;
         private readonly DateTime _createdAt; // Prywatne pole dla daty utworzenia
 
         public string Title
@@ -58,17 +59,29 @@ namespace ConstructionManagementApp.App.Models
             }
         }
 
+        public int ProjectId
+        {
+            get => _projectId;
+            set
+            {
+                if (value <= 0) 
+                    throw new ArgumentException("Id projektu nie może być mniejsze od 0");
+                _projectId = value;
+            }
+        }
+
         public DateTime CreatedAt => _createdAt;
 
         // Relacja wiele do wielu z użytkownikami (przez TaskAssignment)
         public List<TaskAssignment> TaskAssignments { get; private set; }
 
-        public Task(string title, string description, TaskPriority priority, TaskProgress progress)
+        public Task(string title, string description, TaskPriority priority, TaskProgress progress, int projectId)
         {
             Title = title;
             Description = description;
             Priority = priority;
             Progress = progress;
+            ProjectId = projectId;
             _createdAt = DateTime.Now;
             TaskAssignments = new List<TaskAssignment>();
         }
