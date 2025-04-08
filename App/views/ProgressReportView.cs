@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class ProgressReportView
     {
         private readonly ProgressReportController _progressReportController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public ProgressReportView(ProgressReportController progressReportController)
+        public ProgressReportView(ProgressReportController progressReportController, RBACService rbacService, User currentUser)
         {
             _progressReportController = progressReportController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -37,16 +44,16 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllProgressReports();
+                        if (HasPermission(Permission.ViewProgressReports)) DisplayAllProgressReports();
                         break;
                     case 2:
-                        AddProgressReport();
+                        if (HasPermission(Permission.CreateProgressReport)) AddProgressReport();
                         break;
                     case 3:
-                        UpdateProgressReport();
+                        if (HasPermission(Permission.UpdateProgressReport)) UpdateProgressReport();
                         break;
                     case 4:
-                        DeleteProgressReport();
+                        if (HasPermission(Permission.DeleteProgressReport)) DeleteProgressReport();
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
@@ -57,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllProgressReports()

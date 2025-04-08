@@ -10,7 +10,7 @@ namespace ConstructionManagementApp.App.Services
     internal class AuthenticationService
     {
         private readonly UserRepository _userRepository;
-        public Session CurrentSession { get; private set; }
+        public Session? CurrentSession { get; set; }
 
         public AuthenticationService(UserRepository userRepository)
         {
@@ -38,7 +38,7 @@ namespace ConstructionManagementApp.App.Services
             }
 
             CurrentSession = new Session(user);
-            Console.WriteLine($"Zalogowano pomyślnie jako {user.Username}.");
+            Console.WriteLine($"Zalogowano pomyślnie jako {CurrentSession.User.Username}.");
             return true;
         }
 
@@ -49,9 +49,10 @@ namespace ConstructionManagementApp.App.Services
                 Console.WriteLine("Brak aktywnej sesji.");
                 return;
             }
-
-            Console.WriteLine($"Wylogowano użytkownika {CurrentSession.User.Username}.");
+            string username = CurrentSession.User.Username;
             CurrentSession = null;
+            Console.WriteLine($"Wylogowano użytkownika {username}.");
+
         }
 
         public User GetCurrentUser()

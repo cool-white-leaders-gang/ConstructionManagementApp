@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class LogView
     {
         private readonly LogController _logController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public LogView(LogController logController)
+        public LogView(LogController logController, RBACService rBACService, User currentUser)
         {
             _logController = logController;
+            _rbacService = rBACService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -37,16 +44,16 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllLogs();
+                        if (HasPermission(Permission.ViewLogs)) DisplayAllLogs();
                         break;
                     case 2:
-                        SearchLogsByMessage();
+                        if (HasPermission(Permission.ViewLogs)) SearchLogsByMessage();
                         break;
                     case 3:
-                        SearchLogsByDate();
+                        if (HasPermission(Permission.ViewLogs)) SearchLogsByDate();
                         break;
                     case 4:
-                        AddLog();
+                        if (HasPermission(Permission.CreateLog)) AddLog();
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
@@ -57,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllLogs()

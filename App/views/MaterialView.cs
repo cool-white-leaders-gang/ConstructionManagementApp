@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class MaterialView
     {
         private readonly MaterialController _materialController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public MaterialView(MaterialController materialController)
+        public MaterialView(MaterialController materialController, RBACService rbacService, User currentUser)
         {
             _materialController = materialController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -37,16 +44,16 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllMaterials();
+                        if (HasPermission(Permission.ViewMaterials)) DisplayAllMaterials();
                         break;
                     case 2:
-                        AddMaterial();
+                        if (HasPermission(Permission.CreateMaterial)) AddMaterial();
                         break;
                     case 3:
-                        UpdateMaterial();
+                        if (HasPermission(Permission.UpdateMaterial)) UpdateMaterial();
                         break;
                     case 4:
-                        DeleteMaterial();
+                        if (HasPermission(Permission.DeleteMaterial)) DeleteMaterial();
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
@@ -57,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllMaterials()

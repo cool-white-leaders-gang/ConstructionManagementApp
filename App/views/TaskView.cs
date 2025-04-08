@@ -1,16 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
 using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class TaskView
     {
         private readonly TaskController _taskController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public TaskView(TaskController taskController)
+        public TaskView(TaskController taskController, RBACService rbacService, User currentUser)
         {
             _taskController = taskController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -25,7 +31,9 @@ namespace ConstructionManagementApp.App.Views
                 Console.WriteLine("2. Dodaj nowe zadanie");
                 Console.WriteLine("3. Zaktualizuj zadanie");
                 Console.WriteLine("4. Usuń zadanie");
-                Console.WriteLine("5. Powrót do menu głównego");
+                Console.WriteLine("5. Przypisz zadanie");
+                Console.WriteLine("6. Wyświetl pracowników przypisanych do zadania o danym id");
+                Console.WriteLine("7. Powrót do menu głównego");
 
                 Console.Write("\nTwój wybór: ");
                 if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -38,18 +46,24 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllTasks();
+                        if (HasPermission(Permission.ViewTasks)) DisplayAllTasks();
                         break;
                     case 2:
-                        AddTask();
+                        if (HasPermission(Permission.CreateTask)) AddTask();
                         break;
                     case 3:
-                        UpdateTask();
+                        if (HasPermission(Permission.UpdateTask)) UpdateTask();
                         break;
                     case 4:
-                        DeleteTask();
+                        if (HasPermission(Permission.DeleteTask)) DeleteTask();
                         break;
                     case 5:
+                        if (HasPermission(Permission.AssignTask)) DeleteTask();
+                        break;
+                    case 6:
+                        if (HasPermission(Permission.DeleteTask)) DeleteTask();
+                        break;
+                    case 7:
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:
@@ -58,6 +72,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllTasks()
@@ -100,7 +125,15 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Wybrano nieprawidłowy status.")
                 };
 
-                _taskController.AddTask(title, description, priority, progress);
+                Console.WriteLine("Podaj ID projektu, do którego dodać zadanie");
+
+                if (!int.TryParse(Console.ReadLine(), out var projectId))
+                {
+                    Console.WriteLine("Niepoprawne ID.");
+                    return;
+                }
+
+                _taskController.AddTask(title, description, priority, progress, projectId);
             }
             catch (Exception ex)
             {
@@ -179,6 +212,72 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _taskController.DeleteTask(taskId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            finally
+            {
+                ReturnToMenu();
+            }
+        }
+
+        private void AssignTask()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- Dodaj członka do zespołu ---");
+
+                Console.Write("Podaj ID zadania: ");
+                if (!int.TryParse(Console.ReadLine(), out var taskId))
+                {
+                    Console.WriteLine("Niepoprawne ID zadania.");
+                    return;
+                }
+
+                Console.Write("Podaj ID użytkownika: ");
+                if (!int.TryParse(Console.ReadLine(), out var userId))
+                {
+                    Console.WriteLine("Niepoprawne ID użytkownika.");
+                    return;
+                }
+
+                _taskController.AssignTask(taskId, userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            finally
+            {
+                ReturnToMenu();
+            }
+        }
+
+        private void RemoveFromTask()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- Usuń członka z zadania ---");
+
+                Console.Write("Podaj ID zadania: ");
+                if (!int.TryParse(Console.ReadLine(), out var taskId))
+                {
+                    Console.WriteLine("Niepoprawne ID zadania.");
+                    return;
+                }
+
+                Console.Write("Podaj ID użytkownika: ");
+                if (!int.TryParse(Console.ReadLine(), out var userId))
+                {
+                    Console.WriteLine("Niepoprawne ID użytkownika.");
+                    return;
+                }
+
+                _taskController.RemoveWorkerFromTask(taskId, userId);
             }
             catch (Exception ex)
             {

@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class TeamView
     {
         private readonly TeamController _teamController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public TeamView(TeamController teamController)
+        public TeamView(TeamController teamController, RBACService rBACService, User currentUser)
         {
             _teamController = teamController;
+            _currentUser = currentUser;
+            _rbacService = rBACService;
         }
 
         public void ShowView()
@@ -37,18 +44,24 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        CreateTeam();
+                        if (HasPermission(Permission.CreateTeam)) CreateTeam();
                         break;
                     case 2:
-                        AddMemberToTeam();
+                        if (HasPermission(Permission.UpdateTeam)) UpdateTeam();
                         break;
                     case 3:
-                        RemoveMemberFromTeam();
+                        if (HasPermission(Permission.DeleteTeam)) DeleteTeam();
                         break;
                     case 4:
-                        DisplayTeamMembers();
+                        if (HasPermission(Permission.AddMember)) AddMemberToTeam();
                         break;
                     case 5:
+                        if (HasPermission(Permission.RemoveMember)) RemoveMemberFromTeam();
+                        break;
+                    case 6:
+                        if (HasPermission(Permission.ViewTeam)) DisplayTeamMembers();
+                        break;
+                    case 7:
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:
@@ -57,6 +70,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void CreateTeam()
@@ -168,6 +192,68 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _teamController.DisplayUsersInTeam(teamId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            finally
+            {
+                ReturnToMenu();
+            }
+        }
+
+        private void DeleteTeam()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- Usuń zespół ---");
+
+                Console.Write("Podaj ID zespołu: ");
+                if (!int.TryParse(Console.ReadLine(), out var teamId))
+                {
+                    Console.WriteLine("Niepoprawne ID.");
+                    return;
+                }
+
+                _teamController.DeleteTeam(teamId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            finally
+            {
+                ReturnToMenu();
+            }
+        }
+
+        private void UpdateTeam()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- Zaktualizuj zespół ---");
+
+                Console.Write("Podaj ID zespołu: ");
+                if (!int.TryParse(Console.ReadLine(), out var taskId))
+                {
+                    Console.WriteLine("Niepoprawne ID.");
+                    return;
+                }
+
+                Console.Write("Podaj nową nazwę zespołu: ");
+                var name = Console.ReadLine();
+
+                Console.Write("Podaj ID nowego managera zespołu: ");
+                if (!int.TryParse(Console.ReadLine(), out var managerId))
+                {
+                    Console.WriteLine("Niepoprawne ID.");
+                    return;
+                }
+
+                _teamController.UpdateTeam(taskId, name, managerId);
             }
             catch (Exception ex)
             {

@@ -1,15 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class ProjectView
     {
         private readonly ProjectController _projectController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public ProjectView(ProjectController projectController)
+        public ProjectView(ProjectController projectController, RBACService rbacService, User currentUser)
         {
             _projectController = projectController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView()
@@ -37,16 +44,16 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        DisplayAllProjects();
+                        if (HasPermission(Permission.ViewProjects)) DisplayAllProjects();
                         break;
                     case 2:
-                        CreateProject();
+                        if (HasPermission(Permission.CreateProject)) CreateProject();
                         break;
                     case 3:
-                        UpdateProject();
+                        if (HasPermission(Permission.UpdateProject)) UpdateProject();
                         break;
                     case 4:
-                        DeleteProject();
+                        if (HasPermission(Permission.DeleteProject)) DeleteProject();
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
@@ -57,6 +64,17 @@ namespace ConstructionManagementApp.App.Views
                         break;
                 }
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayAllProjects()

@@ -42,7 +42,7 @@ namespace ConstructionManagementApp.App
             MessageController messageController = new MessageController(messageRepository);
             ProgressReportController progressReportController = new ProgressReportController(progressReportRepository);
             ProjectController projectController = new ProjectController(projectRepository);
-            TaskController taskController = new TaskController(taskRepository);
+            TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository);
             TeamController teamController = new TeamController(teamRepository, teamMembersRepository);
             UserController userController = new UserController(userRepository);
 
@@ -53,7 +53,8 @@ namespace ConstructionManagementApp.App
             //initialize views
             AuthenticationService authenticationService = new AuthenticationService(userRepository);
 
-            while (true)
+            string choice;
+            do
             {
                 Console.Clear();
                 Console.WriteLine("===Panel logowania===");
@@ -61,43 +62,50 @@ namespace ConstructionManagementApp.App
                 Console.WriteLine("2. Wyjdź: \n");
 
                 Console.Write("Twój wybór: ");
-
-                string choice = Console.ReadLine();
-                bool loggedOut = true;
-                while (loggedOut)
+                choice = Console.ReadLine();
+                switch (choice)
                 {
-                    switch (choice)
-                    {
-                        case "1":
-                            Console.Write("Podaj email: ");
-                            string email = Console.ReadLine();
-                            Console.Write("Podaj hasło: ");
-                            string password = Console.ReadLine();
-                            if (!authenticationService.Login(email, password))
-                            {
-                                Console.WriteLine("Nie udało się zalogować.");
-                                return;
-                            }
-                            loggedOut = false;
-                            break;
-                        case "2":
-                            Environment.Exit(0);
-                            return;
-                        default:
-                            Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
-                            Console.ReadKey();
-                            continue;
-                    }
+                    case "1":
+                        Console.Write("Podaj email: ");
+                        string email = Console.ReadLine();
+                        Console.Write("Podaj hasło: ");
+                        string password = Console.ReadLine();
+                        if (!authenticationService.Login(email, password))
+                        {
+                            Console.WriteLine("Nie udało się zalogować.");
+                        }
+                        break;
+                    case "2":
+                        Environment.Exit(0);
+                        return;
+                    default:
+                        Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
+                        Console.ReadKey();
+                        break;
                 }
-                Console.WriteLine("Naciśnij dowolny przycisk aby przejść dalej");
-                Console.ReadKey();
-                RBACService rbac = new RBACService();
-                UserView userView = new UserView(userController, rbac, authenticationService.CurrentSession.User);
+            } while (authenticationService.CurrentSession == null);
 
-                MainMenu mainMenu = new MainMenu(authenticationService.CurrentSession, userView);
-                mainMenu.Show();
 
-            }
+
+            Console.WriteLine("Naciśnij dowolny przycisk aby przejść dalej");
+            Console.ReadKey();
+            RBACService rbac = new RBACService();
+            UserView userView = new UserView(userController, rbac, authenticationService.CurrentSession.User);
+            BudgetView budgetView = new BudgetView(budgetController, rbac, authenticationService.CurrentSession.User);
+            EquipmentView equipmentView = new EquipmentView(equipmentController, rbac, authenticationService.CurrentSession.User);
+            IssueView issueView = new IssueView(issueController, rbac, authenticationService.CurrentSession.User);
+            LogView logView = new LogView(logController, rbac, authenticationService.CurrentSession.User);
+            MaterialView materialView = new MaterialView(materialController, rbac, authenticationService.CurrentSession.User);
+            MessageView messageView = new MessageView(messageController, rbac, authenticationService.CurrentSession.User);
+            ProgressReportView progressReportView = new ProgressReportView(progressReportController, rbac, authenticationService.CurrentSession.User);
+            ProjectView projectView = new ProjectView(projectController, rbac, authenticationService.CurrentSession.User);
+            TaskView taskView = new TaskView(taskController, rbac, authenticationService.CurrentSession.User);
+            TeamView teamView = new TeamView(teamController, rbac, authenticationService.CurrentSession.User);
+
+            MainMenu mainMenu = new MainMenu(authenticationService, userView, budgetView, equipmentView, issueView, logView, materialView, messageView, progressReportView, projectView, taskView, teamView);
+            mainMenu.Show();
+
+
 
 
         }

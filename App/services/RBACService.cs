@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Models;
 
@@ -41,7 +42,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateLog, Permission.ViewLogs,
 
                         // Powiadomienia
-                        Permission.CreateNotification, Permission.SendNotification, Permission.ViewNotifications,
+                        Permission.SendMessage, Permission.ViewMessages,
 
                         // Zgłoszenia problemów
                         Permission.CreateIssue, Permission.UpdateIssue, Permission.DeleteIssue, Permission.ViewIssues,
@@ -50,7 +51,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateProject, Permission.UpdateProject, Permission.DeleteProject, Permission.ViewProjects,
 
                         // Zespoły
-                        Permission.CreateTeam, Permission.UpdateTeam, Permission.DeleteTeam, Permission.ViewTeams
+                        Permission.CreateTeam, Permission.UpdateTeam, Permission.DeleteTeam, Permission.ViewTeam
                     }
                 },
                 {
@@ -75,7 +76,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.ViewBudget,
 
                         // Powiadomienia
-                        Permission.CreateNotification, Permission.SendNotification, Permission.ViewNotifications,
+                        Permission.SendMessage, Permission.ViewMessages,
 
                         // Zgłoszenia problemów
                         Permission.CreateIssue, Permission.UpdateIssue, Permission.ViewIssues,
@@ -84,7 +85,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateProject, Permission.UpdateProject, Permission.ViewProjects,
 
                         // Zespoły
-                        Permission.CreateTeam, Permission.UpdateTeam, Permission.ViewTeams
+                        Permission.CreateTeam, Permission.UpdateTeam, Permission.ViewTeam
                     }
                 },
                 {
@@ -103,7 +104,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateProgressReport, Permission.ViewProgressReports,
 
                         // Powiadomienia
-                        Permission.ViewNotifications,
+                        Permission.ViewMessages, Permission.SendMessage,
 
                         // Zgłoszenia problemów
                         Permission.CreateIssue, Permission.ViewIssues,
@@ -119,7 +120,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.ViewProgressReports,
 
                         // Powiadomienia
-                        Permission.ViewNotifications,
+                        Permission.ViewMessages, Permission.SendMessage,
 
                         // Projekty
                         Permission.ViewProjects
@@ -131,13 +132,12 @@ namespace ConstructionManagementApp.App.Services
         // Sprawdza, czy użytkownik ma określone uprawnienie
         public bool HasPermission(User user, Permission permission)
         {
-            if (!_rolePermissions.ContainsKey(user.Role))
+            Role role = user.Role;
+            if (_rolePermissions.ContainsKey(role) && _rolePermissions[role].Contains(permission))
             {
-                Console.WriteLine($"Rola {user.Role} nie ma zdefiniowanych uprawnień.");
-                return false;
+                return true;
             }
-
-            return _rolePermissions[user.Role].Contains(permission);
+            return false;
         }
 
         // Wyświetla wszystkie uprawnienia dla danej roli użytkownika

@@ -1,16 +1,22 @@
 using System;
 using ConstructionManagementApp.App.Controllers;
+using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
 {
     internal class MessageView
     {
         private readonly MessageController _messageController;
+        private readonly RBACService _rbacService;
+        private readonly User _currentUser;
 
-        public MessageView(MessageController messageController)
+        public MessageView(MessageController messageController, RBACService rbacService, User currentUser)
         {
             _messageController = messageController;
+            _rbacService = rbacService;
+            _currentUser = currentUser;
         }
 
         public void ShowView(User currentUser)
@@ -20,7 +26,7 @@ namespace ConstructionManagementApp.App.Views
             while (isRunning)
             {
                 Console.Clear();
-                Console.WriteLine($"Zalogowano jako: {currentUser.Username}");
+                Console.WriteLine($"--- Wiadomości ---");
                 Console.WriteLine("\nWybierz opcję:");
                 Console.WriteLine("1. Wyświetl wiadomości");
                 Console.WriteLine("2. Wyślij wiadomość po nazwie użytkownika odbiorcy");
@@ -39,10 +45,10 @@ namespace ConstructionManagementApp.App.Views
                     switch (choice)
                     {
                         case 1:
-                            DisplayMessages(currentUser.Id);
+                            if (HasPermission(Permission.SendMessage)) DisplayMessages(currentUser.Id);
                             break;
                         case 2:
-                            SendMessageByUsername(currentUser.Id);
+                            if (HasPermission(Permission.ViewMessages)) SendMessageByUsername(currentUser.Id);
                             break;
                         case 3:
                             isRunning = false; // Powrót do menu głównego
@@ -61,6 +67,17 @@ namespace ConstructionManagementApp.App.Views
                 Console.WriteLine("\nNaciśnij dowolny klawisz, aby kontynuować.");
                 Console.ReadKey();
             }
+        }
+
+        private bool HasPermission(Permission permission)
+        {
+            if (!_rbacService.HasPermission(_currentUser, permission))
+            {
+                Console.WriteLine("Brak uprawnień do wykonania tej operacji.");
+                Console.ReadKey();
+                return false;
+            }
+            return true;
         }
 
         private void DisplayMessages(int userId)

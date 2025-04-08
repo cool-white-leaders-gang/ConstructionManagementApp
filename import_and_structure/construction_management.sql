@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 07, 2025 at 08:44 PM
+-- Generation Time: Apr 08, 2025 at 09:42 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -152,7 +152,8 @@ CREATE TABLE `tasks` (
   `Title` varchar(255) NOT NULL,
   `Description` text DEFAULT NULL,
   `Priority` enum('Low','Medium','High') NOT NULL,
-  `Progress` enum('New','InProgress','Completed') NOT NULL
+  `Progress` enum('New','InProgress','Completed') NOT NULL,
+  `projectId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -191,6 +192,13 @@ CREATE TABLE `users` (
   `passwordHash` char(64) NOT NULL,
   `role` enum('Admin','Manager','Worker','') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `email`, `passwordHash`, `role`) VALUES
+(9, 'Admin', 'admin@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Admin');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -266,7 +274,8 @@ ALTER TABLE `taskassignments`
 -- Indeksy dla tabeli `tasks`
 --
 ALTER TABLE `tasks`
-  ADD PRIMARY KEY (`Id`);
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `fk_tasks_project` (`projectId`);
 
 --
 -- Indeksy dla tabeli `teammembers`
@@ -356,7 +365,7 @@ ALTER TABLE `teams`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -409,6 +418,12 @@ ALTER TABLE `reports`
 ALTER TABLE `taskassignments`
   ADD CONSTRAINT `taskassignments_ibfk_1` FOREIGN KEY (`TaskId`) REFERENCES `tasks` (`Id`) ON DELETE CASCADE,
   ADD CONSTRAINT `taskassignments_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tasks`
+--
+ALTER TABLE `tasks`
+  ADD CONSTRAINT `fk_tasks_project` FOREIGN KEY (`projectId`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `teammembers`
