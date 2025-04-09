@@ -51,7 +51,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateProject, Permission.UpdateProject, Permission.DeleteProject, Permission.ViewProjects,
 
                         // Zespoły
-                        Permission.CreateTeam, Permission.UpdateTeam, Permission.DeleteTeam, Permission.ViewTeam
+                        Permission.CreateTeam, Permission.UpdateTeam, Permission.DeleteTeam, Permission.ViewTeam, Permission.AddMember, Permission.RemoveMember
                     }
                 },
                 {
@@ -85,7 +85,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateProject, Permission.UpdateProject, Permission.ViewProjects,
 
                         // Zespoły
-                        Permission.CreateTeam, Permission.UpdateTeam, Permission.ViewTeam
+                        Permission.CreateTeam, Permission.UpdateTeam, Permission.ViewTeam, Permission.AddMember, Permission.RemoveMember
                     }
                 },
                 {
