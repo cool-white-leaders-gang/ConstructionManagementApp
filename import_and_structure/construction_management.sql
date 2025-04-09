@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 08, 2025 at 09:42 PM
+-- Generation Time: Apr 09, 2025 at 07:30 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -32,6 +32,14 @@ CREATE TABLE `budgets` (
   `totalAmount` decimal(10,2) NOT NULL,
   `spentAmount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `budgets`
+--
+
+INSERT INTO `budgets` (`id`, `totalAmount`, `spentAmount`) VALUES
+(1, 20000.00, 0.00),
+(2, 1000000.00, 200000.00);
 
 -- --------------------------------------------------------
 
@@ -167,6 +175,13 @@ CREATE TABLE `teammembers` (
   `UserId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `teammembers`
+--
+
+INSERT INTO `teammembers` (`TeamId`, `UserId`) VALUES
+(2, 3);
+
 -- --------------------------------------------------------
 
 --
@@ -179,6 +194,14 @@ CREATE TABLE `teams` (
   `ManagerId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `teams`
+--
+
+INSERT INTO `teams` (`Id`, `Name`, `ManagerId`) VALUES
+(2, 'nie', 2),
+(3, 'sigmy', 2);
+
 -- --------------------------------------------------------
 
 --
@@ -190,7 +213,7 @@ CREATE TABLE `users` (
   `username` varchar(30) NOT NULL,
   `email` varchar(80) NOT NULL,
   `passwordHash` char(64) NOT NULL,
-  `role` enum('Admin','Manager','Worker','') NOT NULL
+  `role` enum('Admin','Manager','Worker','Client') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -198,7 +221,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `passwordHash`, `role`) VALUES
-(1, 'Admin', 'admin@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Admin');
+(1, 'Admin', 'admin@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Admin'),
+(2, 'Manager', 'manager@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Manager'),
+(3, 'Majster', 'majster@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Worker'),
+(4, 'Klient', 'klient@email.com', '4263DyM5AgU1r5/pe1+tD0W8u/ZKgTVt/oMuDmzhuqI=', 'Client');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -305,7 +331,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `budgets`
 --
 ALTER TABLE `budgets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `equipment`
@@ -359,13 +385,13 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Constraints for dumped tables
