@@ -74,7 +74,7 @@ namespace ConstructionManagementApp.App.Models
 
         public override string ToString()
         {
-            return $"User: {Username}, Email: {Email}, Role: {Role}";
+            return $"\tUżytkownik: {Username}, Email: {Email}, Rola: {Role}";
         }
     }
 }
