@@ -198,7 +198,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `passwordHash`, `role`) VALUES
-(9, 'Admin', 'admin@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Admin');
+(1, 'Admin', 'admin@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Admin');
 
 --
 -- Indeksy dla zrzutów tabel
