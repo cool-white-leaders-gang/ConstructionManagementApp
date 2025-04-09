@@ -9,12 +9,14 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly TeamRepository _teamRepository;
         private readonly TeamMembersRepository _teamMembersRepository;
+        private readonly UserController _userController;
 
         // Konstruktor kontrolera
-        public TeamController(TeamRepository teamRepository, TeamMembersRepository teamMembersRepository)
+        public TeamController(TeamRepository teamRepository, TeamMembersRepository teamMembersRepository, UserController userController)
         {
             _teamRepository = teamRepository;
             _teamMembersRepository = teamMembersRepository;
+            _userController = userController;
         }
 
         // Dodaj nowy zespół
@@ -22,6 +24,12 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                User manager = _userController.GetUserById(managerId);      //jeżeli podane id użytkownika jest złe to wyrzuci wyjątek
+                if (manager.Role != Enums.Role.Manager)
+                {
+                    throw new InvalidOperationException("Użytkownik o podanym ma inną rolę w projekcie");
+                }
+
                 var team = new Team(name, managerId);
                 _teamRepository.CreateTeam(team);
                 Console.WriteLine("Zespół został pomyślnie utworzony.");
@@ -161,6 +169,37 @@ namespace ConstructionManagementApp.App.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Błąd podczas pobierania użytkowników w zespole: {ex.Message}");
+            }
+        }
+
+        public Team GetTeamById(int teamId)
+        {
+            try
+            {
+                var team = _teamRepository.GetTeamById(teamId);
+                if (team == null)
+                    throw new KeyNotFoundException($"Zespół o Id {teamId} nie został znaleziony.");
+
+
+                return team;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd podczas pobierania zespołu: {ex.Message}");
+                throw;
+            }
+        }
+
+        public List<Team> GetAllTeams()
+        {
+            try
+            {
+                return _teamRepository.GetAllTeams();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd podczas pobierania zespołów: {ex.Message}");
+                throw;
             }
         }
     }

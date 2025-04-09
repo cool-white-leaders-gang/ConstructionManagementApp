@@ -84,6 +84,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
+
         }
 
         public void UpdateUser(int userId, string username, string email, string passwordHash, Role role)
