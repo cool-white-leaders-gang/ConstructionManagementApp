@@ -2,6 +2,7 @@ using System;
 using ConstructionManagementApp.App.Controllers;
 using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Views
@@ -11,12 +12,17 @@ namespace ConstructionManagementApp.App.Views
         private readonly TeamController _teamController;
         private readonly RBACService _rbacService;
         private readonly User _currentUser;
+        private readonly UserController _userController;
+        private readonly TeamMembersRepository _teamMembersRepository;
 
-        public TeamView(TeamController teamController, RBACService rBACService, User currentUser)
+        public TeamView(TeamController teamController, RBACService rBACService, User currentUser , UserController userController, TeamMembersRepository teamMembersRepository)
         {
             _teamController = teamController;
             _currentUser = currentUser;
             _rbacService = rBACService;
+            _userController = userController;
+            _teamMembersRepository = teamMembersRepository;
+
         }
 
         public void ShowView()
@@ -28,10 +34,13 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Zarządzanie zespołami ---");
                 Console.WriteLine("1. Utwórz nowy zespół");
-                Console.WriteLine("2. Dodaj członka do zespołu");
-                Console.WriteLine("3. Usuń członka z zespołu");
-                Console.WriteLine("4. Wyświetl członków zespołu");
-                Console.WriteLine("5. Powrót do menu głównego");
+                Console.WriteLine("2. Edytuj zespół");
+                Console.WriteLine("3. Usuń zespół");
+                Console.WriteLine("4. Dodaj nowetgo członka zaspołu");
+                Console.WriteLine("5. Usuń członka z zespołu");
+                Console.WriteLine("6. Wyświetl członków zespołu");
+                Console.WriteLine("7. Wyświetl wszystkie zespoły");
+                Console.WriteLine("8. Powrót do menu głównego");
 
                 Console.Write("\nTwój wybór: ");
                 if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -62,6 +71,9 @@ namespace ConstructionManagementApp.App.Views
                         if (HasPermission(Permission.ViewTeam)) DisplayTeamMembers();
                         break;
                     case 7:
+                        if(HasPermission(Permission.ViewTeam)) DisplayAllTeams();
+                        break;
+                    case 8:
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:
@@ -69,6 +81,34 @@ namespace ConstructionManagementApp.App.Views
                         Console.ReadKey();
                         break;
                 }
+            }
+        }
+
+        private void DisplayAllTeams()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- Wszystkie zespoły ---");
+                Console.WriteLine();
+
+                
+                List<Team> teams = _teamController.GetAllTeams();
+                foreach (var team in teams)
+                {
+                    Console.WriteLine($"Nazwa: {team.Name}, Manager: {team.ManagerId}");
+                    _teamController.DisplayUsersInTeam(team.Id);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            finally
+            {
+                ReturnToMenu();
             }
         }
 
@@ -115,6 +155,7 @@ namespace ConstructionManagementApp.App.Views
         {
             try
             {
+
                 Console.Clear();
                 Console.WriteLine("--- Dodaj członka do zespołu ---");
 
@@ -130,6 +171,16 @@ namespace ConstructionManagementApp.App.Views
                 {
                     Console.WriteLine("Niepoprawne ID użytkownika.");
                     return;
+                }
+                User user = _userController.GetUserById(userId);
+                if (user.Role != Role.Worker)
+                {
+                    throw new InvalidOperationException($"Nie można dodać użytkownika o roli {user.Role}");
+                }
+                List<User> teamMembers = _teamMembersRepository.GetMembersOfTeam(teamId);
+                if (teamMembers.Any(member => member.Id == userId))
+                {
+                    throw new InvalidOperationException("Użytkownik już jest dodany do zespołu");
                 }
 
                 _teamController.AddUserToTeam(teamId, userId);
@@ -190,6 +241,8 @@ namespace ConstructionManagementApp.App.Views
                     Console.WriteLine("Niepoprawne ID zespołu.");
                     return;
                 }
+                var team = _teamController.GetTeamById(teamId);
+
 
                 _teamController.DisplayUsersInTeam(teamId);
             }
