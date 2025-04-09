@@ -73,7 +73,9 @@ namespace ConstructionManagementApp.App.Database
                           v => (TaskProgress)Enum.Parse(typeof(TaskProgress), v)
                       )
                       .IsRequired();
-                entity.Property(e => e.ProjectId).IsRequired();
+                entity.HasOne<Project>()
+                        .WithMany()
+                        .HasForeignKey(e => e.ProjectId);                //klucz obcy reprezentujący id projektu
             });
 
             modelBuilder.Entity<TaskAssignment>(entity =>
