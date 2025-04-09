@@ -34,6 +34,7 @@ namespace ConstructionManagementApp.App
             UserRepository userRepository = new UserRepository(Context);
 
             // Initialize controllers
+            UserController userController = new UserController(userRepository);
             BudgetController budgetController = new BudgetController(budgetRepository);
             EquipmentController equipmentController = new EquipmentController(equipmentRepository);
             IssueController issueController = new IssueController(issueRepository);
@@ -43,12 +44,17 @@ namespace ConstructionManagementApp.App
             ProgressReportController progressReportController = new ProgressReportController(progressReportRepository);
             ProjectController projectController = new ProjectController(projectRepository);
             TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository);
-            TeamController teamController = new TeamController(teamRepository, teamMembersRepository);
-            UserController userController = new UserController(userRepository);
+            TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController);
 
             //Admin USer
 
             //userController.AddUser("Admin", "admin@construction.com", "123", Role.Admin);
+            //userController.AddUser("Manager", "manager@construction.com", "123", Role.Manager);
+            //userController.AddUser("Majster", "majster@construction.com", "123", Role.Worker);
+            userController.AddUser("Klient", "klihhhhhhhent@email.com", "123", Role.Client);
+
+            userController.AddUser("Klient", "klihhhhhhhent@email.com", "123", Role.Worker);
+
 
             //initialize views
             AuthenticationService authenticationService = new AuthenticationService(userRepository);
@@ -100,7 +106,7 @@ namespace ConstructionManagementApp.App
             ProgressReportView progressReportView = new ProgressReportView(progressReportController, rbac, authenticationService.CurrentSession.User);
             ProjectView projectView = new ProjectView(projectController, rbac, authenticationService.CurrentSession.User);
             TaskView taskView = new TaskView(taskController, rbac, authenticationService.CurrentSession.User);
-            TeamView teamView = new TeamView(teamController, rbac, authenticationService.CurrentSession.User);
+            TeamView teamView = new TeamView(teamController, rbac, authenticationService.CurrentSession.User, userController, teamMembersRepository);
 
             MainMenu mainMenu = new MainMenu(authenticationService, userView, budgetView, equipmentView, issueView, logView, materialView, messageView, progressReportView, projectView, taskView, teamView);
             mainMenu.Show();
