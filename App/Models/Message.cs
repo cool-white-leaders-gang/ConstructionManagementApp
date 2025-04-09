@@ -49,15 +49,12 @@ namespace ConstructionManagementApp.App.Models
 
         public DateTime SentAt { get; set; } // Data wysłania wiadomości
 
-        public bool IsRead { get; set; } // Flaga oznaczająca, czy wiadomość została przeczytana
-
         public Message(int senderId, int receiverId, string content)
         {
             SenderId = senderId;
             ReceiverId = receiverId;
             Content = content;
             SentAt = DateTime.Now;
-            IsRead = false;
         }
     }
 }
