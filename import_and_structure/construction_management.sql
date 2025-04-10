@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2025 at 07:30 PM
+-- Generation Time: Apr 10, 2025 at 10:10 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -54,6 +54,14 @@ CREATE TABLE `equipment` (
   `projectId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `equipment`
+--
+
+INSERT INTO `equipment` (`id`, `name`, `status`, `projectId`) VALUES
+(5, 'łopata', 'Available', 1),
+(6, 'łopata', 'Available', 2);
+
 -- --------------------------------------------------------
 
 --
@@ -62,10 +70,14 @@ CREATE TABLE `equipment` (
 
 CREATE TABLE `issues` (
   `id` int(11) NOT NULL,
-  `description` text NOT NULL,
-  `reportedAt` datetime NOT NULL,
-  `reportedByUserId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL
+  `content` text NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `createdByUserId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `Priority` enum('Low','Medium','High') NOT NULL,
+  `status` enum('Open','InProgress','Resolved') NOT NULL,
+  `resolvedAT` datetime DEFAULT NULL,
+  `title` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -79,6 +91,13 @@ CREATE TABLE `logs` (
   `message` text NOT NULL,
   `timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `logs`
+--
+
+INSERT INTO `logs` (`id`, `message`, `timestamp`) VALUES
+(1, '123', '2025-04-09 21:40:09');
 
 -- --------------------------------------------------------
 
@@ -94,6 +113,13 @@ CREATE TABLE `materials` (
   `projectId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `materials`
+--
+
+INSERT INTO `materials` (`id`, `name`, `quantity`, `unit`, `projectId`) VALUES
+(3, 'cegla', 12, 'g', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -107,6 +133,38 @@ CREATE TABLE `messages` (
   `Content` text NOT NULL,
   `SentAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`Id`, `SenderId`, `ReceiverId`, `Content`, `SentAt`) VALUES
+(1, 1, 2, '123', '2025-04-09 00:00:00'),
+(2, 1, 3, '123', '2025-04-09 21:57:29'),
+(3, 1, 3, 'do roboty', '2025-04-09 22:21:48');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `progressreports`
+--
+
+CREATE TABLE `progressreports` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `createdByUserId` int(11) DEFAULT NULL,
+  `projectId` int(11) DEFAULT NULL,
+  `CompletionPercentage` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `progressreports`
+--
+
+INSERT INTO `progressreports` (`id`, `title`, `content`, `createdAt`, `createdByUserId`, `projectId`, `CompletionPercentage`) VALUES
+(4, 'wylano azbest', NULL, '2025-04-10 20:37:59', 1, 1, 10);
 
 -- --------------------------------------------------------
 
@@ -123,20 +181,13 @@ CREATE TABLE `projects` (
   `clientId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- --------------------------------------------------------
-
 --
--- Struktura tabeli dla tabeli `reports`
+-- Dumping data for table `projects`
 --
 
-CREATE TABLE `reports` (
-  `id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `content` text DEFAULT NULL,
-  `createdAt` datetime NOT NULL,
-  `createdByUserId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+INSERT INTO `projects` (`id`, `name`, `description`, `teamId`, `budgetId`, `clientId`) VALUES
+(1, 'budowa domu', 'czeba zbudowac dom', 3, 1, 4),
+(2, 'dom', 'czeba zbudowac', 3, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -175,13 +226,6 @@ CREATE TABLE `teammembers` (
   `UserId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `teammembers`
---
-
-INSERT INTO `teammembers` (`TeamId`, `UserId`) VALUES
-(2, 3);
-
 -- --------------------------------------------------------
 
 --
@@ -199,8 +243,10 @@ CREATE TABLE `teams` (
 --
 
 INSERT INTO `teams` (`Id`, `Name`, `ManagerId`) VALUES
-(2, 'nie', 2),
-(3, 'sigmy', 2);
+(3, 'sigmy', 2),
+(4, 'smegma team', 2),
+(5, 'smegma', 2),
+(6, '21', 2);
 
 -- --------------------------------------------------------
 
@@ -248,7 +294,7 @@ ALTER TABLE `equipment`
 --
 ALTER TABLE `issues`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `reportedByUserId` (`reportedByUserId`),
+  ADD KEY `reportedByUserId` (`createdByUserId`),
   ADD KEY `projectId` (`projectId`);
 
 --
@@ -273,6 +319,14 @@ ALTER TABLE `messages`
   ADD KEY `ReceiverId` (`ReceiverId`);
 
 --
+-- Indeksy dla tabeli `progressreports`
+--
+ALTER TABLE `progressreports`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `createdByUserId` (`createdByUserId`),
+  ADD KEY `projectId` (`projectId`);
+
+--
 -- Indeksy dla tabeli `projects`
 --
 ALTER TABLE `projects`
@@ -280,14 +334,6 @@ ALTER TABLE `projects`
   ADD KEY `teamId` (`teamId`),
   ADD KEY `budgetId` (`budgetId`),
   ADD KEY `clientId` (`clientId`);
-
---
--- Indeksy dla tabeli `reports`
---
-ALTER TABLE `reports`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `createdByUserId` (`createdByUserId`),
-  ADD KEY `projectId` (`projectId`);
 
 --
 -- Indeksy dla tabeli `taskassignments`
@@ -337,7 +383,7 @@ ALTER TABLE `budgets`
 -- AUTO_INCREMENT for table `equipment`
 --
 ALTER TABLE `equipment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `issues`
@@ -349,43 +395,43 @@ ALTER TABLE `issues`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `progressreports`
+--
+ALTER TABLE `progressreports`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `reports`
---
-ALTER TABLE `reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -407,7 +453,7 @@ ALTER TABLE `equipment`
 -- Constraints for table `issues`
 --
 ALTER TABLE `issues`
-  ADD CONSTRAINT `issues_ibfk_1` FOREIGN KEY (`reportedByUserId`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `issues_ibfk_1` FOREIGN KEY (`createdByUserId`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `issues_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
 
 --
@@ -424,19 +470,19 @@ ALTER TABLE `messages`
   ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`ReceiverId`) REFERENCES `users` (`id`);
 
 --
+-- Constraints for table `progressreports`
+--
+ALTER TABLE `progressreports`
+  ADD CONSTRAINT `progressreports_ibfk_1` FOREIGN KEY (`createdByUserId`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `progressreports_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `projects`
 --
 ALTER TABLE `projects`
   ADD CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`teamId`) REFERENCES `teams` (`Id`),
   ADD CONSTRAINT `projects_ibfk_2` FOREIGN KEY (`budgetId`) REFERENCES `budgets` (`id`),
   ADD CONSTRAINT `projects_ibfk_3` FOREIGN KEY (`clientId`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `reports`
---
-ALTER TABLE `reports`
-  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`createdByUserId`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`projectId`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `taskassignments`
