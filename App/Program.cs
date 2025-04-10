@@ -36,7 +36,7 @@ namespace ConstructionManagementApp.App
             // Initialize controllers
             UserController userController = new UserController(userRepository);
             BudgetController budgetController = new BudgetController(budgetRepository);
-            EquipmentController equipmentController = new EquipmentController(equipmentRepository);
+            EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository);
             IssueController issueController = new IssueController(issueRepository);
             LogController logController = new LogController(logRepository);
             MaterialController materialController = new MaterialController(materialRepository);

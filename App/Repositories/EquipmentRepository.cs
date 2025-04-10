@@ -38,11 +38,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteEquipmentById(int equipmentId)
+        public void DeleteEquipmentByName(string name)
         {
-            var equipment = GetEquipmentById(equipmentId);
+            var equipment = GetEquipmentByName(name);
             if (equipment == null)
-                throw new KeyNotFoundException("Nie znaleziono sprzętu o podanym Id.");
+                throw new KeyNotFoundException("Nie znaleziono sprzętu o podanej nazwie.");
 
             _context.Equipment.Remove(equipment);
             _context.SaveChanges();
@@ -51,6 +51,11 @@ namespace ConstructionManagementApp.App.Repositories
         public Equipment GetEquipmentById(int id)
         {
             return _context.Equipment.FirstOrDefault(e => e.Id == id);
+        }
+
+        public Equipment GetEquipmentByName(string name)
+        {
+            return _context.Equipment.FirstOrDefault(e => e.Name == name);
         }
 
         public List<Equipment> GetAllEquipments()

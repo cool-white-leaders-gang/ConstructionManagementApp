@@ -103,14 +103,10 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Nieprawidłowy status sprzętu.")
                 };
 
-                Console.Write("Podaj ID projektu: ");
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID projektu.");
-                    return;
-                }
+                Console.Write("Podaj nazwę projektu: ");
+                string projectName = Console.ReadLine();
 
-                _equipmentController.AddEquipment(name, status, projectId);
+                _equipmentController.AddEquipment(name, status, projectName);
             }
             catch (Exception ex)
             {
@@ -129,12 +125,8 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Zaktualizuj sprzęt ---");
 
-                Console.Write("Podaj ID sprzętu: ");
-                if (!int.TryParse(Console.ReadLine(), out var equipmentId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.Write("Podaj nazwę sprzętu do zaktualizowania: ");
+                string equipmentName = Console.ReadLine();
 
                 Console.Write("Podaj nową nazwę sprzętu: ");
                 var name = Console.ReadLine();
@@ -148,14 +140,10 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Nieprawidłowy status sprzętu.")
                 };
 
-                Console.Write("Podaj nowy ID projektu: ");
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID projektu.");
-                    return;
-                }
+                Console.Write("Podaj nową nazwę projektu: ");
+                string projectName = Console.ReadLine();
 
-                _equipmentController.UpdateEquipment(equipmentId, name, status, projectId);
+                _equipmentController.UpdateEquipment(equipmentName, name, status, projectName);
             }
             catch (Exception ex)
             {
@@ -174,14 +162,10 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Usuń sprzęt ---");
 
-                Console.Write("Podaj ID sprzętu: ");
-                if (!int.TryParse(Console.ReadLine(), out var equipmentId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.Write("Podaj nazwę sprzętu: ");
+                string equipmentName = Console.ReadLine();
 
-                _equipmentController.DeleteEquipment(equipmentId);
+                _equipmentController.DeleteEquipment(equipmentName);
             }
             catch (Exception ex)
             {
