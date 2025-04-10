@@ -19,7 +19,8 @@ namespace ConstructionManagementApp.App.Repositories
         {
             if (project == null)
                 throw new ArgumentNullException(nameof(project), "Projekt nie może być null.");
-
+            if (IsNameTaken(project.Name))
+                throw new ArgumentException("Nazwa projektu jest już zajęta");
             _context.Projects.Add(project);
             _context.SaveChanges();
         }
@@ -40,11 +41,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteProjectById(int projectId)
+        public void DeleteProjectByName(string name)
         {
-            var project = GetProjectById(projectId);
+            var project = GetProjectByName(name);
             if (project == null)
-                throw new KeyNotFoundException("Nie znaleziono projektu o podanym Id.");
+                throw new KeyNotFoundException("Nie znaleziono projektu o podanej nazwie.");
 
             _context.Projects.Remove(project);
             _context.SaveChanges();
@@ -55,9 +56,19 @@ namespace ConstructionManagementApp.App.Repositories
             return _context.Projects.FirstOrDefault(p => p.Id == id);
         }
 
+        public Project GetProjectByName(string name)
+        {
+            return _context.Projects.FirstOrDefault(p => p.Name == name);
+        }
+
         public List<Project> GetAllProjects()
         {
             return _context.Projects.ToList();
+        }
+
+        bool IsNameTaken(string name)
+        {
+            return _context.Projects.Any(p => p.Name == name);
         }
     }
 }

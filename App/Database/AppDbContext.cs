@@ -166,7 +166,6 @@ namespace ConstructionManagementApp.App.Database
                         v => (IssueStatus)Enum.Parse(typeof(IssueStatus), v)
                     )
                     .IsRequired();
-                entity.Property(e => e.ResolvedAt).IsRequired(false);
                 entity.HasOne<User>()
                     .WithMany()
                     .HasForeignKey(e => e.CreatedByUserId)

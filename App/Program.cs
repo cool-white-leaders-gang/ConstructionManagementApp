@@ -42,7 +42,7 @@ namespace ConstructionManagementApp.App
             MaterialController materialController = new MaterialController(materialRepository);
             MessageController messageController = new MessageController(messageRepository);
             ProgressReportController progressReportController = new ProgressReportController(progressReportRepository);
-            ProjectController projectController = new ProjectController(projectRepository);
+            ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository);
             TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository);
             TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController);
 
@@ -73,9 +73,9 @@ namespace ConstructionManagementApp.App
                 {
                     case "1":
                         Console.Write("Podaj email: ");
-                        string email = Console.ReadLine();
+                        string email = "admin@construction.com";//Console.ReadLine();
                         Console.Write("Podaj hasło: ");
-                        string password = Console.ReadLine();
+                        string password = "123";//Console.ReadLine();
                         if (!authenticationService.Login(email, password))
                         {
                             Console.WriteLine("Nie udało się zalogować.");

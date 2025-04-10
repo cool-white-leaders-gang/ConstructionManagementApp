@@ -52,6 +52,11 @@ namespace ConstructionManagementApp.App.Repositories
             return _context.Teams.FirstOrDefault(t => t.Id == id);
         }
 
+        public Team GetTeamByName(string name)
+        {
+            return _context.Teams.FirstOrDefault(t => t.Name == name);
+        }
+
         public List<Team> GetAllTeams()
         {
             return _context.Teams.ToList();

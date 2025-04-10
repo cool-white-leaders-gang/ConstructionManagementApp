@@ -97,26 +97,18 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj opis projektu: ");
                 var description = Console.ReadLine();
 
-                Console.Write("Podaj Id zespołu zajmującego się projektem: ");
-                if (!int.TryParse(Console.ReadLine(), out var teamId))
-                {
-                    Console.WriteLine("Niepoprawne ID zespołu.");
-                    return;
-                }
+                Console.Write("Podaj nazwę zespołu zajmującego się projektem: ");
+                var teamName = Console.ReadLine();
                 Console.Write("Podaj Id budżetu projektu: ");
                 if (!int.TryParse(Console.ReadLine(), out var budgetId))
                 {
                     Console.WriteLine("Niepoprawne ID budżetu.");
                     return;
                 }
-                Console.Write("Podaj Id klienta: ");
-                if (!int.TryParse(Console.ReadLine(), out var clientId))
-                {
-                    Console.WriteLine("Niepoprawne ID klienta.");
-                    return;
-                }
+                Console.Write("Podaj nazwę klienta: ");
+                var clientName = Console.ReadLine();
 
-                _projectController.CreateProject(name, description, teamId, budgetId, clientId);
+                _projectController.CreateProject(name, description, teamName, budgetId, clientName);
             }
             catch (Exception ex)
             {
@@ -135,12 +127,8 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Zaktualizuj projekt ---");
 
-                Console.Write("Podaj ID projektu: ");
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.Write("Podaj nazwę projektu do zaktualizowania: ");
+                var projectName = Console.ReadLine();
 
                 Console.Write("Podaj nową nazwę projektu: ");
                 var name = Console.ReadLine();
@@ -148,27 +136,19 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nowy opis projektu: ");
                 var description = Console.ReadLine();
 
-                Console.Write("Podaj Id zespołu zajmującego się projektem: ");
-                if (!int.TryParse(Console.ReadLine(), out var teamId))
-                {
-                    Console.WriteLine("Niepoprawne ID zespołu.");
-                    return;
-                }
+                Console.Write("Podaj nazwę zespołu zajmującego się projektem: ");
+                var teamName = Console.ReadLine();
                 Console.Write("Podaj Id budżetu projektu: ");
                 if (!int.TryParse(Console.ReadLine(), out var budgetId))
                 {
                     Console.WriteLine("Niepoprawne ID budżetu.");
                     return;
                 }
-                Console.Write("Podaj Id klienta: ");
-                if (!int.TryParse(Console.ReadLine(), out var clientId))
-                {
-                    Console.WriteLine("Niepoprawne ID klienta.");
-                    return;
-                }
+                Console.Write("Podaj nazwę klienta: ");
+                var clientName = Console.ReadLine();
 
 
-                _projectController.UpdateProject(projectId, name, description, teamId, budgetId, clientId);
+                _projectController.UpdateProject(projectName, name, description, teamName, budgetId, clientName);
             }
             catch (Exception ex)
             {
@@ -187,14 +167,10 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Usuń projekt ---");
 
-                Console.Write("Podaj ID projektu: ");
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.Write("Podaj nazwę projektu: ");
+                string projectName = Console.ReadLine();
 
-                _projectController.DeleteProject(projectId);
+                _projectController.DeleteProject(projectName);
             }
             catch (Exception ex)
             {
