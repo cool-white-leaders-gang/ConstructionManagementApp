@@ -20,7 +20,9 @@ namespace ConstructionManagementApp.App.Enums
         DeleteTask,         // Usuwanie zadania
         ViewTasks,          // Przeglądanie listy zadań
         AssignTask,         // Przypisywanie zadania do użytkownika
-        CompleteTask,       // Oznaczanie zadania jako ukończone
+        RemoveFromTask,
+        ViewTaskAssignment,
+        CompleteTask,
 
         // Materiały
         CreateMaterial,     // Dodawanie materiału
