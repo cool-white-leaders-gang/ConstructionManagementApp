@@ -16,34 +16,37 @@ namespace ConstructionManagementApp.App.Repositories
             _context = context;
         }
 
-        public void AssignWorkerToTask(int taskId, int userId)
+        public void AssignWorkerToTask(int taskId, string username)
         {
             var task = _context.Tasks.FirstOrDefault(t => t.Id == taskId);
             if (task == null)
                 throw new KeyNotFoundException($"Zadanie o Id {taskId} nie istnieje.");
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
             if (user == null)
-                throw new KeyNotFoundException($"Użytkownik o Id {userId} nie istnieje.");
+                throw new KeyNotFoundException($"Użytkownik o nazwie {username} nie istnieje.");
 
             // Sprawdzenie, czy użytkownik ma odpowiednią rolę
             if (user.Role != Role.Worker)
-                throw new InvalidOperationException($"Użytkownik o Id {userId} nie ma roli Worker i nie może być przypisany do zadania.");
+                throw new InvalidOperationException($"Użytkownik o nazwie {username} nie ma roli Worker i nie może być przypisany do zadania.");
 
             // Sprawdzenie, czy użytkownik już jest przypisany do zadania
-            if (_context.TaskAssignments.Any(ta => ta.TaskId == taskId && ta.UserId == userId))
-                throw new InvalidOperationException($"Użytkownik o Id {userId} jest już przypisany do zadania o Id {taskId}.");
+            if (_context.TaskAssignments.Any(ta => ta.TaskId == taskId && ta.UserId == user.Id))
+                throw new InvalidOperationException($"Użytkownik o nazwie  {username}  jest już przypisany do zadania o Id {taskId}");
 
-            var assignment = new TaskAssignment(taskId, userId);
+            var assignment = new TaskAssignment(taskId, user.Id);
             _context.TaskAssignments.Add(assignment);
             _context.SaveChanges();
         }
 
-        public void RemoveWorkerFromTask(int taskId, int userId)
+        public void RemoveWorkerFromTask(int taskId, string username)
         {
-            var assignment = _context.TaskAssignments.FirstOrDefault(ta => ta.TaskId == taskId && ta.UserId == userId);
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
+                throw new KeyNotFoundException($"Użytkownik o nazwie {username} nie istnieje.");
+            var assignment = _context.TaskAssignments.FirstOrDefault(ta => ta.TaskId == taskId && ta.UserId == user.Id);
             if (assignment == null)
-                throw new KeyNotFoundException($"Nie znaleziono przypisania użytkownika o Id {userId} do zadania o Id {taskId}.");
+                throw new KeyNotFoundException($"Nie znaleziono przypisania użytkownika o nazwie {username} do zadania o Id {taskId}.");
 
             _context.TaskAssignments.Remove(assignment);
             _context.SaveChanges();
