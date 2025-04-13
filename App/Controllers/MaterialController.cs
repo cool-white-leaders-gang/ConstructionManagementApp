@@ -18,9 +18,6 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                if (quantity <= 0)
-                    throw new ArgumentException("Ilość materiału musi być większa od zera.");
-
                 var material = new Material(name, quantity, unit, projectId);
                 _materialRepository.AddMaterial(material);
                 Console.WriteLine("Materiał został pomyślnie dodany.");
@@ -39,8 +36,6 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                if (quantity <= 0)
-                    throw new ArgumentException("Ilość materiału musi być większa od zera.");
 
                 var material = _materialRepository.GetMaterialById(materialId);
                 if (material == null)
@@ -88,7 +83,7 @@ namespace ConstructionManagementApp.App.Controllers
             try
             {
                 var materials = _materialRepository.GetAllMaterials();
-                if (materials.Count == 0)
+                if (materials.Count == 0 || materials == null)
                 {
                     Console.WriteLine("Brak materiałów w systemie.");
                     return;

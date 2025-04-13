@@ -27,8 +27,6 @@ namespace ConstructionManagementApp.App.Repositories
         public void UpdateMaterial(Material material)
         {
             var existingMaterial = GetMaterialById(material.Id);
-            if (existingMaterial == null)
-                throw new KeyNotFoundException("Nie znaleziono materiału o podanym Id.");
 
             existingMaterial.Name = material.Name;
             existingMaterial.Quantity = material.Quantity;
