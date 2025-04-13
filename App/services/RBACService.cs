@@ -24,7 +24,7 @@ namespace ConstructionManagementApp.App.Services
 
                         // Zadania
                         Permission.CreateTask, Permission.UpdateTask, Permission.DeleteTask, Permission.ViewTasks,
-                        Permission.AssignTask, Permission.CompleteTask,
+                        Permission.AssignTask, Permission.RemoveFromTask,Permission.ViewTaskAssignment,Permission.CompleteTask,
 
                         // Materiały
                         Permission.CreateMaterial, Permission.UpdateMaterial, Permission.DeleteMaterial, Permission.ViewMaterials,
