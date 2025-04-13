@@ -8,7 +8,6 @@ namespace ConstructionManagementApp.App.Models
         private string _content;
         private int _senderId;
         private int _receiverId;
-        private DateTime _sentAt;
 
         public int SenderId
         {
