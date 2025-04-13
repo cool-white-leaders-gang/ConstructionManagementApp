@@ -136,12 +136,8 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Zaktualizuj dane użytkownika ---");
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out int userId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.Write("Podaj nazwę użytkownika do zaktualizowania: ");
+                var userToUpdate = Console.ReadLine();
 
                 Console.Write("Podaj nową nazwę użytkownika: ");
                 var username = Console.ReadLine();
@@ -164,7 +160,7 @@ namespace ConstructionManagementApp.App.Views
                 };
 
                 var hashedPassword = PasswordHasher.HashPassword(password);
-                _userController.UpdateUser(userId, username, email, hashedPassword, role);
+                _userController.UpdateUser(userToUpdate, username, email, hashedPassword, role);
             }
             catch (Exception ex)
             {
@@ -183,14 +179,10 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Usuń użytkownika ---");
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out int userId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.Write("Podaj nazwę użytkownika: ");
+                string username = Console.ReadLine();
 
-                _userController.DeleteUser(userId);
+                _userController.DeleteUser(username);
             }
             catch (Exception ex)
             {

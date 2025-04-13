@@ -30,8 +30,6 @@ namespace ConstructionManagementApp.App.Repositories
         public void UpdateUser(User user)
         {
             var existingUser = GetUserById(user.Id);
-            if (existingUser == null)
-                throw new KeyNotFoundException("Nie znaleziono użytkownika o podanym Id.");
 
             if (existingUser.Email != user.Email && IsEmailTaken(user.Email))
                 throw new ArgumentException("Podany adres email jest już zajęty.");
@@ -43,11 +41,11 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteUserById(int userId)
+        public void DeleteUserByName(string username)
         {
-            var user = GetUserById(userId);
+            var user = GetUserByUsername(username);
             if (user == null)
-                throw new KeyNotFoundException("Nie znaleziono użytkownika o podanym Id.");
+                throw new KeyNotFoundException("Nie znaleziono użytkownika o podanej nazwie.");
 
             _context.Users.Remove(user);
             _context.SaveChanges();

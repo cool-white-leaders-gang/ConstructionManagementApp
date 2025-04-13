@@ -87,13 +87,13 @@ namespace ConstructionManagementApp.App.Controllers
 
         }
 
-        public void UpdateUser(int userId, string username, string email, string passwordHash, Role role)
+        public void UpdateUser(string userNameUpdate, string username, string email, string passwordHash, Role role)
         {
             try
             {
-                var user = _userRepository.GetUserById(userId);
+                var user = _userRepository.GetUserByUsername(userNameUpdate);
                 if (user == null)
-                    throw new KeyNotFoundException($"Nie znaleziono użytkownika o ID {userId}.");
+                    throw new KeyNotFoundException($"Nie znaleziono użytkownika o nazwie {userNameUpdate}.");
 
                 user.Username = username;
                 user.Email = email;
@@ -117,11 +117,11 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void DeleteUser(int userId)
+        public void DeleteUser(string username)
         {
             try
             {
-                _userRepository.DeleteUserById(userId);
+                _userRepository.GetUserByUsername(username);
                 Console.WriteLine("Użytkownik został pomyślnie usunięty.");
             }
             catch (KeyNotFoundException ex)
