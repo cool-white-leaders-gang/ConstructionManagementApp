@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using Task =  ConstructionManagementApp.App.Models.Task;
 using ConstructionManagementApp.App.Enums;
-using ConstructionManagementApp.App.Models;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -36,13 +35,13 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateTask(int taskId, string title, string description, TaskPriority priority, TaskProgress progress)
+        public void UpdateTask(int id, string title, string description, TaskPriority priority, TaskProgress progress)
         {
             try
             {
-                var task = _taskRepository.GetTaskById(taskId);
+                var task = _taskRepository.GetTaskById(id);
                 if (task == null)
-                    throw new KeyNotFoundException($"Nie znaleziono zadania o ID {taskId}.");
+                    throw new KeyNotFoundException($"Nie znaleziono zadania o ID {id}.");
 
                 task.Title = title;
                 task.Description = description;
@@ -66,11 +65,36 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void DeleteTask(int taskId)
+        public void CompleteTask(int id)
         {
             try
             {
-                _taskRepository.DeleteTaskById(taskId);
+                var task = _taskRepository.GetTaskById(id);
+                if (task == null)
+                    throw new KeyNotFoundException($"Nie znaleziono zadania o ID {id}.");
+                task.Progress = TaskProgress.Completed;
+                _taskRepository.UpdateTask(task);
+                Console.WriteLine("Zadania zostało pomyślnie ukończone");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
+            }
+        }
+
+        public void DeleteTask(int id)
+        {
+            try
+            {
+                _taskRepository.DeleteTaskById(id);
                 Console.WriteLine("Zadanie zostało pomyślnie usunięte.");
             }
             catch (KeyNotFoundException ex)
@@ -106,12 +130,12 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void AssignTask(int taskId, int userId)
+        public void AssignTask(int taskId, string username)
         {
             try
             {
-                _taskAssignmentRepository.AssignWorkerToTask(taskId, userId);
-                Console.WriteLine($"Użytkownik o Id {userId} został przypisany do zadania o Id {taskId}.");
+                _taskAssignmentRepository.AssignWorkerToTask(taskId, username);
+                Console.WriteLine($"Użytkownik o nazwie {username} został przypisany do zadania o ID {taskId}.");
             }
             catch (Exception ex)
             {
@@ -119,12 +143,12 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void RemoveWorkerFromTask(int taskId, int userId)
+        public void RemoveWorkerFromTask(int taskId, string username)
         {
             try
             {
-                _taskAssignmentRepository.RemoveWorkerFromTask(taskId, userId);
-                Console.WriteLine($"Użytkownik o Id {userId} został usunięty z zadania o Id {taskId}.");
+                _taskAssignmentRepository.RemoveWorkerFromTask(taskId, username);
+                Console.WriteLine($"Użytkownik o nazwie {username} został usunięty z zadania o Id {taskId}.");
             }
             catch (Exception ex)
             {

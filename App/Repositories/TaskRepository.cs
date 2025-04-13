@@ -27,8 +27,6 @@ namespace ConstructionManagementApp.App.Repositories
         public void UpdateTask(Task task)
         {
             var existingTask = GetTaskById(task.Id);
-            if (existingTask == null)
-                throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
 
             existingTask.Title = task.Title;
             existingTask.Description = task.Description;
@@ -39,9 +37,9 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
-        public void DeleteTaskById(int taskId)
+        public void DeleteTaskById(int id)
         {
-            var task = GetTaskById(taskId);
+            var task = GetTaskById(id);
             if (task == null)
                 throw new KeyNotFoundException("Nie znaleziono zadania o podanym Id.");
 
@@ -52,6 +50,11 @@ namespace ConstructionManagementApp.App.Repositories
         public Task GetTaskById(int id)
         {
             return _context.Tasks.FirstOrDefault(t => t.Id == id);
+        }
+
+        public Task GetTaskByTitle(string title)
+        {
+            return _context.Tasks.FirstOrDefault(t => t.Title == title);
         }
 
         public List<Task> GetAllTasks()

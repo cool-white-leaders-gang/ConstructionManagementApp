@@ -32,8 +32,10 @@ namespace ConstructionManagementApp.App.Views
                 Console.WriteLine("3. Zaktualizuj zadanie");
                 Console.WriteLine("4. Usuń zadanie");
                 Console.WriteLine("5. Przypisz zadanie");
-                Console.WriteLine("6. Wyświetl pracowników przypisanych do zadania o danym id");
-                Console.WriteLine("7. Powrót do menu głównego");
+                Console.WriteLine("6. Usuń przypisanie");
+                Console.WriteLine("7. Wyświetl pracowników przypisanych do zadania");
+                Console.WriteLine("8. Zakończ przypisane zadanie");
+                Console.WriteLine("9. Powrót do menu głównego");
 
                 Console.Write("\nTwój wybór: ");
                 if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -58,12 +60,18 @@ namespace ConstructionManagementApp.App.Views
                         if (HasPermission(Permission.DeleteTask)) DeleteTask();
                         break;
                     case 5:
-                        if (HasPermission(Permission.AssignTask)) DeleteTask();
+                        if (HasPermission(Permission.AssignTask)) AssignTask();
                         break;
                     case 6:
-                        if (HasPermission(Permission.DeleteTask)) DeleteTask();
+                        if (HasPermission(Permission.DeleteTask)) RemoveFromTask();
                         break;
                     case 7:
+                        if (HasPermission(Permission.ViewTaskAssignment)) DisplayWorkersAssignedToTask();
+                        break;
+                    case 8:
+                        if (HasPermission(Permission.CompleteTask)) CompleteTask();
+                        break;
+                    case 9:
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:
@@ -73,6 +81,8 @@ namespace ConstructionManagementApp.App.Views
                 }
             }
         }
+
+  
 
         private bool HasPermission(Permission permission)
         {
@@ -237,14 +247,10 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out var userId))
-                {
-                    Console.WriteLine("Niepoprawne ID użytkownika.");
-                    return;
-                }
+                Console.Write("Podaj nazwę użytkownika: ");
+                string username = Console.ReadLine();
 
-                _taskController.AssignTask(taskId, userId);
+                _taskController.AssignTask(taskId, username);
             }
             catch (Exception ex)
             {
@@ -270,14 +276,10 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out var userId))
-                {
-                    Console.WriteLine("Niepoprawne ID użytkownika.");
-                    return;
-                }
+                Console.Write("Podaj nazwę użytkownika: ");
+                string username = Console.ReadLine();
 
-                _taskController.RemoveWorkerFromTask(taskId, userId);
+                _taskController.RemoveWorkerFromTask(taskId, username);
             }
             catch (Exception ex)
             {
@@ -289,6 +291,35 @@ namespace ConstructionManagementApp.App.Views
             }
         }
 
+        private void DisplayWorkersAssignedToTask()
+        {
+            Console.Clear ();
+            Console.WriteLine("--- Wyświetl pracowników przypisanych do zadania ---");
+
+            Console.Write("Podaj ID zadania: ");
+            if (!int.TryParse(Console.ReadLine(), out var taskId))
+            {
+                Console.WriteLine("Niepoprawne ID zadania.");
+                return;
+            }
+            _taskController.DisplayWorkersAssignedToTask (taskId);
+            Console.ReadKey();
+        }
+
+        private void CompleteTask()
+        {
+            Console.Clear();
+            Console.WriteLine("--- Zakończ zadanie ---");
+
+            Console.Write("Podaj ID zadania: ");
+            if (!int.TryParse(Console.ReadLine(), out var taskId))
+            {
+                Console.WriteLine("Niepoprawne ID zadania.");
+                return;
+            }
+            _taskController.CompleteTask(taskId);
+            Console.ReadKey();
+        }
         private void ReturnToMenu()
         {
             Console.WriteLine("\nNaciśnij dowolny klawisz, aby wrócić do menu zadań.");
