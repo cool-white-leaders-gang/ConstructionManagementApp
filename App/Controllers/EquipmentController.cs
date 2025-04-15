@@ -21,10 +21,10 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                int projectId = _projectRepository.GetProjectByName(projectName).Id;
-                if (_projectRepository.GetProjectByName(projectName) == null)
-                    throw new KeyNotFoundException($"Nie znaleziono projektu o nazwie {projectName}");
-                var equipment = new Equipment(name, status, projectId);
+                var project = _projectRepository.GetProjectByName(projectName);
+                if (project == null)
+                    throw new KeyNotFoundException($"Nie znaleziono projektu o Id {projectName}");
+                var equipment = new Equipment(name, status, project.Id);
                 _equipmentRepository.AddEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie dodany.");
             }
@@ -38,16 +38,16 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateEquipment(string equipmentName, string newName, EquipmentStatus status, string projectName)
+        public void UpdateEquipment(int equipmentId, string newName, EquipmentStatus status, int projectId)
         {
             try
             {
-                var equipment = _equipmentRepository.GetEquipmentByName(equipmentName);
+                var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
                 if (equipment == null)
-                    throw new KeyNotFoundException($"Nie znaleziono sprzętu o nazwie {equipmentName}.");
-                int projectId = _projectRepository.GetProjectByName(projectName).Id;
-                if (_projectRepository.GetProjectByName(projectName) == null)
-                    throw new KeyNotFoundException($"Nie znaleziono projektu o naziwe {projectName}");
+                    throw new KeyNotFoundException($"Nie znaleziono sprzętu o Id {equipmentId}.");
+             
+                if (_projectRepository.GetProjectById(projectId) == null)
+                    throw new KeyNotFoundException($"Nie znaleziono projektu o Id {projectId}");
 
                 equipment.Name = newName;
                 equipment.Status = status;
@@ -70,11 +70,11 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void DeleteEquipment(string equipmentName)
+        public void DeleteEquipment(int equipmentId)
         {
             try
             {
-                _equipmentRepository.DeleteEquipmentByName(equipmentName);
+                _equipmentRepository.DeleteEquipmentById(equipmentId);
                 Console.WriteLine("Sprzęt został pomyślnie usunięty.");
             }
             catch (KeyNotFoundException ex)
@@ -109,5 +109,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine($"Błąd: {ex.Message}");
             }
         }
+
+ 
     }
 }
