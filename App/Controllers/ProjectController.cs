@@ -25,11 +25,13 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                if (_userRepository.GetUserByUsername(clientUsername).Role != Role.Client || _userRepository.GetUserByUsername(clientUsername) == null)
-                    throw new KeyNotFoundException($"Nie znaleziono użytkownika {clientUsername}, który jest klientem");
+                if (_userRepository.GetUserByUsername(clientUsername) == null)
+                    throw new KeyNotFoundException($"Nie znaleziono użytkownika {clientUsername}");
+                else if(_userRepository.GetUserByUsername(clientUsername).Role != Role.Client)
+                    throw new InvalidOperationException("Podany użytkownik nie jest klientem.");
                 if (_budgetRepository.GetBudgetById(budgetId) == null)
                     throw new KeyNotFoundException($"Nie znaleziono budżetu o ID: {budgetId}");
-                if (_teamRepository.GetTeamByName(teamName).Name == null)
+                if (_teamRepository.GetTeamByName(teamName) == null)
                     throw new KeyNotFoundException($"Nie znaleziono zespołu o nazwie: {teamName}");
                 int clientId = _userRepository.GetUserByUsername(clientUsername).Id;
                 int teamId = _teamRepository.GetTeamByName(teamName).Id;
