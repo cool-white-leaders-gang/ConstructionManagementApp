@@ -1,9 +1,11 @@
 using System;
+using System.Runtime.InteropServices.Marshalling;
 using System.Security.Cryptography;
 using System.Text;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Utilities;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Services
 {
@@ -11,15 +13,12 @@ namespace ConstructionManagementApp.App.Services
     {
         private readonly UserRepository _userRepository;
         public Session? CurrentSession { get; set; }
+        public LogEventHandler ActionOccured;
 
         public AuthenticationService(UserRepository userRepository)
         {
             _userRepository = userRepository;
             CurrentSession = null;
-        }
-
-        public AuthenticationService(){
-
         }
 
         public bool Login(string email, string password)
@@ -39,6 +38,7 @@ namespace ConstructionManagementApp.App.Services
 
             CurrentSession = new Session(user);
             Console.WriteLine($"Zalogowano pomyślnie jako {CurrentSession.User.Username}.");
+            OnActionOccured(new LogEventArgs(CurrentSession.User.Username, $"Użytkownik o nazwie {CurrentSession.User.Username} zalogował się do systemu"));
             return true;
         }
 
@@ -63,6 +63,11 @@ namespace ConstructionManagementApp.App.Services
         private bool VerifyPassword(string password, string hashedPassword)
         {
             return PasswordHasher.HashPassword(password) == hashedPassword;
+        }
+
+        protected virtual void OnActionOccured(LogEventArgs e)
+        {
+            ActionOccured?.Invoke(this, e);
         }
     }
 }

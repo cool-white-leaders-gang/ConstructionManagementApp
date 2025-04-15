@@ -230,8 +230,8 @@ namespace ConstructionManagementApp.App.Database
                 entity.HasOne<User>()
                     .WithMany() 
                     .HasForeignKey(e => e.CreatedByUserId)
-                    .IsRequired() 
-                    .OnDelete(DeleteBehavior.Cascade); 
+                    .IsRequired(false) 
+                    .OnDelete(DeleteBehavior.ClientSetNull); 
 
                 entity.HasOne<Project>()
                     .WithMany() 
