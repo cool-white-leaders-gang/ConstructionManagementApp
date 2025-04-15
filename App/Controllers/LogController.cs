@@ -14,11 +14,12 @@ namespace ConstructionManagementApp.App.Controllers
             _logRepository = logRepository;
         }
 
-        public void AddLog(string message)
+        public void AddLog(string message, string userEmail)
         {
             try
             {
-                Log log = new Log(message, DateTime.Now);
+
+                Log log = new Log(message, DateTime.Now, userEmail);
                 _logRepository.AddLog(log);
                 Console.WriteLine("Log został pomyślnie dodany.");
             }
@@ -46,7 +47,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista logów ---");
                 foreach (var log in logs)
                 {
-                    Console.WriteLine($"[{log.Timestamp}] {log.Message}");
+                    Console.WriteLine($"[{log.Timestamp}][{log.UserEmail}] {log.Message}");
                 }
             }
             catch (Exception ex)

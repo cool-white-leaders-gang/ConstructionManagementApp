@@ -3,6 +3,7 @@ using System;
 public class Log
 {
     public int Id { get; private set; } // Id logu
+    private string _userEmail;
     private string _message;
     private DateTime _timestamp;
 
@@ -28,9 +29,21 @@ public class Log
         }
     }
 
-    public Log(string message, DateTime timestamp)
+    public string UserEmail
+    {
+        get => _userEmail;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Email użytkownika nie może być pusty");
+            _userEmail = value;
+        }
+    }
+
+    public Log(string message, DateTime timestamp, string userEmail)
     {
         Message = message;
         Timestamp = timestamp;
+        UserEmail = userEmail;
     }
 }
