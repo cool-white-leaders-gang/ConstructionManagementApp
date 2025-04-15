@@ -11,12 +11,14 @@ namespace ConstructionManagementApp.App.Views
         private readonly EquipmentController _equipmentController;
         private readonly RBACService _rbacService;
         private readonly User _currentUser;
+        private readonly LogController _logController;
 
-        public EquipmentView(EquipmentController equipmentController, RBACService rbacService, User currentUser)
+        public EquipmentView(EquipmentController equipmentController, RBACService rbacService, User currentUser, LogController logController)
         {
             _equipmentController = equipmentController;
             _rbacService = rbacService;
             _currentUser = currentUser;
+            _logController = logController;
         }
 
         public void ShowView()
@@ -57,6 +59,7 @@ namespace ConstructionManagementApp.App.Views
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
+                        Console.WriteLine("Naciśnij dowolny klawisz aby przejść dalej");
                         break;
                     default:
                         Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
@@ -105,8 +108,8 @@ namespace ConstructionManagementApp.App.Views
 
                 Console.Write("Podaj nazwę projektu: ");
                 string projectName = Console.ReadLine();
-
                 _equipmentController.AddEquipment(name, status, projectName);
+                _logController.AddLog($"Dodano lub próbowano dodać sprzęt: {name}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -125,9 +128,13 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Zaktualizuj sprzęt ---");
 
-                Console.Write("Podaj nazwę sprzętu do zaktualizowania: ");
-                string equipmentName = Console.ReadLine();
-
+                Console.Write("Podaj Id sprzętu do zaktualizowania: ");
+                int equipmentId;
+                while (!int.TryParse(Console.ReadLine(), out equipmentId))
+                {
+                    Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
+                    Console.ReadKey();
+                }
                 Console.Write("Podaj nową nazwę sprzętu: ");
                 var name = Console.ReadLine();
 
@@ -140,10 +147,16 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Nieprawidłowy status sprzętu.")
                 };
 
-                Console.Write("Podaj nową nazwę projektu: ");
-                string projectName = Console.ReadLine();
+                Console.Write("Podaj nazwę projektu: ");
+                int projectId;
+                while(!int.TryParse(Console.ReadLine(), out projectId))
+                {
+                    Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
+                    Console.ReadKey();
+                }
 
-                _equipmentController.UpdateEquipment(equipmentName, name, status, projectName);
+                _equipmentController.UpdateEquipment(equipmentId, name, status, projectId);
+                _logController.AddLog($"Zaktualizowano lub próbowano aktualizować sprzęt --> ID: {equipmentId}, nazwa: {name}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -162,10 +175,16 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.WriteLine("--- Usuń sprzęt ---");
 
-                Console.Write("Podaj nazwę sprzętu: ");
-                string equipmentName = Console.ReadLine();
+                Console.Write("Podaj ID sprzętu: ");
+                int equipmentId;
+                while(!int.TryParse(Console.ReadLine(), out equipmentId))
+                {
+                    Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
+                    Console.ReadKey();
+                }
 
-                _equipmentController.DeleteEquipment(equipmentName);
+                _equipmentController.DeleteEquipment(equipmentId);
+                _logController.AddLog($"Próba usunięcia sprzętu: {equipmentId}", _currentUser.Email);
             }
             catch (Exception ex)
             {

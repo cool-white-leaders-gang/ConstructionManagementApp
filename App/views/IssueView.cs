@@ -11,12 +11,14 @@ namespace ConstructionManagementApp.App.Views
         private readonly IssueController _issueController;
         private readonly RBACService _rbacService;
         private readonly User _currentUser;
+        private readonly LogController _logController;
 
-        public IssueView(IssueController issueController, RBACService rbacService, User currentUser)
+        public IssueView(IssueController issueController, RBACService rbacService, User currentUser, LogController logController)
         {
             _issueController = issueController;
             _rbacService = rbacService;
             _currentUser = currentUser;
+            _logController = logController;
         }
 
         public void ShowView()
@@ -122,6 +124,7 @@ namespace ConstructionManagementApp.App.Views
                 };
 
                 _issueController.AddIssue(title, content, userId, projectId, priority);
+                _logController.AddLog($"Próba dodania lub dodanie zgłoszenia: {title}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -174,6 +177,7 @@ namespace ConstructionManagementApp.App.Views
                     : DateTime.Parse(resolvedAtInput);
 
                 _issueController.UpdateIssue(issueId, priority, status, resolvedAt);
+                _logController.AddLog($"Próba aktualizacji lub aktualizacja zgłoszenia: {issueId}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -200,6 +204,7 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _issueController.DeleteIssue(issueId);
+                _logController.AddLog($"Próba usunięcia zgłoszenia: {issueId}", _currentUser.Email);
             }
             catch (Exception ex)
             {

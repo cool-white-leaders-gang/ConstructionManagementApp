@@ -133,13 +133,14 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nazwę zespołu: ");
                 var name = Console.ReadLine();
 
-                Console.Write("Id managera zespołu: ");
-                if(!int.TryParse(Console.ReadLine(), out int managerId))
-                {
-                    Console.WriteLine("Niepoprawne ID managera.");
-                    return;
-                }
-                _teamController.CreateTeam(name, managerId);
+                Console.Write("Podaj nazwę managera zespołu: ");
+                string managerName = Console.ReadLine();
+                //if(!int.TryParse(Console.ReadLine(), out int managerId))
+                //{
+                //    Console.WriteLine("Niepoprawne ID managera.");
+                //    return;
+                //}
+                _teamController.CreateTeam(name, managerName);
             }
             catch (Exception ex)
             {

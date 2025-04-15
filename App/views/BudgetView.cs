@@ -11,12 +11,14 @@ namespace ConstructionManagementApp.App.Views
         private readonly BudgetController _budgetController;
         private readonly RBACService _rbacService;
         private readonly User _currentUser;
+        private readonly LogController _logController;
 
-        public BudgetView(BudgetController budgetController, RBACService rbacService, User currentUser)
+        public BudgetView(BudgetController budgetController, RBACService rbacService, User currentUser, LogController logController)
         {
             _budgetController = budgetController;
             _rbacService = rbacService;
             _currentUser = currentUser;
+            _logController = logController;
         }
 
         public void ShowView()
@@ -99,6 +101,7 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.AddBudget(totalAmount);
+                _logController.AddLog("Dodano nowy budżet", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -139,6 +142,7 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.UpdateBudget(budgetId, totalAmount, spentAmount);
+                _logController.AddLog($"Zaktualizowano budżet o Id: {budgetId}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -165,6 +169,7 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.DeleteBudget(budgetId);
+                _logController.AddLog($"Usunięto budżet o Id: {budgetId}", _currentUser.Email);
             }
             catch (Exception ex)
             {

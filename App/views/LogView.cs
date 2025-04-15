@@ -57,6 +57,7 @@ namespace ConstructionManagementApp.App.Views
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
+                        Console.WriteLine("Naćiśnij dowolny przycisk aby kontynuować...");
                         break;
                     default:
                         Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
@@ -134,7 +135,7 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.Write("Podaj wiadomość logu: ");
                 var message = Console.ReadLine();
-                _logController.AddLog(message);
+                _logController.AddLog(message, _currentUser.Email);
             }
             catch (Exception ex)
             {
