@@ -70,5 +70,6 @@ namespace ConstructionManagementApp.App.Repositories
         {
             return _context.Projects.Any(p => p.Name == name);
         }
+
     }
 }
