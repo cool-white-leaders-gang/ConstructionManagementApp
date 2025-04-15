@@ -20,17 +20,19 @@ namespace ConstructionManagementApp.App.Controllers
         }
 
         // Dodaj nowy zespół
-        public void CreateTeam(string name, int managerId)
+        public void CreateTeam(string name, string managerName)
         {
             try
             {
-                User manager = _userController.GetUserById(managerId);      //jeżeli podane id użytkownika jest złe to wyrzuci wyjątek
+                User manager = _userController.GetUserByUsername(managerName);
+                if (manager == null)
+                    throw new KeyNotFoundException($"Nie znaleziono menadżera o podanej nazwie: {managerName}");
                 if (manager.Role != Enums.Role.Manager)
                 {
-                    throw new InvalidOperationException("Użytkownik o podanym ma inną rolę w projekcie");
+                    throw new InvalidOperationException($"Użytkownik {managerName} ma inną rolę");
                 }
 
-                var team = new Team(name, managerId);
+                var team = new Team(name, manager.Id);
                 _teamRepository.CreateTeam(team);
                 Console.WriteLine("Zespół został pomyślnie utworzony.");
             }
