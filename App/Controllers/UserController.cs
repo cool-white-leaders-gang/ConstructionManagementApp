@@ -27,7 +27,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas szukanie użytkownika: {ex.Message}");
                 throw;
             }
         }
@@ -43,7 +43,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas szukanie użytkownika: {ex.Message}");
                 throw;
             }
         }
@@ -63,7 +63,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas szukanie użytkownika: {ex.Message}");
                 throw;
             }
         }
@@ -105,7 +105,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas szukanie użytkownika: {ex.Message}");
             }
             catch (ArgumentException ex)
             {

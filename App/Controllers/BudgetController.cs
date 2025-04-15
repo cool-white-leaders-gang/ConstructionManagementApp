@@ -55,15 +55,15 @@ namespace ConstructionManagementApp.App.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas wyszukiwanie budżetu: {ex.Message}");
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas ustawiania kwoty: {ex.Message}");
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczs ustawiania wydatków: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                Console.WriteLine($"Błąd: {ex.Message}");
+                Console.WriteLine($"Błąd podczas wyszukiwania: {ex.Message}");
             }
             catch (ArgumentException ex)
             {
