@@ -47,6 +47,14 @@ namespace ConstructionManagementApp.App.Repositories
             _context.Equipment.Remove(equipment);
             _context.SaveChanges();
         }
+        public void DeleteEquipmentById(int id)
+        {
+            var equipment = GetEquipmentById(id);
+            if (equipment == null)
+                throw new KeyNotFoundException("Nie znaleziono sprzętu o podanym Id.");
+            _context.Equipment.Remove(equipment);
+            _context.SaveChanges();
+        }
 
         public Equipment GetEquipmentById(int id)
         {
