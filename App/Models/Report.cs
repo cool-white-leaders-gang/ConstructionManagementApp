@@ -30,7 +30,7 @@ namespace ConstructionManagementApp.App.Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException("Opis raportu nie może być pusty.");
-                _title = value;
+                _content = value;
             }
         }
 

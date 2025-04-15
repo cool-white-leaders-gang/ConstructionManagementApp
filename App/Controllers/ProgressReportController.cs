@@ -18,7 +18,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                var report = new ProgressReport(title, content, userId, projectId, completionPercentage);
+                ProgressReport report = new ProgressReport(title, content, userId, projectId, completionPercentage);
                 _progressReportRepository.AddProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie dodany.");
             }
