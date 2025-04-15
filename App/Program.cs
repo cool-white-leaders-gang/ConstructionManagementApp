@@ -97,9 +97,9 @@ namespace ConstructionManagementApp.App
             Console.ReadKey();
             RBACService rbac = new RBACService();
             UserView userView = new UserView(userController, rbac, authenticationService.CurrentSession.User);
-            BudgetView budgetView = new BudgetView(budgetController, rbac, authenticationService.CurrentSession.User);
-            EquipmentView equipmentView = new EquipmentView(equipmentController, rbac, authenticationService.CurrentSession.User);
-            IssueView issueView = new IssueView(issueController, rbac, authenticationService.CurrentSession.User);
+            BudgetView budgetView = new BudgetView(budgetController, rbac, authenticationService.CurrentSession.User, logController);
+            EquipmentView equipmentView = new EquipmentView(equipmentController, rbac, authenticationService.CurrentSession.User, logController);
+            IssueView issueView = new IssueView(issueController, rbac, authenticationService.CurrentSession.User, logController);
             LogView logView = new LogView(logController, rbac, authenticationService.CurrentSession.User);
             MaterialView materialView = new MaterialView(materialController, rbac, authenticationService.CurrentSession.User);
             MessageView messageView = new MessageView(messageController, rbac, authenticationService.CurrentSession.User);
