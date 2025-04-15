@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 10, 2025 at 10:10 PM
+-- Generation Time: Apr 15, 2025 at 09:55 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -80,6 +80,13 @@ CREATE TABLE `issues` (
   `title` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `issues`
+--
+
+INSERT INTO `issues` (`id`, `content`, `createdAt`, `createdByUserId`, `projectId`, `Priority`, `status`, `resolvedAT`, `title`) VALUES
+(1, '1', '2025-04-15 21:14:57', 1, 1, 'Low', 'Open', NULL, '1');
+
 -- --------------------------------------------------------
 
 --
@@ -89,15 +96,17 @@ CREATE TABLE `issues` (
 CREATE TABLE `logs` (
   `id` int(11) NOT NULL,
   `message` text NOT NULL,
-  `timestamp` datetime NOT NULL
+  `timestamp` datetime NOT NULL,
+  `username` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `logs`
 --
 
-INSERT INTO `logs` (`id`, `message`, `timestamp`) VALUES
-(1, '123', '2025-04-09 21:40:09');
+INSERT INTO `logs` (`id`, `message`, `timestamp`, `username`) VALUES
+(1, '123', '2025-04-09 21:40:09', ''),
+(2, 'Próba dodania lub dodanie zgłoszenia: 1', '2025-04-15 21:14:57', 'admin@construction.com');
 
 -- --------------------------------------------------------
 
@@ -152,10 +161,10 @@ INSERT INTO `messages` (`Id`, `SenderId`, `ReceiverId`, `Content`, `SentAt`) VAL
 CREATE TABLE `progressreports` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `content` text DEFAULT NULL,
+  `content` text NOT NULL,
   `createdAt` datetime NOT NULL,
   `createdByUserId` int(11) DEFAULT NULL,
-  `projectId` int(11) DEFAULT NULL,
+  `projectId` int(11) NOT NULL,
   `CompletionPercentage` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -164,7 +173,8 @@ CREATE TABLE `progressreports` (
 --
 
 INSERT INTO `progressreports` (`id`, `title`, `content`, `createdAt`, `createdByUserId`, `projectId`, `CompletionPercentage`) VALUES
-(4, 'wylano azbest', NULL, '2025-04-10 20:37:59', 1, 1, 10);
+(4, 'wylano azbest', '', '2025-04-10 20:37:59', 1, 1, 10),
+(5, '1', '1', '2025-04-15 21:14:43', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -389,13 +399,13 @@ ALTER TABLE `equipment`
 -- AUTO_INCREMENT for table `issues`
 --
 ALTER TABLE `issues`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `materials`
@@ -413,7 +423,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `progressreports`
 --
 ALTER TABLE `progressreports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `projects`
