@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <Folder Include="App\Delegates\" />
-    <Folder Include="App\Events\" />
     <Folder Include="App\Exceptions\" />
     <Folder Include="App\Interfaces\" />
     <Folder Include="App\Views\" />
