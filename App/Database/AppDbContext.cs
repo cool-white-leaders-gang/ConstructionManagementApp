@@ -245,9 +245,9 @@ namespace ConstructionManagementApp.App.Database
             {
                 entity.ToTable("logs");
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.UserEmail).IsRequired();
                 entity.Property(e => e.Message).HasColumnType("text").IsRequired();
                 entity.Property(e => e.Timestamp).HasColumnType("datetime").IsRequired();
+                entity.Property(e => e.UserName).HasMaxLength(30).IsRequired();
             });
 
             // Message Configuration

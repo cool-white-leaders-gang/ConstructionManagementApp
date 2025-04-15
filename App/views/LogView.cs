@@ -135,7 +135,7 @@ namespace ConstructionManagementApp.App.Views
                 Console.Clear();
                 Console.Write("Podaj wiadomość logu: ");
                 var message = Console.ReadLine();
-                _logController.AddLog(message, _currentUser.Email);
+                _logController.AddLog(message, _currentUser.Username);
             }
             catch (Exception ex)
             {
