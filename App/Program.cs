@@ -7,6 +7,7 @@ using ConstructionManagementApp.App.Views;
 using Task = ConstructionManagementApp.App.Models.Task;
 using ConstructionManagementApp.App.Services;
 using ConstructionManagementApp.App.Utilities;
+using ConstructionManagementApp.Services;
 
 
 
@@ -32,11 +33,13 @@ namespace ConstructionManagementApp.App
             TeamMembersRepository teamMembersRepository = new TeamMembersRepository(Context);
             TeamRepository teamRepository = new TeamRepository(Context);
             UserRepository userRepository = new UserRepository(Context);
-
+            //initialize services
+            AuthenticationService authenticationService = new AuthenticationService(userRepository);
+            LogService logService = new LogService(logRepository);
             // Initialize controllers
-            UserController userController = new UserController(userRepository);
-            BudgetController budgetController = new BudgetController(budgetRepository);
-            EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository);
+            UserController userController = new UserController(userRepository, authenticationService);
+            BudgetController budgetController = new BudgetController(budgetRepository, authenticationService);
+            EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository, authenticationService);
             IssueController issueController = new IssueController(issueRepository);
             LogController logController = new LogController(logRepository);
             MaterialController materialController = new MaterialController(materialRepository);
@@ -56,8 +59,17 @@ namespace ConstructionManagementApp.App
             userController.AddUser("Klient", "klihhhhhhhent@email.com", "123", Role.Worker);
 
 
-            //initialize views
-            AuthenticationService authenticationService = new AuthenticationService(userRepository);
+            //subscribe events
+            authenticationService.UserLoggedIn += logService.OnActionOccurred;
+            userController.UserAdded += logService.OnActionOccurred;
+            userController.UserUpdated += logService.OnActionOccurred;
+            userController.UserDeleted += logService.OnActionOccurred;
+            budgetController.BudgetAdded += logService.OnActionOccurred;
+            budgetController.BudgetUpdated += logService.OnActionOccurred;
+            budgetController.BudgetDeleted += logService.OnActionOccurred;
+            equipmentController.EquipmentAdded += logService.OnActionOccurred;
+            equipmentController.EquipmentUpdated += logService.OnActionOccurred;
+            equipmentController.EquipmentDeleted += logService.OnActionOccurred;
 
             string choice;
             do

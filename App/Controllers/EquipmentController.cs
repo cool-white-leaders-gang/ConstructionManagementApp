@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
+using System.Xml.Linq;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -10,11 +13,16 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly EquipmentRepository _equipmentRepository;
         private readonly ProjectRepository _projectRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler EquipmentAdded;
+        public event LogEventHandler EquipmentDeleted;
+        public event LogEventHandler EquipmentUpdated;
 
-        public EquipmentController(EquipmentRepository equipmentRepository, ProjectRepository projectRepository)
+        public EquipmentController(EquipmentRepository equipmentRepository, ProjectRepository projectRepository, AuthenticationService authenticationService)
         {
             _equipmentRepository = equipmentRepository;
             _projectRepository = projectRepository;
+            _authenticationService = authenticationService;
         }
 
         public void AddEquipment(string name, EquipmentStatus status, string projectName)
@@ -27,6 +35,7 @@ namespace ConstructionManagementApp.App.Controllers
                 var equipment = new Equipment(name, status, project.Id);
                 _equipmentRepository.AddEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie dodany.");
+                EquipmentAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowe wyposażenie o nazwie {name}"));
             }
             catch (ArgumentException ex)
             {
@@ -55,6 +64,8 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _equipmentRepository.UpdateEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie zaktualizowany.");
+                EquipmentUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano wyposażenie o ID {equipmentId}"));
+
             }
             catch (KeyNotFoundException ex)
             {
@@ -76,6 +87,8 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _equipmentRepository.DeleteEquipmentById(equipmentId);
                 Console.WriteLine("Sprzęt został pomyślnie usunięty.");
+                EquipmentDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto wyposażenie o ID {equipmentId}"));
+
             }
             catch (KeyNotFoundException ex)
             {

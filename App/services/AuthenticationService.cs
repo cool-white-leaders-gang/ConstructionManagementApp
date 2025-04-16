@@ -6,6 +6,7 @@ using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Utilities;
 using ConstructionManagementApp.Events;
+using ConstructionManagementApp.Services;
 
 namespace ConstructionManagementApp.App.Services
 {
@@ -13,7 +14,8 @@ namespace ConstructionManagementApp.App.Services
     {
         private readonly UserRepository _userRepository;
         public Session? CurrentSession { get; set; }
-        public LogEventHandler ActionOccured;
+
+        public event LogEventHandler UserLoggedIn;
 
         public AuthenticationService(UserRepository userRepository)
         {
@@ -38,7 +40,7 @@ namespace ConstructionManagementApp.App.Services
 
             CurrentSession = new Session(user);
             Console.WriteLine($"Zalogowano pomyślnie jako {CurrentSession.User.Username}.");
-            OnActionOccured(new LogEventArgs(CurrentSession.User.Username, $"Użytkownik o nazwie {CurrentSession.User.Username} zalogował się do systemu"));
+            UserLoggedIn?.Invoke(this, new LogEventArgs(CurrentSession.User.Username, $"Uzytkownik zalogował się do systemu"));
             return true;
         }
 
@@ -65,9 +67,6 @@ namespace ConstructionManagementApp.App.Services
             return PasswordHasher.HashPassword(password) == hashedPassword;
         }
 
-        protected virtual void OnActionOccured(LogEventArgs e)
-        {
-            ActionOccured?.Invoke(this, e);
-        }
+        
     }
 }

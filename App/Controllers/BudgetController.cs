@@ -2,16 +2,23 @@ using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Controllers
 {
     internal class BudgetController
     {
         private readonly BudgetRepository _budgetRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler BudgetAdded;
+        public event LogEventHandler BudgetDeleted;
+        public event LogEventHandler BudgetUpdated;
 
-        public BudgetController(BudgetRepository budgetRepository)
+        public BudgetController(BudgetRepository budgetRepository, AuthenticationService authenticationService)
         {
             _budgetRepository = budgetRepository;
+            _authenticationService = authenticationService;
         }
 
         public Budget GetBudgetById(int budgetId)
@@ -52,6 +59,7 @@ namespace ConstructionManagementApp.App.Controllers
                 _budgetRepository.UpdateBudget(budget);
 
                 Console.WriteLine($"Kwota {amount:C} została wydana z budżetu. Pozostała kwota: {budget.TotalAmount - budget.SpentAmount:C}");
+                BudgetUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Kwota {amount:C} została wydana z budżetu o id {budgetId}."));
             }
             catch (KeyNotFoundException ex)
             {
@@ -78,6 +86,7 @@ namespace ConstructionManagementApp.App.Controllers
                 var budget = new Budget(totalAmount);
                 _budgetRepository.AddBudget(budget);
                 Console.WriteLine("Budżet został pomyślnie dodany.");
+                BudgetAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy budżet"));
             }
             catch (ArgumentException ex)
             {
@@ -102,6 +111,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _budgetRepository.UpdateBudget(budget);
                 Console.WriteLine("Budżet został pomyślnie zaktualizowany.");
+                BudgetUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Budżet o ID {budgetId} został zaktualizowany."));
             }
             catch (KeyNotFoundException ex)
             {
@@ -123,6 +133,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _budgetRepository.DeleteBudgetById(budgetId);
                 Console.WriteLine("Budżet został pomyślnie usunięty.");
+                BudgetDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Budżet o ID {budgetId} został usunięty."));
             }
             catch (KeyNotFoundException ex)
             {

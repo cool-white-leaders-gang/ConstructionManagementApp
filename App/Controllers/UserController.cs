@@ -4,16 +4,23 @@ using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Utilities;
+using ConstructionManagementApp.Events;
+using ConstructionManagementApp.App.Services;
 
 namespace ConstructionManagementApp.App.Controllers
 {
     internal class UserController
     {
         private readonly UserRepository _userRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler UserAdded;
+        public event LogEventHandler UserUpdated;
+        public event LogEventHandler UserDeleted;
 
-        public UserController(UserRepository userRepository)
+        public UserController(UserRepository userRepository, AuthenticationService authenticationService)
         {
             _userRepository = userRepository;
+            _authenticationService = authenticationService;
         }
 
         public User GetUserById(int userId)
@@ -75,6 +82,8 @@ namespace ConstructionManagementApp.App.Controllers
                 var user = new User(username, email,PasswordHasher.HashPassword(passwordHash), role);
                 _userRepository.CreateUser(user);
                 Console.WriteLine("Użytkownik został pomyślnie dodany.");
+                UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowego użytkownika o nazwie {username}"));
+                
             }
             catch (ArgumentException ex)
             {
@@ -102,6 +111,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _userRepository.UpdateUser(user);
                 Console.WriteLine("Dane użytkownika zostały pomyślnie zaktualizowane.");
+                UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano użytkownika o nazwie {userNameUpdate}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -123,6 +133,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _userRepository.GetUserByUsername(username);
                 Console.WriteLine("Użytkownik został pomyślnie usunięty.");
+                UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika o nazwie {username}"));
             }
             catch (KeyNotFoundException ex)
             {
