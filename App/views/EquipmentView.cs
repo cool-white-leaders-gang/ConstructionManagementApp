@@ -109,7 +109,6 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj nazwę projektu: ");
                 string projectName = Console.ReadLine();
                 _equipmentController.AddEquipment(name, status, projectName);
-                _logController.AddLog($"Dodano lub próbowano dodać sprzęt: {name}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -156,7 +155,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _equipmentController.UpdateEquipment(equipmentId, name, status, projectId);
-                _logController.AddLog($"Zaktualizowano lub próbowano aktualizować sprzęt --> ID: {equipmentId}, nazwa: {name}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -184,7 +182,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _equipmentController.DeleteEquipment(equipmentId);
-                _logController.AddLog($"Próba usunięcia sprzętu: {equipmentId}", _currentUser.Email);
             }
             catch (Exception ex)
             {

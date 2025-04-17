@@ -141,7 +141,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.UpdateBudget(budgetId, totalAmount, spentAmount);
-                _logController.AddLog($"Zaktualizowano budżet o Id: {budgetId}", _currentUser.Email);
             }
             catch (Exception ex)
             {
@@ -168,7 +167,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.DeleteBudget(budgetId);
-                _logController.AddLog($"Usunięto budżet o Id: {budgetId}", _currentUser.Email);
             }
             catch (Exception ex)
             {
