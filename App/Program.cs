@@ -40,11 +40,11 @@ namespace ConstructionManagementApp.App
             UserController userController = new UserController(userRepository, authenticationService);
             BudgetController budgetController = new BudgetController(budgetRepository, authenticationService);
             EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository, authenticationService);
-            IssueController issueController = new IssueController(issueRepository);
+            IssueController issueController = new IssueController(issueRepository, authenticationService);
             LogController logController = new LogController(logRepository);
-            MaterialController materialController = new MaterialController(materialRepository);
-            MessageController messageController = new MessageController(messageRepository);
-            ProgressReportController progressReportController = new ProgressReportController(progressReportRepository);
+            MaterialController materialController = new MaterialController(materialRepository, authenticationService);
+            MessageController messageController = new MessageController(messageRepository, authenticationService);
+            ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService);
             ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository);
             TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository);
             TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController);
@@ -60,16 +60,18 @@ namespace ConstructionManagementApp.App
 
 
             //subscribe events
-            authenticationService.UserLoggedIn += logService.OnActionOccurred;
-            userController.UserAdded += logService.OnActionOccurred;
-            userController.UserUpdated += logService.OnActionOccurred;
-            userController.UserDeleted += logService.OnActionOccurred;
-            budgetController.BudgetAdded += logService.OnActionOccurred;
-            budgetController.BudgetUpdated += logService.OnActionOccurred;
-            budgetController.BudgetDeleted += logService.OnActionOccurred;
-            equipmentController.EquipmentAdded += logService.OnActionOccurred;
-            equipmentController.EquipmentUpdated += logService.OnActionOccurred;
-            equipmentController.EquipmentDeleted += logService.OnActionOccurred;
+            EventSubscriptionManager.SubscribeEvents(
+                authenticationService,
+                userController,
+                budgetController,
+                equipmentController,
+                issueController,
+                materialController,
+                messageController,
+                progressReportController,
+                logService
+                
+            );
 
             string choice;
             do
