@@ -20,6 +20,9 @@ namespace ConstructionManagementApp.App.Utilities
             MaterialController materialController,
             MessageController messageController,
             ProgressReportController progressReportController,
+            ProjectController projectController,
+            TaskController taskController,
+            TeamController teamController,
             LogService logService)
         {
             // Subscribe to events
@@ -43,6 +46,20 @@ namespace ConstructionManagementApp.App.Utilities
             progressReportController.ProgressReportAdded += logService.OnActionOccurred;
             progressReportController.ProgressReportUpdated += logService.OnActionOccurred;
             progressReportController.ProgressReportDeleted += logService.OnActionOccurred;
+            projectController.ProjectAdded += logService.OnActionOccurred;
+            projectController.ProjectUpdated += logService.OnActionOccurred;
+            projectController.ProjectDeleted += logService.OnActionOccurred;
+            taskController.TaskAdded += logService.OnActionOccurred;
+            taskController.TaskUpdated += logService.OnActionOccurred;
+            taskController.TaskDeleted += logService.OnActionOccurred;
+            taskController.TaskCompleted += logService.OnActionOccurred;
+            taskController.TaskAssigned += logService.OnActionOccurred;
+            taskController.TaskUnassigned += logService.OnActionOccurred;
+            teamController.TeamAdded += logService.OnActionOccurred;
+            teamController.TeamUpdated += logService.OnActionOccurred;
+            teamController.TeamDeleted += logService.OnActionOccurred;
+            teamController.UserAddedToTeam += logService.OnActionOccurred;
+            teamController.UserRemovedFromTeam += logService.OnActionOccurred;
         }
     }
 }
