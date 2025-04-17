@@ -30,6 +30,10 @@ namespace ConstructionManagementApp.App.Database
             string user = "root";
             string password = ""; // Consider using a configuration provider for sensitive data
             optionsBuilder.UseMySql($"server={server};database={database};user={user};password={password};", new MySqlServerVersion(new Version(10, 4, 32))); // Match server version from SQL dump
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.EnableSensitiveDataLogging(); // Enable sensitive data logging
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
