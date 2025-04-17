@@ -96,7 +96,9 @@ namespace ConstructionManagementApp.App
                         if (!authenticationService.Login(email, password))
                         {
                             Console.WriteLine("Nie udało się zalogować.");
+                            Console.ReadKey();
                         }
+
                         break;
                     case "2":
                         Environment.Exit(0);

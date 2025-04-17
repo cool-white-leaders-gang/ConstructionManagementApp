@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="App\Exceptions\" />
     <Folder Include="App\Views\" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
 	<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
