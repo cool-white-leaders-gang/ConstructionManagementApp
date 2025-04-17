@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Repositories;
 
 namespace ConstructionManagementApp.App.Services
 {
@@ -10,9 +11,12 @@ namespace ConstructionManagementApp.App.Services
     {
         // Słownik przypisujący role do listy permisji
         private readonly Dictionary<Role, List<Permission>> _rolePermissions;
+        private readonly TeamRepository _teamRepository;
+        private readonly ProjectRepository _projectRepository;
 
-        public RBACService()
+        public RBACService(ProjectRepository projectRepository, TeamRepository teamRepository)
         {
+            _projectRepository = projectRepository;
             // Definicja permisji dla każdej roli
             _rolePermissions = new Dictionary<Role, List<Permission>>
             {
@@ -127,6 +131,7 @@ namespace ConstructionManagementApp.App.Services
                     }
                 }
             };
+            _teamRepository = teamRepository;
         }
 
         // Sprawdza, czy użytkownik ma określone uprawnienie
@@ -154,6 +159,28 @@ namespace ConstructionManagementApp.App.Services
             {
                 Console.WriteLine($"- {permission}");
             }
+        }
+
+        public bool IsProjectManager(User user, int projectId, ProjectRepository projectRepository)
+        {
+            if (user == null)
+                return false;
+
+            if (user.Role == Role.Admin)
+                return true;
+
+            // Pobierz projekt na podstawie ID
+            var project = projectRepository.GetProjectById(projectId);
+            if (project == null || project.TeamId <= 0)
+                return false;
+
+            // Pobierz zespół na podstawie TeamId
+            var team = _teamRepository.GetTeamById(project.TeamId);
+            if (team == null)
+                return false;
+
+            // Sprawdź, czy użytkownik jest menedżerem zespołu
+            return team.ManagerId == user.Id;
         }
     }
 }
