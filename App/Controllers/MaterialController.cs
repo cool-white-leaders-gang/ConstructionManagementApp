@@ -2,16 +2,23 @@ using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Controllers
 {
     internal class MaterialController
     {
         private readonly MaterialRepository _materialRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler MaterialAdded;
+        public event LogEventHandler MaterialDeleted;
+        public event LogEventHandler MaterialUpdated;
 
-        public MaterialController(MaterialRepository materialRepository)
+        public MaterialController(MaterialRepository materialRepository, AuthenticationService authenticationService)
         {
             _materialRepository = materialRepository;
+            _authenticationService = authenticationService;
         }
 
         public void AddMaterial(string name, int quantity, string unit, int projectId)
@@ -21,6 +28,7 @@ namespace ConstructionManagementApp.App.Controllers
                 var material = new Material(name, quantity, unit, projectId);
                 _materialRepository.AddMaterial(material);
                 Console.WriteLine("Materiał został pomyślnie dodany.");
+                MaterialAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy materiał o ID {material.Id} i nazwie {name}"));
             }
             catch (ArgumentException ex)
             {
@@ -46,6 +54,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _materialRepository.UpdateMaterial(material);
                 Console.WriteLine("Materiał został pomyślnie zaktualizowany.");
+                MaterialUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano materiał o ID {materialId} i nazwie {name}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -67,6 +76,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _materialRepository.DeleteMaterialById(materialId);
                 Console.WriteLine("Materiał został pomyślnie usunięty.");
+                MaterialDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto materiał o ID {materialId}"));
             }
             catch (KeyNotFoundException ex)
             {

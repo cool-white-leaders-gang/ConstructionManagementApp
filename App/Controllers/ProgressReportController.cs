@@ -2,25 +2,34 @@ using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Controllers
 {
     internal class ProgressReportController
     {
         private readonly ProgressReportRepository _progressReportRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler ProgressReportAdded;
+        public event LogEventHandler ProgressReportDeleted;
+        public event LogEventHandler ProgressReportUpdated;
 
-        public ProgressReportController(ProgressReportRepository progressReportRepository)
+        public ProgressReportController(ProgressReportRepository progressReportRepository, AuthenticationService authenticationService)
         {
             _progressReportRepository = progressReportRepository;
+            _authenticationService = authenticationService;
         }
 
         public void AddProgressReport(string title, string content, int userId, int projectId, int completionPercentage)
         {
             try
             {
+                
                 ProgressReport report = new ProgressReport(title, content, userId, projectId, completionPercentage);
                 _progressReportRepository.AddProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie dodany.");
+                ProgressReportAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy raport postępu o tytule {title}"));
             }
             catch (ArgumentException ex)
             {
@@ -46,6 +55,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _progressReportRepository.UpdateProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie zaktualizowany.");
+                ProgressReportUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano raport postępu o ID {reportId} i tytule {title}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -67,6 +77,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _progressReportRepository.DeleteProgressReportById(reportId);
                 Console.WriteLine("Raport postępu został pomyślnie usunięty.");
+                ProgressReportDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto raport postępu o ID {reportId}"));
             }
             catch (KeyNotFoundException ex)
             {

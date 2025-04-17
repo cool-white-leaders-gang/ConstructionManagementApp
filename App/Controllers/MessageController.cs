@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -9,31 +11,17 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly MessageRepository _messageRepository;
         private readonly UserRepository _userRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler MessageSent;
 
-        public MessageController(MessageRepository messageRepository)
+
+
+        public MessageController(MessageRepository messageRepository, AuthenticationService authenticationService)
         {
             _messageRepository = messageRepository;
+            _authenticationService = authenticationService;
         }
 
-        public void SendMessage(Message message)
-        {
-            try
-            {
-                if (message == null)
-                    throw new ArgumentNullException(nameof(message), "Wiadomość nie może być null.");
-
-                _messageRepository.SendMessage(message);
-                Console.WriteLine("Wiadomość została pomyślnie wysłana.");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Błąd: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
-            }
-        }
 
         public void SendMessageByUsername(int senderId, string receiverUsername, string content)
         {
@@ -51,6 +39,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _messageRepository.SendMessage(message);
                 Console.WriteLine("Wiadomość została pomyślnie wysłana.");
+                MessageSent?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Wysłano wiadomość do {receiverUsername} o treści: \"{content}\""));
             }
             catch (ArgumentException ex)
             {

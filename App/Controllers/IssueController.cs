@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
+using System.Net.Security;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Controllers
 {
     internal class IssueController
     {
         private readonly IssueRepository _issueRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler IssueAdded;
+        public event LogEventHandler IssueDeleted;
+        public event LogEventHandler IssueUpdated;
 
-        public IssueController(IssueRepository issueRepository)
+        public IssueController(IssueRepository issueRepository, AuthenticationService authenticationService)
         {
             _issueRepository = issueRepository;
+            _authenticationService = authenticationService;
         }
 
         public void AddIssue(string title, string content, int userId, int projectId, TaskPriority priority)
@@ -22,6 +30,7 @@ namespace ConstructionManagementApp.App.Controllers
                 var issue = new Issue(title, content, userId, projectId, priority);
                 _issueRepository.AddIssue(issue);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie dodane.");
+                IssueAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowe zgłoszenie o tytule {title}"));
             }
             catch (ArgumentException ex)
             {
@@ -47,6 +56,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _issueRepository.UpdateIssue(issue);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie zaktualizowane.");
+                IssueUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano zgłoszenie o ID {issueId} i nazwie {issue.Title}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -68,6 +78,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _issueRepository.DeleteIssueById(issueId);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie usunięte.");
+                IssueDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto zgłoszenie o ID {issueId}"));
             }
             catch (KeyNotFoundException ex)
             {
