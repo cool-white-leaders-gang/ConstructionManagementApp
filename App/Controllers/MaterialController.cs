@@ -11,21 +11,24 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly MaterialRepository _materialRepository;
         private readonly AuthenticationService _authenticationService;
+        private readonly ProjectRepository _projectRepository;
         public event LogEventHandler MaterialAdded;
         public event LogEventHandler MaterialDeleted;
         public event LogEventHandler MaterialUpdated;
 
-        public MaterialController(MaterialRepository materialRepository, AuthenticationService authenticationService)
+        public MaterialController(MaterialRepository materialRepository, ProjectRepository projectRepository, AuthenticationService authenticationService)
         {
             _materialRepository = materialRepository;
+            _projectRepository = projectRepository;
             _authenticationService = authenticationService;
         }
 
-        public void AddMaterial(string name, int quantity, string unit, int projectId)
+        public void AddMaterial(string name, int quantity, string unit, string projectName)
         {
             try
             {
-                var material = new Material(name, quantity, unit, projectId);
+                var project = _projectRepository.GetProjectByName(projectName);
+                var material = new Material(name, quantity, unit, project.Id);
                 _materialRepository.AddMaterial(material);
                 Console.WriteLine("Materiał został pomyślnie dodany.");
                 MaterialAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy materiał o ID {material.Id} i nazwie {name}"));
@@ -102,7 +105,7 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista materiałów ---");
                 foreach (var material in materials)
                 {
-                    Console.WriteLine($"ID: {material.Id}, Nazwa: {material.Name}, Ilość: {material.Quantity}");
+                    Console.WriteLine(material.ToString());
                 }
             }
             catch (Exception ex)
