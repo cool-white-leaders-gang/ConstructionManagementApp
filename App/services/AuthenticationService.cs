@@ -7,10 +7,11 @@ using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Utilities;
 using ConstructionManagementApp.Events;
 using ConstructionManagementApp.Services;
+using ConstructionManagementApp.App.Interfaces;
 
 namespace ConstructionManagementApp.App.Services
 {
-    internal class AuthenticationService
+    internal class AuthenticationService : IAuthenticationService
     {
         private readonly UserRepository _userRepository;
         public Session? CurrentSession { get; set; }
