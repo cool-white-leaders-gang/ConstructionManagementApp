@@ -135,15 +135,11 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Wybrano nieprawidłowy status.")
                 };
 
-                Console.WriteLine("Podaj ID projektu, do którego dodać zadanie");
+                Console.WriteLine("Podaj nazwę projektu, do którego dodać zadanie");
 
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                var projectName = Console.ReadLine();
 
-                _taskController.AddTask(title, description, priority, progress, projectId);
+                _taskController.AddTask(title, description, priority, progress, projectName);
             }
             catch (Exception ex)
             {

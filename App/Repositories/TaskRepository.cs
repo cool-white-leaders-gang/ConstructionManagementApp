@@ -57,9 +57,14 @@ namespace ConstructionManagementApp.App.Repositories
             return _context.Tasks.FirstOrDefault(t => t.Title == title);
         }
 
-        public List<Task> GetAllTasks()
+        public List<Task> GetTasksByProjectIds(List<int> projectIds)
         {
-            return _context.Tasks.ToList();
+            if (projectIds == null || !projectIds.Any())
+                return new List<Task>();
+
+            return _context.Tasks
+                .Where(task => projectIds.Contains(task.ProjectId))
+                .ToList();
         }
     }
 }

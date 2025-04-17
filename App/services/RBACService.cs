@@ -13,8 +13,9 @@ namespace ConstructionManagementApp.App.Services
         private readonly Dictionary<Role, List<Permission>> _rolePermissions;
         private readonly TeamRepository _teamRepository;
         private readonly ProjectRepository _projectRepository;
+        private readonly TeamMembersRepository _teamMembersRepository;
 
-        public RBACService(ProjectRepository projectRepository, TeamRepository teamRepository)
+        public RBACService(ProjectRepository projectRepository, TeamRepository teamRepository, TeamMembersRepository teamMembersRepository)
         {
             _projectRepository = projectRepository;
             // Definicja permisji dla każdej roli
@@ -132,6 +133,7 @@ namespace ConstructionManagementApp.App.Services
                 }
             };
             _teamRepository = teamRepository;
+            _teamMembersRepository = teamMembersRepository;
         }
 
         // Sprawdza, czy użytkownik ma określone uprawnienie
@@ -169,18 +171,52 @@ namespace ConstructionManagementApp.App.Services
             if (user.Role == Role.Admin)
                 return true;
 
-            // Pobierz projekt na podstawie ID
             var project = projectRepository.GetProjectById(projectId);
             if (project == null || project.TeamId <= 0)
                 return false;
 
-            // Pobierz zespół na podstawie TeamId
             var team = _teamRepository.GetTeamById(project.TeamId);
             if (team == null)
                 return false;
 
-            // Sprawdź, czy użytkownik jest menedżerem zespołu
             return team.ManagerId == user.Id;
+        }
+
+        public bool IsWorkerInProjectTeam(User user, int projectId, ProjectRepository projectRepository)
+        {
+            if (user == null || user.Role != Role.Worker)
+                return false;
+            if(user.Role == Role.Admin)
+                return true;
+            var project = projectRepository.GetProjectById(projectId);
+            if (project == null)
+                return false;
+
+            var team = _teamRepository.GetTeamById(project.TeamId);
+            if (team == null)
+                return false;
+
+            var teamMembers = _teamMembersRepository.GetMembersOfTeam(team.Id);
+            return teamMembers.Any(member => member.Id == user.Id);
+        }
+
+        public List<int> GetProjectsForUserOrManagedBy(User user, ProjectRepository projectRepository)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            // Get the list of all projects
+            var allProjects = projectRepository.GetAllProjects();
+
+            // Filter projects where the user is part of the team or is the manager
+            var userProjectIds = allProjects
+                .Where(project =>
+                    _teamMembersRepository.GetMembersOfTeam(project.TeamId).Any(member => member.Id == user.Id) ||
+                    project.TeamId > 0 && _teamRepository.GetTeamById(project.TeamId)?.ManagerId == user.Id)
+                .Select(project => project.Id)
+                .ToList();
+
+            return userProjectIds;
         }
     }
 }

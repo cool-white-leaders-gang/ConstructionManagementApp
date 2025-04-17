@@ -112,6 +112,7 @@ namespace ConstructionManagementApp.App.Views
                     case 0:
                         Console.WriteLine("Wylogowywanie...");
                         _authenticationService.Logout();
+                        
                         break;
                     default:
                         Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");

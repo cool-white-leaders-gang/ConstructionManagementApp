@@ -42,6 +42,9 @@ namespace ConstructionManagementApp.App.Repositories
         public void RemoveWorkerFromTask(int taskId, string username)
         {
             var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var task = _context.Tasks.FirstOrDefault(t => t.Id == taskId);
+            if (task == null)
+                throw new KeyNotFoundException($"Zadanie o ID {taskId} nie istnieje");
             if (user == null)
                 throw new KeyNotFoundException($"Użytkownik o nazwie {username} nie istnieje.");
             var assignment = _context.TaskAssignments.FirstOrDefault(ta => ta.TaskId == taskId && ta.UserId == user.Id);
@@ -50,6 +53,7 @@ namespace ConstructionManagementApp.App.Repositories
 
             _context.TaskAssignments.Remove(assignment);
             _context.SaveChanges();
+
         }
 
         public List<User> GetWorkersAssignedToTask(int taskId)

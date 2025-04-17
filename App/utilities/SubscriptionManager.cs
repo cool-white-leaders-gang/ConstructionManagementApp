@@ -53,6 +53,7 @@ namespace ConstructionManagementApp.App.Utilities
             taskController.TaskUpdated += logService.OnActionOccurred;
             taskController.TaskDeleted += logService.OnActionOccurred;
             taskController.TaskCompleted += logService.OnActionOccurred;
+            taskController.TaskCompleted += logService.OnActionOccurred;
             taskController.TaskAssigned += logService.OnActionOccurred;
             taskController.TaskUnassigned += logService.OnActionOccurred;
             teamController.TeamAdded += logService.OnActionOccurred;

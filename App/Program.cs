@@ -37,6 +37,7 @@ namespace ConstructionManagementApp.App
             //initialize services
             AuthenticationService authenticationService = new AuthenticationService(userRepository);
             LogService logService = new LogService(logRepository);
+            RBACService rbac = new RBACService(projectRepository, teamRepository, teamMembersRepository);
 
             // Initialize controllers
             UserController userController = new UserController(userRepository, authenticationService);
@@ -48,7 +49,7 @@ namespace ConstructionManagementApp.App
             MessageController messageController = new MessageController(userRepository, messageRepository, authenticationService);
             ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService, projectRepository);
             ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository, authenticationService);
-            TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository, authenticationService);
+            TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository, authenticationService, projectRepository, rbac, userRepository);
             TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController, authenticationService);
 
             //Admin USer
@@ -111,7 +112,7 @@ namespace ConstructionManagementApp.App
 
             Console.WriteLine("Naciśnij dowolny przycisk aby przejść dalej");
             Console.ReadKey();
-            RBACService rbac = new RBACService(projectRepository, teamRepository);
+            
             UserView userView = new UserView(userController, rbac, authenticationService.CurrentSession.User);
             BudgetView budgetView = new BudgetView(budgetController, rbac, authenticationService.CurrentSession.User, logController);
             EquipmentView equipmentView = new EquipmentView(equipmentController, rbac, authenticationService.CurrentSession.User, logController);
