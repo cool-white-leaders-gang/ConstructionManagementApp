@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using ConstructionManagementApp.App.Repositories;
 using Task =  ConstructionManagementApp.App.Models.Task;
 using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
+
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -10,11 +13,20 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly TaskRepository _taskRepository;
         private readonly TaskAssignmentRepository _taskAssignmentRepository;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler TaskAdded;
+        public event LogEventHandler TaskDeleted;
+        public event LogEventHandler TaskUpdated;
+        public event LogEventHandler TaskCompleted;
+        public event LogEventHandler TaskAssigned;
+        public event LogEventHandler TaskUnassigned;
 
-        public TaskController(TaskRepository taskRepository, TaskAssignmentRepository taskAssignmentRepository)
+
+        public TaskController(TaskRepository taskRepository, TaskAssignmentRepository taskAssignmentRepository, AuthenticationService authenticationService)
         {
             _taskRepository = taskRepository;
             _taskAssignmentRepository = taskAssignmentRepository;
+            _authenticationService = authenticationService;
         }
 
         public void AddTask(string title, string description, TaskPriority priority, TaskProgress progress, int projectId)
@@ -24,6 +36,7 @@ namespace ConstructionManagementApp.App.Controllers
                 var task = new Task(title, description, priority, progress, projectId);
                 _taskRepository.AddTask(task);
                 Console.WriteLine("Zadanie zostało pomyślnie dodane.");
+                TaskAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowe zadanie o tytule {title}"));
             }
             catch (ArgumentException ex)
             {
@@ -50,6 +63,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _taskRepository.UpdateTask(task);
                 Console.WriteLine("Zadanie zostało pomyślnie zaktualizowane.");
+                TaskUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano zadanie o ID {id} i nazwie {title}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -75,6 +89,7 @@ namespace ConstructionManagementApp.App.Controllers
                 task.Progress = TaskProgress.Completed;
                 _taskRepository.UpdateTask(task);
                 Console.WriteLine("Zadania zostało pomyślnie ukończone");
+                TaskCompleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zadanie o ID {id} zostało ukończone"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -96,6 +111,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _taskRepository.DeleteTaskById(id);
                 Console.WriteLine("Zadanie zostało pomyślnie usunięte.");
+                TaskDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto zadanie o ID {id}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -136,6 +152,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _taskAssignmentRepository.AssignWorkerToTask(taskId, username);
                 Console.WriteLine($"Użytkownik o nazwie {username} został przypisany do zadania o ID {taskId}.");
+                TaskAssigned?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Przypisano użytkownika {username} do zadania o ID {taskId}"));
             }
             catch (Exception ex)
             {
@@ -149,6 +166,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _taskAssignmentRepository.RemoveWorkerFromTask(taskId, username);
                 Console.WriteLine($"Użytkownik o nazwie {username} został usunięty z zadania o Id {taskId}.");
+                TaskUnassigned?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika {username} z zadania o ID {taskId}"));
             }
             catch (Exception ex)
             {

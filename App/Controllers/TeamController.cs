@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
+using ConstructionManagementApp.App.Services;
+using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -10,13 +12,20 @@ namespace ConstructionManagementApp.App.Controllers
         private readonly TeamRepository _teamRepository;
         private readonly TeamMembersRepository _teamMembersRepository;
         private readonly UserController _userController;
+        private readonly AuthenticationService _authenticationService;
+        public event LogEventHandler TeamAdded;
+        public event LogEventHandler TeamUpdated;
+        public event LogEventHandler TeamDeleted;
+        public event LogEventHandler UserAddedToTeam;
+        public event LogEventHandler UserRemovedFromTeam;
 
         // Konstruktor kontrolera
-        public TeamController(TeamRepository teamRepository, TeamMembersRepository teamMembersRepository, UserController userController)
+        public TeamController(TeamRepository teamRepository, TeamMembersRepository teamMembersRepository, UserController userController, AuthenticationService authenticationService)
         {
             _teamRepository = teamRepository;
             _teamMembersRepository = teamMembersRepository;
             _userController = userController;
+            _authenticationService = authenticationService;
         }
 
         // Dodaj nowy zespół
@@ -35,6 +44,7 @@ namespace ConstructionManagementApp.App.Controllers
                 var team = new Team(name, manager.Id);
                 _teamRepository.CreateTeam(team);
                 Console.WriteLine("Zespół został pomyślnie utworzony.");
+                TeamAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy zespół o nazwie {name}"));
             }
             catch (Exception ex)
             {
@@ -59,6 +69,7 @@ namespace ConstructionManagementApp.App.Controllers
 
                 _teamRepository.UpdateTeam(team);
                 Console.WriteLine("Zespół został pomyślnie zaktualizowany.");
+                TeamUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano zespół o ID {teamId} i nazwie {name}"));
             }
             catch (Exception ex)
             {
@@ -73,6 +84,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 _teamRepository.DeleteTeamById(teamId);
                 Console.WriteLine("Zespół został pomyślnie usunięty.");
+                TeamDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto zespół o ID {teamId}"));
             }
             catch (Exception ex)
             {
@@ -81,12 +93,13 @@ namespace ConstructionManagementApp.App.Controllers
         }
 
         // Dodaj użytkownika do zespołu
-        public void AddUserToTeam(int teamId, int userId)
+        public void AddUserToTeam(int teamId, string userName)
         {
             try
             {
-                _teamMembersRepository.AddMemberToTeam(teamId, userId);
-                Console.WriteLine($"Użytkownik o Id {userId} został dodany do zespołu o Id {teamId}.");
+                _teamMembersRepository.AddMemberToTeam(teamId, userName);
+                Console.WriteLine($"Użytkownik o Id {userName} został dodany do zespołu o Id {teamId}.");
+                UserAddedToTeam?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano użytkownika {userName} do zespołu o ID {teamId}"));
             }
             catch (Exception ex)
             {
@@ -95,12 +108,13 @@ namespace ConstructionManagementApp.App.Controllers
         }
 
         // Usuń użytkownika z zespołu
-        public void RemoveUserFromTeam(int teamId, int userId)
+        public void RemoveUserFromTeam(int teamId, string userName)
         {
             try
             {
-                _teamMembersRepository.RemoveMemberFromTeam(teamId, userId);
-                Console.WriteLine($"Użytkownik o Id {userId} został usunięty z zespołu o Id {teamId}.");
+                _teamMembersRepository.RemoveMemberFromTeam(teamId, userName);
+                Console.WriteLine($"Użytkownik o {userName} został usunięty z zespołu o Id {teamId}.");
+                UserRemovedFromTeam?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika {userName} z zespołu o ID {teamId}"));
             }
             catch (Exception ex)
             {
