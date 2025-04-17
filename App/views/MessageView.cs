@@ -65,7 +65,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 Console.WriteLine("\nNaciśnij dowolny klawisz, aby kontynuować.");
-                Console.ReadKey();
             }
         }
 

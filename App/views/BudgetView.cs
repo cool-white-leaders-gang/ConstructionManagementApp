@@ -101,7 +101,6 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _budgetController.AddBudget(totalAmount);
-                _logController.AddLog("Dodano nowy budżet", _currentUser.Email);
             }
             catch (Exception ex)
             {
