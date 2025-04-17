@@ -30,34 +30,33 @@ namespace ConstructionManagementApp.App
             ProjectRepository projectRepository = new ProjectRepository(Context);
             TaskAssignmentRepository taskAssignmentRepository = new TaskAssignmentRepository(Context);
             TaskRepository taskRepository = new TaskRepository(Context);
-            TeamMembersRepository teamMembersRepository = new TeamMembersRepository(Context);
             TeamRepository teamRepository = new TeamRepository(Context);
             UserRepository userRepository = new UserRepository(Context);
+            TeamMembersRepository teamMembersRepository = new TeamMembersRepository(Context, userRepository);
+
             //initialize services
             AuthenticationService authenticationService = new AuthenticationService(userRepository);
             LogService logService = new LogService(logRepository);
+
             // Initialize controllers
             UserController userController = new UserController(userRepository, authenticationService);
             BudgetController budgetController = new BudgetController(budgetRepository, authenticationService);
             EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository, authenticationService);
             IssueController issueController = new IssueController(issueRepository, authenticationService, projectRepository);
             LogController logController = new LogController(logRepository);
-            MaterialController materialController = new MaterialController(materialRepository, authenticationService);
-            MessageController messageController = new MessageController(messageRepository, authenticationService);
+            MaterialController materialController = new MaterialController(materialRepository, projectRepository ,authenticationService);
+            MessageController messageController = new MessageController(userRepository, messageRepository, authenticationService);
             ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService, projectRepository);
-            ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository);
-            TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository);
-            TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController);
+            ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository, authenticationService);
+            TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository, authenticationService);
+            TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController, authenticationService);
 
             //Admin USer
 
             //userController.AddUser("Admin", "admin@construction.com", "123", Role.Admin);
             //userController.AddUser("Manager", "manager@construction.com", "123", Role.Manager);
             //userController.AddUser("Majster", "majster@construction.com", "123", Role.Worker);
-            userController.AddUser("Klient", "klihhhhhhhent@email.com", "123", Role.Client);
-
-            userController.AddUser("Klient", "klihhhhhhhent@email.com", "123", Role.Worker);
-
+            //userController.AddUser("klient", "klinet@email.com", "123", Role.Client);
 
             //subscribe events
             EventSubscriptionManager.SubscribeEvents(
@@ -69,6 +68,9 @@ namespace ConstructionManagementApp.App
                 materialController,
                 messageController,
                 progressReportController,
+                projectController,
+                taskController,
+                teamController,
                 logService
                 
             );
@@ -87,9 +89,9 @@ namespace ConstructionManagementApp.App
                 {
                     case "1":
                         Console.Write("Podaj email: ");
-                        string email = "admin@construction.com";//Console.ReadLine();
+                        string email = Console.ReadLine();
                         Console.Write("Podaj hasło: ");
-                        string password = "123";//Console.ReadLine();
+                        string password = Console.ReadLine();
                         if (!authenticationService.Login(email, password))
                         {
                             Console.WriteLine("Nie udało się zalogować.");
@@ -109,7 +111,7 @@ namespace ConstructionManagementApp.App
 
             Console.WriteLine("Naciśnij dowolny przycisk aby przejść dalej");
             Console.ReadKey();
-            RBACService rbac = new RBACService();
+            RBACService rbac = new RBACService(projectRepository, teamRepository);
             UserView userView = new UserView(userController, rbac, authenticationService.CurrentSession.User);
             BudgetView budgetView = new BudgetView(budgetController, rbac, authenticationService.CurrentSession.User, logController);
             EquipmentView equipmentView = new EquipmentView(equipmentController, rbac, authenticationService.CurrentSession.User, logController);
