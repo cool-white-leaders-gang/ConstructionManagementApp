@@ -13,21 +13,27 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly IssueRepository _issueRepository;
         private readonly AuthenticationService _authenticationService;
+        private readonly ProjectRepository _projectRepository;
         public event LogEventHandler IssueAdded;
         public event LogEventHandler IssueDeleted;
         public event LogEventHandler IssueUpdated;
 
-        public IssueController(IssueRepository issueRepository, AuthenticationService authenticationService)
+        public IssueController(IssueRepository issueRepository, AuthenticationService authenticationService, ProjectRepository projectRepository)
         {
             _issueRepository = issueRepository;
             _authenticationService = authenticationService;
+            _projectRepository = projectRepository;
         }
 
-        public void AddIssue(string title, string content, int userId, int projectId, TaskPriority priority)
+        public void AddIssue(string title, string content, string projectName, TaskPriority priority)
         {
             try
             {
-                var issue = new Issue(title, content, userId, projectId, priority);
+                var project = _projectRepository.GetProjectByName(projectName);
+                if (project == null)
+                    throw new KeyNotFoundException($"Nie udało się znaleźć projektu o nazwie {projectName}");
+                int projectId = project.Id;
+                var issue = new Issue(title, content, _authenticationService.CurrentSession.User.Id, projectId, priority);
                 _issueRepository.AddIssue(issue);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie dodane.");
                 IssueAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowe zgłoszenie o tytule {title}"));

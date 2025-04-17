@@ -40,11 +40,11 @@ namespace ConstructionManagementApp.App
             UserController userController = new UserController(userRepository, authenticationService);
             BudgetController budgetController = new BudgetController(budgetRepository, authenticationService);
             EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository, authenticationService);
-            IssueController issueController = new IssueController(issueRepository, authenticationService);
+            IssueController issueController = new IssueController(issueRepository, authenticationService, projectRepository);
             LogController logController = new LogController(logRepository);
             MaterialController materialController = new MaterialController(materialRepository, authenticationService);
             MessageController messageController = new MessageController(messageRepository, authenticationService);
-            ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService);
+            ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService, projectRepository);
             ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository);
             TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository);
             TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController);

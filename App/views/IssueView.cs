@@ -99,19 +99,8 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj treść zgłoszenia: ");
                 var content = Console.ReadLine();
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out var userId))
-                {
-                    Console.WriteLine("Niepoprawne ID użytkownika.");
-                    return;
-                }
-
-                Console.Write("Podaj ID projektu: ");
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID projektu.");
-                    return;
-                }
+                Console.Write("Podaj nazwę projektu: ");
+                string projectName = Console.ReadLine();
 
                 Console.WriteLine("Wybierz priorytet zgłoszenia: 1. Niski, 2. Średni, 3. Wysoki");
                 var priorityChoice = Console.ReadLine();
@@ -123,7 +112,7 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Nieprawidłowy priorytet zgłoszenia.")
                 };
 
-                _issueController.AddIssue(title, content, userId, projectId, priority);
+                _issueController.AddIssue(title, content, projectName, priority);
             }
             catch (Exception ex)
             {

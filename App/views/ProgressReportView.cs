@@ -97,20 +97,8 @@ namespace ConstructionManagementApp.App.Views
                 Console.Write("Podaj opis raportu: ");
                 var content = Console.ReadLine();
 
-               
-                Console.WriteLine("Podaj Id użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out var userId))
-                {
-                    Console.WriteLine("Niepoprawne ID użytkownika.");
-                    return;
-
-                }
-                Console.WriteLine("Podaj Id projektu: ");
-                if (!int.TryParse(Console.ReadLine(), out var projectId))
-                {
-                    Console.WriteLine("Niepoprawne ID.");
-                    return;
-                }
+                Console.WriteLine("Podaj nazwę projektu: ");
+                var projectName = Console.ReadLine();
                 Console.WriteLine("Podaj procent ukończenia: ");
                 if (!int.TryParse(Console.ReadLine(), out var completionPercentage))
                 {
@@ -123,7 +111,7 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                _progressReportController.AddProgressReport(title, content, userId, projectId, completionPercentage );
+                _progressReportController.AddProgressReport(title, content, projectName, completionPercentage );
             }
             catch (Exception ex)
             {

@@ -11,22 +11,27 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly ProgressReportRepository _progressReportRepository;
         private readonly AuthenticationService _authenticationService;
+        private readonly ProjectRepository _projectRepository;
         public event LogEventHandler ProgressReportAdded;
         public event LogEventHandler ProgressReportDeleted;
         public event LogEventHandler ProgressReportUpdated;
 
-        public ProgressReportController(ProgressReportRepository progressReportRepository, AuthenticationService authenticationService)
+        public ProgressReportController(ProgressReportRepository progressReportRepository, AuthenticationService authenticationService, ProjectRepository projectRepository)
         {
             _progressReportRepository = progressReportRepository;
             _authenticationService = authenticationService;
+            _projectRepository = projectRepository;
         }
 
-        public void AddProgressReport(string title, string content, int userId, int projectId, int completionPercentage)
+        public void AddProgressReport(string title, string content, string projectName, int completionPercentage)
         {
             try
             {
-                
-                ProgressReport report = new ProgressReport(title, content, userId, projectId, completionPercentage);
+                var project = _projectRepository.GetProjectByName(projectName);
+                if (project == null)
+                    throw new KeyNotFoundException($"Nie udało się znaleźć projektu o nazwie {projectName}");
+                int projectId = project.Id;
+                ProgressReport report = new ProgressReport(title, content, _authenticationService.CurrentSession.User.Id, projectId, completionPercentage);
                 _progressReportRepository.AddProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie dodany.");
                 ProgressReportAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy raport postępu o tytule {title}"));
