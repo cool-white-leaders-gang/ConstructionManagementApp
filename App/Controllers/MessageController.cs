@@ -16,9 +16,10 @@ namespace ConstructionManagementApp.App.Controllers
 
 
 
-        public MessageController(MessageRepository messageRepository, AuthenticationService authenticationService)
+        public MessageController(UserRepository userRepository, MessageRepository messageRepository, AuthenticationService authenticationService)
         {
             _messageRepository = messageRepository;
+            _userRepository = userRepository;
             _authenticationService = authenticationService;
         }
 
@@ -65,7 +66,13 @@ namespace ConstructionManagementApp.App.Controllers
 
                 foreach (var message in messages)
                 {
-                    Console.WriteLine($"Od: {_userRepository.GetUserById(message.SenderId)}, Treść: {message.Content}, Data: {message.SentAt}");
+                    var sender = _userRepository.GetUserById(message.SenderId);
+                    if (sender == null)
+                    {
+                        Console.WriteLine("Nie znaleziono użytkownika nadawcy.");
+                        continue;
+                    }
+                    Console.WriteLine($"Od: {sender.Email}, Treść: {message.Content}, Data: {message.SentAt}");
                 }
             }
             catch (ArgumentException ex)
