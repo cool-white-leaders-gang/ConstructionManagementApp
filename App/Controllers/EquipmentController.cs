@@ -47,20 +47,21 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateEquipment(int equipmentId, string newName, EquipmentStatus status, int projectId)
+        public void UpdateEquipment(int equipmentId, string newName, EquipmentStatus status, string projectName)
         {
             try
             {
                 var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
+                var project = _projectRepository.GetProjectByName(projectName);
                 if (equipment == null)
                     throw new KeyNotFoundException($"Nie znaleziono sprzętu o Id {equipmentId}.");
              
-                if (_projectRepository.GetProjectById(projectId) == null)
-                    throw new KeyNotFoundException($"Nie znaleziono projektu o Id {projectId}");
+                if (_projectRepository.GetProjectById(project.Id) == null)
+                    throw new KeyNotFoundException($"Nie znaleziono projektu o Id {project.Id}");
 
                 equipment.Name = newName;
                 equipment.Status = status;
-                equipment.ProjectId = projectId;
+                equipment.ProjectId = project.Id;
 
                 _equipmentRepository.UpdateEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie zaktualizowany.");
