@@ -108,7 +108,7 @@ namespace ConstructionManagementApp.App.Controllers
                 user.Email = email;
                 user.PasswordHash = passwordHash;
                 user.Role = role;
-
+ 
                 _userRepository.UpdateUser(user);
                 Console.WriteLine("Dane użytkownika zostały pomyślnie zaktualizowane.");
                 UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano użytkownika o nazwie {userNameUpdate}"));
@@ -131,7 +131,7 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
-                _userRepository.GetUserByUsername(username);
+                _userRepository.DeleteUserByName(username);
                 Console.WriteLine("Użytkownik został pomyślnie usunięty.");
                 UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika o nazwie {username}"));
             }
