@@ -167,24 +167,19 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out var userId))
-                {
-                    Console.WriteLine("Niepoprawne ID użytkownika.");
-                    return;
-                }
-                User user = _userController.GetUserById(userId);
+                Console.Write("Podaj nazwę użytkownika: ");
+                string userName = Console.ReadLine();
+                User user = _userController.GetUserByUsername(userName);
                 if (user.Role != Role.Worker)
                 {
                     throw new InvalidOperationException($"Nie można dodać użytkownika o roli {user.Role}");
                 }
                 List<User> teamMembers = _teamMembersRepository.GetMembersOfTeam(teamId);
-                if (teamMembers.Any(member => member.Id == userId))
+                if (teamMembers.Any(member => member.Id == user.Id))
                 {
                     throw new InvalidOperationException("Użytkownik już jest dodany do zespołu");
                 }
-
-                _teamController.AddUserToTeam(teamId, userId);
+                _teamController.AddUserToTeam(teamId, userName);
             }
             catch (Exception ex)
             {
@@ -210,14 +205,10 @@ namespace ConstructionManagementApp.App.Views
                     return;
                 }
 
-                Console.Write("Podaj ID użytkownika: ");
-                if (!int.TryParse(Console.ReadLine(), out var userId))
-                {
-                    Console.WriteLine("Niepoprawne ID użytkownika.");
-                    return;
-                }
+                Console.Write("Podaj nazwę użytkownika: ");
+                string userName = Console.ReadLine();
 
-                _teamController.RemoveUserFromTeam(teamId, userId);
+                _teamController.RemoveUserFromTeam(teamId, userName);
             }
             catch (Exception ex)
             {

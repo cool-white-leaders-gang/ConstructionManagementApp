@@ -84,6 +84,8 @@ namespace ConstructionManagementApp.App.Views
             Console.Clear();
             Console.WriteLine("--- Twoje wiadomości ---");
             _messageController.DisplayMessagesForUser(userId);
+            ReturnToMenu();
+
         }
 
         private void SendMessageByUsername(int senderId)
@@ -105,6 +107,16 @@ namespace ConstructionManagementApp.App.Views
             {
                 Console.WriteLine($"Błąd: {ex.Message}");
             }
+            finally
+            {
+                ReturnToMenu();
+            }
+        }
+
+        private void ReturnToMenu()
+        {
+            Console.WriteLine("\nNaciśnij dowolny klawisz, aby wrócić do menu budżetów.");
+            Console.ReadKey();
         }
     }
 }

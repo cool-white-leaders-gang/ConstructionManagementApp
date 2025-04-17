@@ -147,6 +147,7 @@ namespace ConstructionManagementApp.App.Views
 
                 Console.Write("Podaj nowe hasło: ");
                 var password = Console.ReadLine();
+                
 
                 Console.WriteLine("Wybierz nową rolę: 1. Admin, 2. Manager, 3. Worker, 4. Client");
                 var roleChoice = Console.ReadLine();
@@ -158,7 +159,10 @@ namespace ConstructionManagementApp.App.Views
                     "4" => Role.Client,
                     _ => throw new ArgumentException("Wybrano nieprawidłową rolę.")
                 };
-
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    throw new ArgumentException("Hasło nie może być puste.");
+                }
                 var hashedPassword = PasswordHasher.HashPassword(password);
                 _userController.UpdateUser(userToUpdate, username, email, hashedPassword, role);
             }

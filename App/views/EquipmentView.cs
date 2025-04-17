@@ -147,14 +147,10 @@ namespace ConstructionManagementApp.App.Views
                 };
 
                 Console.Write("Podaj nazwę projektu: ");
-                int projectId;
-                while(!int.TryParse(Console.ReadLine(), out projectId))
-                {
-                    Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
-                    Console.ReadKey();
-                }
+                string projectName = Console.ReadLine();
+                
 
-                _equipmentController.UpdateEquipment(equipmentId, name, status, projectId);
+                _equipmentController.UpdateEquipment(equipmentId, name, status, projectName);
             }
             catch (Exception ex)
             {

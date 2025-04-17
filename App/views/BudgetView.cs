@@ -59,6 +59,7 @@ namespace ConstructionManagementApp.App.Views
                         break;
                     case 5:
                         isRunning = false; // Powrót do menu głównego
+                        Console.WriteLine("Naciśnij dowolny przycisk, aby przejść dalej");
                         break;
                     default:
                         Console.WriteLine("Niepoprawny wybór. Naciśnij dowolny klawisz, aby spróbować ponownie.");
