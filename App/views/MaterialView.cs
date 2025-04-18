@@ -27,7 +27,7 @@ namespace ConstructionManagementApp.App.Views
             {
                 Console.Clear();
                 Console.WriteLine("--- Zarządzanie materiałami ---");
-                Console.WriteLine("1. Wyświetl wszystkie materiały");
+                Console.WriteLine("1. Wyświetl materiały");
                 Console.WriteLine("2. Dodaj nowy materiał");
                 Console.WriteLine("3. Zaktualizuj materiał");
                 Console.WriteLine("4. Usuń materiał");
@@ -44,7 +44,7 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        if (HasPermission(Permission.ViewMaterials)) DisplayAllMaterials();
+                        if (HasPermission(Permission.ViewMaterials)) DisplayMaterialsForCurrentUser();
                         break;
                     case 2:
                         if (HasPermission(Permission.CreateMaterial)) AddMaterial();
@@ -77,10 +77,11 @@ namespace ConstructionManagementApp.App.Views
             return true;
         }
 
-        private void DisplayAllMaterials()
+        private void DisplayMaterialsForCurrentUser()
         {
             Console.Clear();
-            _materialController.DisplayAllMaterials();
+            Console.WriteLine("--- Wyświetl materiały przypisane do Twoich projektów ---");
+            _materialController.DisplayMaterialsForUser();
             ReturnToMenu();
         }
 

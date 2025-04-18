@@ -69,10 +69,10 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateTask, Permission.UpdateTask, Permission.ViewTasks, Permission.AssignTask,
 
                         // Materiały
-                        Permission.CreateMaterial, Permission.UpdateMaterial, Permission.ViewMaterials,
+                        Permission.CreateMaterial, Permission.UpdateMaterial, Permission.ViewMaterials, Permission.DeleteMaterial,
 
                         // Sprzęt
-                        Permission.CreateEquipment, Permission.UpdateEquipment, Permission.ViewEquipment,
+                        Permission.CreateEquipment, Permission.UpdateEquipment, Permission.ViewEquipment, Permission.DeleteEquipment, Permission.ViewEquipment,
 
                         // Raporty postępu
                         Permission.CreateProgressReport, Permission.UpdateProgressReport, Permission.ViewProgressReports,
@@ -90,7 +90,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.CreateProject, Permission.UpdateProject, Permission.ViewProjects,
 
                         // Zespoły
-                        Permission.CreateTeam, Permission.UpdateTeam, Permission.ViewTeam, Permission.AddMember, Permission.RemoveMember
+                        Permission.ViewTeam, Permission.AddMember, Permission.RemoveMember
                     }
                 },
                 {

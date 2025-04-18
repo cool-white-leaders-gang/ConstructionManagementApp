@@ -15,28 +15,37 @@ namespace ConstructionManagementApp.App.Controllers
         private readonly EquipmentRepository _equipmentRepository;
         private readonly ProjectRepository _projectRepository;
         private readonly AuthenticationService _authenticationService;
+        private readonly RBACService _rbacService;
         public event LogEventHandler EquipmentAdded;
         public event LogEventHandler EquipmentDeleted;
         public event LogEventHandler EquipmentUpdated;
 
-        public EquipmentController(EquipmentRepository equipmentRepository, ProjectRepository projectRepository, AuthenticationService authenticationService)
+        public EquipmentController(EquipmentRepository equipmentRepository, ProjectRepository projectRepository, AuthenticationService authenticationService, RBACService rbacService)
         {
             _equipmentRepository = equipmentRepository;
             _projectRepository = projectRepository;
             _authenticationService = authenticationService;
+            _rbacService = rbacService;
         }
 
         public void AddEquipment(string name, EquipmentStatus status, string projectName)
         {
             try
             {
+                var currentUser = _authenticationService.CurrentSession.User;
+
+                // Pobierz projekt na podstawie nazwy
                 var project = _projectRepository.GetProjectByName(projectName);
                 if (project == null)
-                    throw new KeyNotFoundException($"Nie znaleziono projektu o Id {projectName}");
+                    throw new KeyNotFoundException($"Nie znaleziono projektu o nazwie {projectName}.");
+
+                // Sprawdź czy użytkownik jest managerem projektu
+                if (!_rbacService.IsProjectManager(currentUser, project.Id, _projectRepository))
+                    throw new UnauthorizedAccessException("Nie masz uprawnień do dodawania sprzętu do tego projektu.");
                 var equipment = new Equipment(name, status, project.Id);
                 _equipmentRepository.AddEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie dodany.");
-                EquipmentAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowe wyposażenie o nazwie {name}"));
+                EquipmentAdded?.Invoke(this, new LogEventArgs(currentUser.Username, $"Dodano nowe wyposażenie o nazwie {name}"));
             }
             catch (ArgumentException ex)
             {
@@ -48,25 +57,35 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void UpdateEquipment(int equipmentId, string newName, EquipmentStatus status, string projectName)
+        public void UpdateEquipment(int equipmentId, string newName, EquipmentStatus status)
         {
             try
             {
+                var currentUser = _authenticationService.CurrentSession.User;
+
                 var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
-                var project = _projectRepository.GetProjectByName(projectName);
                 if (equipment == null)
-                    throw new KeyNotFoundException($"Nie znaleziono sprzętu o Id {equipmentId}.");
-             
-                if (_projectRepository.GetProjectById(project.Id) == null)
-                    throw new KeyNotFoundException($"Nie znaleziono projektu o Id {project.Id}");
+                    throw new KeyNotFoundException($"Nie znaleziono sprzętu o ID {equipmentId}.");
+
+                // Pobierz projekt na podstawie nazwy
+                var project = _projectRepository.GetProjectById(equipment.ProjectId);
+                if (project == null)
+                    throw new KeyNotFoundException($"Nie znaleziono projektu o ID {equipment.ProjectId}.");
+
+                // Sprawdź czy użytkownik jest managerem projektu
+                if (!_rbacService.IsProjectManager(currentUser, project.Id, _projectRepository))
+                    throw new UnauthorizedAccessException("Nie masz uprawnień do aktualizacji sprzętu w tym projekcie.");
+
+                // Aktualizuj sprzęt
+                
 
                 equipment.Name = newName;
                 equipment.Status = status;
-                equipment.ProjectId = project.Id;
+
 
                 _equipmentRepository.UpdateEquipment(equipment);
                 Console.WriteLine("Sprzęt został pomyślnie zaktualizowany.");
-                EquipmentUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano wyposażenie o ID {equipmentId}"));
+                EquipmentUpdated?.Invoke(this, new LogEventArgs(currentUser.Username, $"Zaktualizowano wyposażenie o ID {equipmentId}"));
 
             }
             catch (KeyNotFoundException ex)
@@ -87,6 +106,18 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                var currentUser = _authenticationService.CurrentSession.User;
+
+                // Pobierz sprzęt na podstawie ID
+                var equipment = _equipmentRepository.GetEquipmentById(equipmentId);
+                if (equipment == null)
+                    throw new KeyNotFoundException($"Nie znaleziono sprzętu o ID {equipmentId}.");
+
+                // Sprawdź czy użytkownik jest managerem projektu
+                var project = _projectRepository.GetProjectById(equipment.ProjectId);
+                if (project == null || !_rbacService.IsProjectManager(currentUser, project.Id, _projectRepository))
+                    throw new UnauthorizedAccessException("Nie masz uprawnień do usuwania sprzętu w tym projekcie.");
+
                 _equipmentRepository.DeleteEquipmentById(equipmentId);
                 Console.WriteLine("Sprzęt został pomyślnie usunięty.");
                 EquipmentDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto wyposażenie o ID {equipmentId}"));
@@ -102,14 +133,20 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void DisplayAllEquipments()
+        public void DisplayEquipmentsForUser()
         {
             try
             {
-                var equipments = _equipmentRepository.GetAllEquipments();
-                if (equipments.Count == 0)
+                var currentUser = _authenticationService.CurrentSession.User;
+                var userProjects = _rbacService.GetProjectsForUserOrManagedBy(currentUser, _projectRepository);
+
+                var equipments = _equipmentRepository.GetAllEquipments()
+                    .Where(equipment => userProjects.Contains(equipment.ProjectId))
+                    .ToList();
+
+                if (!equipments.Any())
                 {
-                    Console.WriteLine("Brak sprzętu w systemie.");
+                    Console.WriteLine("Brak sprzętu przypisanego do Twoich projektów.");
                     return;
                 }
 
@@ -125,6 +162,6 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
- 
+
     }
 }

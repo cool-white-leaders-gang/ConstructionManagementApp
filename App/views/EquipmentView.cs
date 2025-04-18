@@ -46,7 +46,7 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        if (HasPermission(Permission.ViewEquipment)) DisplayAllEquipments();
+                        if (HasPermission(Permission.ViewEquipment)) DisplayEquipmentsForCurrentUser();
                         break;
                     case 2:
                         if (HasPermission(Permission.CreateEquipment)) AddEquipment();
@@ -80,10 +80,10 @@ namespace ConstructionManagementApp.App.Views
             return true;
         }
 
-        private void DisplayAllEquipments()
+        private void DisplayEquipmentsForCurrentUser()
         {
             Console.Clear();
-            _equipmentController.DisplayAllEquipments();
+            _equipmentController.DisplayEquipmentsForUser();
             ReturnToMenu();
         }
 
@@ -146,11 +146,9 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Nieprawidłowy status sprzętu.")
                 };
 
-                Console.Write("Podaj nazwę projektu: ");
-                string projectName = Console.ReadLine();
                 
 
-                _equipmentController.UpdateEquipment(equipmentId, name, status, projectName);
+                _equipmentController.UpdateEquipment(equipmentId, name, status);
             }
             catch (Exception ex)
             {
