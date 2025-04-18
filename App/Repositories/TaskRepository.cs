@@ -10,11 +10,13 @@ namespace ConstructionManagementApp.App.Repositories
     {
         private readonly AppDbContext _context;
 
+        // Konstruktor repozytorium, inicjalizuje kontekst bazy danych
         public TaskRepository(AppDbContext context)
         {
             _context = context;
         }
 
+        // Dodanie nowego zadania do bazy danych
         public void AddTask(Task task)
         {
             if (task == null)
@@ -24,10 +26,12 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
+        // Aktualizacja istniejącego zadania
         public void UpdateTask(Task task)
         {
             var existingTask = GetTaskById(task.Id);
 
+            // Aktualizowanie właściwości zadania
             existingTask.Title = task.Title;
             existingTask.Description = task.Description;
             existingTask.Priority = task.Priority;
@@ -37,6 +41,7 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
+        // Usuwanie zadania po Id
         public void DeleteTaskById(int id)
         {
             var task = GetTaskById(id);
@@ -47,16 +52,19 @@ namespace ConstructionManagementApp.App.Repositories
             _context.SaveChanges();
         }
 
+        // Pobranie zadania po Id
         public Task GetTaskById(int id)
         {
             return _context.Tasks.FirstOrDefault(t => t.Id == id);
         }
 
+        // Pobranie zadania po tytule
         public Task GetTaskByTitle(string title)
         {
             return _context.Tasks.FirstOrDefault(t => t.Title == title);
         }
 
+        // Pobranie zadań po Id projektów
         public List<Task> GetTasksByProjectIds(List<int> projectIds)
         {
             if (projectIds == null || !projectIds.Any())

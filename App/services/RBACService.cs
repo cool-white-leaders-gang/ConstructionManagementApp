@@ -20,7 +20,6 @@ namespace ConstructionManagementApp.App.Services
         public RBACService(ProjectRepository projectRepository, TeamRepository teamRepository, TeamMembersRepository teamMembersRepository, UserRepository userRepository)
         {
             _projectRepository = projectRepository;
-            // Definicja permisji dla każdej roli
             _rolePermissions = new Dictionary<Role, List<Permission>>
             {
                 {
@@ -28,35 +27,25 @@ namespace ConstructionManagementApp.App.Services
                     {
                         // Użytkownicy
                         Permission.CreateUser, Permission.UpdateUser, Permission.DeleteUser, Permission.ViewUsers,
-
                         // Zadania
                         Permission.CreateTask, Permission.UpdateTask, Permission.DeleteTask, Permission.ViewTasks,
-                        Permission.AssignTask, Permission.RemoveFromTask,Permission.ViewTaskAssignment,Permission.CompleteTask,
-
+                        Permission.AssignTask, Permission.RemoveFromTask, Permission.ViewTaskAssignment, Permission.CompleteTask,
                         // Materiały
                         Permission.CreateMaterial, Permission.UpdateMaterial, Permission.DeleteMaterial, Permission.ViewMaterials,
-
                         // Sprzęt
                         Permission.CreateEquipment, Permission.UpdateEquipment, Permission.DeleteEquipment, Permission.ViewEquipment,
-
                         // Raporty postępu
                         Permission.CreateProgressReport, Permission.UpdateProgressReport, Permission.DeleteProgressReport, Permission.ViewProgressReports,
-
                         // Budżet
                         Permission.CreateBudget, Permission.UpdateBudget, Permission.DeleteBudget, Permission.ViewBudget,
-
                         // Logi
                         Permission.CreateLog, Permission.ViewLogs,
-
                         // Powiadomienia
                         Permission.SendMessage, Permission.ViewMessages,
-
                         // Zgłoszenia problemów
                         Permission.CreateIssue, Permission.UpdateIssue, Permission.DeleteIssue, Permission.ViewIssues,
-
                         // Projekty
                         Permission.CreateProject, Permission.UpdateProject, Permission.DeleteProject, Permission.ViewProjects,
-
                         // Zespoły
                         Permission.CreateTeam, Permission.UpdateTeam, Permission.DeleteTeam, Permission.ViewTeam, Permission.AddMember, Permission.RemoveMember
                     }
@@ -66,31 +55,22 @@ namespace ConstructionManagementApp.App.Services
                     {
                         // Użytkownicy
                         Permission.ViewUsers,
-
                         // Zadania
                         Permission.CreateTask, Permission.UpdateTask, Permission.ViewTasks, Permission.AssignTask,
-
                         // Materiały
                         Permission.CreateMaterial, Permission.UpdateMaterial, Permission.ViewMaterials, Permission.DeleteMaterial,
-
                         // Sprzęt
                         Permission.CreateEquipment, Permission.UpdateEquipment, Permission.ViewEquipment, Permission.DeleteEquipment, Permission.ViewEquipment,
-
                         // Raporty postępu
                         Permission.CreateProgressReport, Permission.UpdateProgressReport, Permission.ViewProgressReports,
-
                         // Budżet
                         Permission.ViewBudget,
-
                         // Powiadomienia
                         Permission.SendMessage, Permission.ViewMessages,
-
                         // Zgłoszenia problemów
                         Permission.CreateIssue, Permission.UpdateIssue, Permission.ViewIssues,
-
                         // Projekty
                         Permission.CreateProject, Permission.UpdateProject, Permission.ViewProjects,
-
                         // Zespoły
                         Permission.ViewTeam, Permission.AddMember, Permission.RemoveMember
                     }
@@ -100,22 +80,16 @@ namespace ConstructionManagementApp.App.Services
                     {
                         // Zadania
                         Permission.ViewTasks, Permission.CompleteTask, Permission.StartTask,
-
                         // Materiały
                         Permission.ViewMaterials,
-
                         // Sprzęt
                         Permission.ViewEquipment,
-
                         // Raporty postępu
                         Permission.CreateProgressReport,
-
                         // Powiadomienia
                         Permission.ViewMessages, Permission.SendMessage,
-
                         // Zgłoszenia problemów
                         Permission.CreateIssue, Permission.ViewIssues,
-
                         // Projekty
                         Permission.ViewProjects
                     }
@@ -125,10 +99,8 @@ namespace ConstructionManagementApp.App.Services
                     {
                         // Raporty postępu
                         Permission.ViewProgressReports,
-
                         // Powiadomienia
                         Permission.ViewMessages, Permission.SendMessage,
-
                         // Projekty
                         Permission.ViewProjects
                     }
@@ -189,7 +161,7 @@ namespace ConstructionManagementApp.App.Services
         {
             if (user == null || user.Role != Role.Worker)
                 return false;
-            if(user.Role == Role.Admin)
+            if (user.Role == Role.Admin)
                 return true;
             var project = projectRepository.GetProjectById(projectId);
             if (project == null)

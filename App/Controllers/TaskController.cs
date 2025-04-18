@@ -343,6 +343,33 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                // Pobierz aktualnie zalogowanego użytkownika
+                var currentUser = _authenticationService.CurrentSession.User;
+
+                // Pobierz zadanie na podstawie ID
+                var task = _taskRepository.GetTaskById(taskId);
+                if (task == null)
+                {
+                    throw new KeyNotFoundException($"Nie znaleziono zadania o ID {taskId}.");
+                }
+
+                // Pobierz projekt powiązany z zadaniem
+                var project = _projectRepository.GetProjectById(task.ProjectId);
+                if (project == null)
+                {
+                    throw new KeyNotFoundException($"Nie znaleziono projektu powiązanego z zadaniem o ID {taskId}.");
+                }
+
+                // Sprawdź, czy użytkownik ma dostęp:
+                // 1. Admin ma zawsze dostęp
+                // 2. Użytkownik jest przypisany do projektu jako worker
+                // 3. Użytkownik jest menedżerem projektu
+                if (!_rbacService.IsWorkerInProjectTeam(currentUser, project.Id, _projectRepository) &&
+                    !_rbacService.IsProjectManager(currentUser, project.Id, _projectRepository))
+                {
+                    throw new UnauthorizedAccessException("Nie masz uprawnień do wyświetlania użytkowników przypisanych do tego zadania.");
+                }
+
                 // Pobranie użytkowników przypisanych do zadania
                 var users = _taskAssignmentRepository.GetWorkersAssignedToTask(taskId);
                 if (users == null || users.Count == 0)
@@ -357,9 +384,13 @@ namespace ConstructionManagementApp.App.Controllers
                     Console.WriteLine(user.ToString());
                 }
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Brak uprawnień: {ex.Message}");
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Błąd podczas pobierania użytkowników w zadania: {ex.Message}");
+                Console.WriteLine($"Błąd podczas pobierania użytkowników w zadaniu: {ex.Message}");
             }
         }
     }

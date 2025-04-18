@@ -1,12 +1,8 @@
 using System;
-using System.Runtime.InteropServices.Marshalling;
-using System.Security.Cryptography;
-using System.Text;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Utilities;
 using ConstructionManagementApp.Events;
-using ConstructionManagementApp.Services;
 using ConstructionManagementApp.App.Interfaces;
 using ConstructionManagementApp.App.Delegates;
 
@@ -25,8 +21,10 @@ namespace ConstructionManagementApp.App.Services
             CurrentSession = null;
         }
 
+        // Logowanie użytkownika
         public bool Login(string email, string password)
         {
+            // Sprawdzenie, czy użytkownik istnieje
             var user = _userRepository.GetUserByEmail(email);
             if (user == null)
             {
@@ -34,18 +32,23 @@ namespace ConstructionManagementApp.App.Services
                 return false;
             }
 
+            // Weryfikacja hasła
             if (!VerifyPassword(password, user.PasswordHash))
             {
                 Console.WriteLine("Nieprawidłowe hasło.");
                 return false;
             }
 
+            // Tworzenie sesji po pomyślnym zalogowaniu
             CurrentSession = new Session(user);
             Console.WriteLine($"Zalogowano pomyślnie jako {CurrentSession.User.Username}.");
-            UserLoggedIn?.Invoke(this, new LogEventArgs(CurrentSession.User.Username, $"Uzytkownik zalogował się do systemu"));
+
+            // Wysyłanie zdarzenia logowania
+            UserLoggedIn?.Invoke(this, new LogEventArgs(CurrentSession.User.Username, "Użytkownik zalogował się do systemu"));
             return true;
         }
 
+        // Wylogowanie użytkownika
         public void Logout()
         {
             if (CurrentSession == null)
@@ -53,22 +56,22 @@ namespace ConstructionManagementApp.App.Services
                 Console.WriteLine("Brak aktywnej sesji.");
                 return;
             }
+
             string username = CurrentSession.User.Username;
             CurrentSession = null;
             Console.WriteLine($"Wylogowano użytkownika {username}.");
-
         }
 
+        // Pobranie aktualnie zalogowanego użytkownika
         public User GetCurrentUser()
         {
             return CurrentSession?.User;
         }
 
+        // Weryfikacja poprawności hasła
         private bool VerifyPassword(string password, string hashedPassword)
         {
             return PasswordHasher.HashPassword(password) == hashedPassword;
         }
-
-        
     }
 }
