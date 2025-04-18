@@ -85,48 +85,48 @@ App/
 
 - Logowanie
 
-![Ekran logowania](images/panel-logowania.jpg)
-![log](images/log-logowanie.jpg)
+![Ekran logowania](../images/panel-logowania.jpg)
+![log](../images/log-logowanie.jpg)
 
 ```Log po zalogowaniu```
 - Główne menu
 
-![glowne menu](images/menu-glowne.jpg)
+![glowne menu](../images/menu-glowne.jpg)
 
 - Ekran zarządzania 
 
 
-![ekran zarzadzania](images/ekran-zarzadzania.jpg)
+![ekran zarzadzania](../images/ekran-zarzadzania.jpg)
 - Wypisywanie tabeli
-![wypisywanie](images/wypisanie.jpg)
+![wypisywanie](../images/wypisanie.jpg)
 
 - Dodawanie do tabeli
-![dodawanie](images/dodawanie.jpg)
-![dodawanie w bazie danych](images/dodawanie-baza.jpg)
+![dodawanie](../images/dodawanie.jpg)
+![dodawanie w bazie danych](../images/dodawanie-baza.jpg)
 ```użytkownik dodany do bazy```
 
 							
-	![dodawanie log](images/dodawanie-log.jpg)
+	![dodawanie log](../images/dodawanie-log.jpg)
 <br>
 ```Log po dodaniu```
 
 - Aktualizacja tabeli
-![aktualizacja](images/aktualizacja.jpg)
-![aktualizacja w bazie danych](images/aktualizacja-baza.jpg)
+![aktualizacja](../images/aktualizacja.jpg)
+![aktualizacja w bazie danych](../images/aktualizacja-baza.jpg)
 ```użytkownik zaktualizowany w bazie```
 
 							
-	![aktualizacja log](images/aktualizacja-log.jpg)
+	![aktualizacja log](../images/aktualizacja-log.jpg)
 <br>
 ```Log po aktualizacji```
 
 - Usuwanie z tabeli
-![usuwanie](images/usuwanie.jpg)
-![usuwanie w bazie danych](images/usuwanie-baza.jpg)
+![usuwanie](../images/usuwanie.jpg)
+![usuwanie w bazie danych](../images/usuwanie-baza.jpg)
 ```użytkownik usuniety z bazy```
 
 							
-	![usuwanie log](images/usuwanie-log.jpg)
+	![usuwanie log](../images/usuwanie-log.jpg)
 <br>
 ```Log po usunieciu```
 
@@ -134,10 +134,10 @@ App/
 
 
 - Przykładowy ekran po wpisaniu danych niezgodnych z logiką aplikacji (zespołami może zarządzać użytkownik, który ma rolę managera) 
-![blad o nieistniejącym uzytkowniku](images/blad-manager.jpg)
+![blad o nieistniejącym uzytkowniku](../images/blad-manager.jpg)
 
 - Przykładowy ekran po wpisaniu nieprawidłowych lub nieistniejacyh danych 
-![błąd o niezgodności](images/blad-nie-istnieje.jpg)
+![błąd o niezgodności](../images/blad-nie-istnieje.jpg)
 
 
 
