@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Models
@@ -32,8 +33,8 @@ namespace ConstructionManagementApp.App.Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException("Email nie może być pusty.");
-                if (!value.Contains("@"))
-                    throw new ArgumentException("Email musi zawierać znak '@'.");
+                if (!Regex.IsMatch(value, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                    throw new ArgumentException("Podany adres e-mail jest nieprawidłowy.");
                 _email = value;
             }
         }
