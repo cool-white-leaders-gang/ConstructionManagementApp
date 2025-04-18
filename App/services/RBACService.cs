@@ -15,8 +15,9 @@ namespace ConstructionManagementApp.App.Services
         private readonly TeamRepository _teamRepository;
         private readonly ProjectRepository _projectRepository;
         private readonly TeamMembersRepository _teamMembersRepository;
+        private readonly UserRepository _userRepository;
 
-        public RBACService(ProjectRepository projectRepository, TeamRepository teamRepository, TeamMembersRepository teamMembersRepository)
+        public RBACService(ProjectRepository projectRepository, TeamRepository teamRepository, TeamMembersRepository teamMembersRepository, UserRepository userRepository)
         {
             _projectRepository = projectRepository;
             // Definicja permisji dla każdej roli
@@ -135,6 +136,7 @@ namespace ConstructionManagementApp.App.Services
             };
             _teamRepository = teamRepository;
             _teamMembersRepository = teamMembersRepository;
+            _userRepository = userRepository;
         }
 
         // Sprawdza, czy użytkownik ma określone uprawnienie
@@ -206,10 +208,16 @@ namespace ConstructionManagementApp.App.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            // Get the list of all projects
+            // Jeśli użytkownik jest administratorem, zwróć wszystkie projekty
+            if (user.Role == Role.Admin)
+            {
+                return projectRepository.GetAllProjects().Select(project => project.Id).ToList();
+            }
+
+            // Pobierz listę wszystkich projektów
             var allProjects = projectRepository.GetAllProjects();
 
-            // Filter projects where the user is part of the team or is the manager
+            // Filtruj projekty, gdzie użytkownik jest częścią zespołu lub menedżerem
             var userProjectIds = allProjects
                 .Where(project =>
                     _teamMembersRepository.GetMembersOfTeam(project.TeamId).Any(member => member.Id == user.Id) ||
@@ -222,6 +230,13 @@ namespace ConstructionManagementApp.App.Services
 
         public List<int> GetProjectsManagedBy(int managerId)
         {
+            // Jeśli ID menedżera jest administratorem, zwróć wszystkie projekty
+            var manager = _userRepository.GetUserById(managerId);
+            if (manager != null && manager.Role == Role.Admin)
+            {
+                return _projectRepository.GetAllProjects().Select(project => project.Id).ToList();
+            }
+
             var allProjects = _projectRepository.GetAllProjects();
             return allProjects
                 .Where(project => project.TeamId > 0 && _teamRepository.GetTeamById(project.TeamId)?.ManagerId == managerId)

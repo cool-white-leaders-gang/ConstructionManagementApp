@@ -40,7 +40,8 @@ namespace ConstructionManagementApp.App.Views
                 Console.WriteLine("5. Usuń członka z zespołu");
                 Console.WriteLine("6. Wyświetl członków zespołu");
                 Console.WriteLine("7. Wyświetl wszystkie zespoły");
-                Console.WriteLine("8. Powrót do menu głównego");
+                Console.WriteLine("8. Wyświetl szczegóły zespołu");
+                Console.WriteLine("9. Powrót do menu głównego");
 
                 Console.Write("\nTwój wybór: ");
                 if (!int.TryParse(Console.ReadLine(), out int choice))
@@ -74,6 +75,9 @@ namespace ConstructionManagementApp.App.Views
                         if(HasPermission(Permission.ViewTeam)) DisplayAllTeams();
                         break;
                     case 8:
+                        if (HasPermission(Permission.ViewTeam)) DisplayTeamById();
+                        break;
+                    case 9:
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:
@@ -90,15 +94,7 @@ namespace ConstructionManagementApp.App.Views
             {
                 Console.Clear();
                 Console.WriteLine("--- Wszystkie zespoły ---");
-                Console.WriteLine();
-
-                
-                List<Team> teams = _teamController.GetAllTeams();
-                foreach (var team in teams)
-                {
-                    Console.WriteLine($"Nazwa: {team.Name}, Manager: {team.ManagerId}");
-                    _teamController.DisplayUsersInTeam(team.Id);
-                }
+                _teamController.DisplayTeamsForUser();
 
 
             }
@@ -135,11 +131,7 @@ namespace ConstructionManagementApp.App.Views
 
                 Console.Write("Podaj nazwę managera zespołu: ");
                 string managerName = Console.ReadLine();
-                //if(!int.TryParse(Console.ReadLine(), out int managerId))
-                //{
-                //    Console.WriteLine("Niepoprawne ID managera.");
-                //    return;
-                //}
+                
                 _teamController.CreateTeam(name, managerName);
             }
             catch (Exception ex)
@@ -233,7 +225,7 @@ namespace ConstructionManagementApp.App.Views
                     Console.WriteLine("Niepoprawne ID zespołu.");
                     return;
                 }
-                var team = _teamController.GetTeamById(teamId);
+
 
 
                 _teamController.DisplayUsersInTeam(teamId);
@@ -299,6 +291,32 @@ namespace ConstructionManagementApp.App.Views
                 }
 
                 _teamController.UpdateTeam(taskId, name, managerId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
+            }
+            finally
+            {
+                ReturnToMenu();
+            }
+        }
+
+        private void DisplayTeamById()
+        {
+            try
+            {
+                Console.Clear();
+                Console.WriteLine("--- Wyświetlanie szczegółów zespołu ---");
+                Console.Write("Podaj ID zespołu: ");
+
+                if (!int.TryParse(Console.ReadLine(), out var teamId))
+                {
+                    Console.WriteLine("Niepoprawne ID zespołu. Spróbuj ponownie.");
+                    return;
+                }
+
+                _teamController.DisplayTeamById(teamId); // Wywołanie metody w kontrolerze
             }
             catch (Exception ex)
             {

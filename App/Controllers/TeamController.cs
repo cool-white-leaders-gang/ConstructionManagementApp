@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ConstructionManagementApp.App.Delegates;
+using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Services;
@@ -98,9 +99,19 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                var currentUser = _authenticationService.GetCurrentUser();
+                var team = _teamRepository.GetTeamById(teamId);
+                if (team == null)
+                    throw new KeyNotFoundException($"Nie znaleziono zespołu o ID {teamId}");
+                if (currentUser.Role != Role.Admin && currentUser.Id != team.ManagerId)
+                    throw new UnauthorizedAccessException("Tylko administrator lub menadżer zespołu może dodawać członków do zespołu.");
                 _teamMembersRepository.AddMemberToTeam(teamId, userName);
                 Console.WriteLine($"Użytkownik o Id {userName} został dodany do zespołu o Id {teamId}.");
-                UserAddedToTeam?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano użytkownika {userName} do zespołu o ID {teamId}"));
+                UserAddedToTeam?.Invoke(this, new LogEventArgs(currentUser.Username, $"Dodano użytkownika {userName} do zespołu o ID {teamId}"));
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Błąd: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -113,6 +124,12 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                var currentUser = _authenticationService.GetCurrentUser();
+                var team = _teamRepository.GetTeamById(teamId);
+                if (team == null)
+                    throw new KeyNotFoundException($"Nie znaleziono zespołu o ID {teamId}");
+                if (currentUser.Role != Role.Admin && currentUser.Id != team.ManagerId)
+                    throw new UnauthorizedAccessException("Tylko administrator lub menadżer zespołu może usuwać członków do zespołu.");
                 _teamMembersRepository.RemoveMemberFromTeam(teamId, userName);
                 Console.WriteLine($"Użytkownik o {userName} został usunięty z zespołu o Id {teamId}.");
                 UserRemovedFromTeam?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika {userName} z zespołu o ID {teamId}"));
@@ -124,20 +141,39 @@ namespace ConstructionManagementApp.App.Controllers
         }
 
         // Wyświetl wszystkie zespoły
-        public void DisplayAllTeams()
+        public void DisplayTeamsForUser()
         {
             try
             {
-                var teams = _teamRepository.GetAllTeams();
+                var currentUser = _authenticationService.CurrentSession.User;
+                List<Team> teams;
+                if (currentUser.Role == Enums.Role.Admin)
+                {
+                    teams = _teamRepository.GetAllTeams();
+                }
+                else
+                {
+                    // Filtrujemy zespoły, gdzie użytkownik jest Managerem lub członkiem
+
+                    teams = _teamRepository.GetAllTeams()
+                    .Where(team => team.ManagerId == currentUser.Id ||
+                                   _teamMembersRepository.GetMembersOfTeam(team.Id)
+                                       .Any(member => member.Id == currentUser.Id))
+                    .ToList();
+                }
+                
+
                 if (teams.Count == 0)
                 {
-                    Console.WriteLine("Brak zespołów do wyświetlenia.");
-                    return;
+                    Console.WriteLine("Nie należysz do żadnego zespołu.");
                 }
-
-                foreach (var team in teams)
+                else
                 {
-                    Console.WriteLine(team.ToString());
+                    Console.WriteLine("--- Twoje zespoły ---");
+                    foreach (var team in teams)
+                    {
+                        Console.WriteLine($"Nazwa: {team.Name}, Manager: {team.ManagerId}");
+                    }
                 }
             }
             catch (Exception ex)
@@ -151,14 +187,42 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                var currentUser = _authenticationService.CurrentSession.User;
                 var team = _teamRepository.GetTeamById(teamId);
+
                 if (team == null)
                 {
                     Console.WriteLine($"Zespół o Id {teamId} nie został znaleziony.");
                     return;
                 }
 
-                Console.WriteLine(team.ToString());
+                // Sprawdzenie, czy użytkownik ma dostęp do zespołu
+                if (currentUser.Role != Role.Admin &&
+                    team.ManagerId != currentUser.Id &&
+                    !_teamMembersRepository.GetMembersOfTeam(teamId).Any(member => member.Id == currentUser.Id))
+                {
+                    Console.WriteLine("Nie masz dostępu do tego zespołu.");
+                    return;
+                }
+
+                // Wyświetlanie szczegółów zespołu
+                Console.WriteLine($"--- Szczegóły zespołu o Id {teamId} ---");
+                Console.WriteLine($"Nazwa zespołu: {team.Name}");
+                Console.WriteLine($"Manager Id: {team.ManagerId}");
+                Console.WriteLine("Członkowie zespołu:");
+
+                var users = _teamMembersRepository.GetMembersOfTeam(teamId);
+                if (users.Count == 0)
+                {
+                    Console.WriteLine("Brak członków w tym zespole.");
+                }
+                else
+                {
+                    foreach (var user in users)
+                    {
+                        Console.WriteLine($"- {user.ToString()}");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -171,6 +235,20 @@ namespace ConstructionManagementApp.App.Controllers
         {
             try
             {
+                var currentUser = _authenticationService.GetCurrentUser();
+                var team = _teamRepository.GetTeamById(teamId);
+
+                if (team == null)
+                {
+                    Console.WriteLine($"Zespół o Id {teamId} nie został znaleziony.");
+                    return;
+                }
+
+                if (currentUser.Role != Role.Admin && team.ManagerId != currentUser.Id && !_teamMembersRepository.GetMembersOfTeam(teamId).Any(member => member.Id == currentUser.Id))
+                {
+                    throw new UnauthorizedAccessException("Nie masz uprawnień do wyświetlenia członków tego zespołu.");
+                }
+
                 var users = _teamMembersRepository.GetMembersOfTeam(teamId);
                 if (users.Count == 0)
                 {
@@ -189,35 +267,8 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public Team GetTeamById(int teamId)
-        {
-            try
-            {
-                var team = _teamRepository.GetTeamById(teamId);
-                if (team == null)
-                    throw new KeyNotFoundException($"Zespół o Id {teamId} nie został znaleziony.");
+        
 
-
-                return team;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania zespołu: {ex.Message}");
-                throw;
-            }
-        }
-
-        public List<Team> GetAllTeams()
-        {
-            try
-            {
-                return _teamRepository.GetAllTeams();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Błąd podczas pobierania zespołów: {ex.Message}");
-                throw;
-            }
-        }
+        
     }
 }

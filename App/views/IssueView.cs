@@ -83,7 +83,7 @@ namespace ConstructionManagementApp.App.Views
         private void DisplayAllIssues()
         {
             Console.Clear();
-            _issueController.DisplayAllIssues();
+            _issueController.DisplayIssuesForUser();
             ReturnToMenu();
         }
 
@@ -159,13 +159,9 @@ namespace ConstructionManagementApp.App.Views
                     _ => throw new ArgumentException("Nieprawidłowy status zgłoszenia.")
                 };
 
-                Console.Write("Podaj datę rozwiązania zgłoszenia (yyyy-MM-dd) lub pozostaw puste: ");
-                var resolvedAtInput = Console.ReadLine();
-                DateTime? resolvedAt = string.IsNullOrWhiteSpace(resolvedAtInput)
-                    ? null
-                    : DateTime.Parse(resolvedAtInput);
+                
 
-                _issueController.UpdateIssue(issueId, priority, status, resolvedAt);
+                _issueController.UpdateIssue(issueId, priority, status);
             }
             catch (Exception ex)
             {

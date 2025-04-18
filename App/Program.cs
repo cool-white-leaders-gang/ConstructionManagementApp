@@ -1,10 +1,7 @@
-﻿using ConstructionManagementApp.App.Models;
-using ConstructionManagementApp.App.Enums;
-using ConstructionManagementApp.App.Database;
+﻿using ConstructionManagementApp.App.Database;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.App.Controllers;
 using ConstructionManagementApp.App.Views;
-using Task = ConstructionManagementApp.App.Models.Task;
 using ConstructionManagementApp.App.Services;
 using ConstructionManagementApp.App.Utilities;
 using ConstructionManagementApp.Services;
@@ -39,7 +36,7 @@ namespace ConstructionManagementApp.App
             //initialize services
             AuthenticationService authenticationService = new AuthenticationService(userRepository);
             LogService logService = new LogService(logRepository);
-            RBACService rbac = new RBACService(projectRepository, teamRepository, teamMembersRepository);
+            RBACService rbac = new RBACService(projectRepository, teamRepository, teamMembersRepository, userRepository);
 
             // Initialize controllers
             UserController userController = new UserController(userRepository, authenticationService);
