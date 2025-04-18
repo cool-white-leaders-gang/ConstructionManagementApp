@@ -5,6 +5,7 @@ using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Services;
 using ConstructionManagementApp.Events;
 using ConstructionManagementApp.App.Delegates;
+using ConstructionManagementApp.App.Enums;
 
 namespace ConstructionManagementApp.App.Controllers
 {
@@ -13,15 +14,17 @@ namespace ConstructionManagementApp.App.Controllers
         private readonly ProgressReportRepository _progressReportRepository;
         private readonly AuthenticationService _authenticationService;
         private readonly ProjectRepository _projectRepository;
+        private readonly RBACService _rbacService;
         public event LogEventHandler ProgressReportAdded;
         public event LogEventHandler ProgressReportDeleted;
         public event LogEventHandler ProgressReportUpdated;
 
-        public ProgressReportController(ProgressReportRepository progressReportRepository, AuthenticationService authenticationService, ProjectRepository projectRepository)
+        public ProgressReportController(ProgressReportRepository progressReportRepository, AuthenticationService authenticationService, ProjectRepository projectRepository, RBACService rBACService)
         {
             _progressReportRepository = progressReportRepository;
             _authenticationService = authenticationService;
             _projectRepository = projectRepository;
+            _rbacService = rBACService;
         }
 
         public void AddProgressReport(string title, string content, string projectName, int completionPercentage)
@@ -95,21 +98,49 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void DisplayAllProgressReports()
+        public void DisplayReportsForUser()
         {
             try
             {
-                var reports = _progressReportRepository.GetAllProgressReports();
-                if (reports.Count == 0)
+                var currentUser = _authenticationService.CurrentSession.User;
+                var userRole = currentUser.Role;
+                var userId = currentUser.Id;
+                List<ProgressReport> reports;
+
+                if (userRole == Role.Admin)
                 {
-                    Console.WriteLine("Brak raportów postępu w systemie.");
+                    // Admin widzi wszystkie raporty
+                    reports = _progressReportRepository.GetAllProgressReports();
+                }
+                else if (userRole == Role.Manager)
+                {
+                    // Menedżer widzi raporty powiązane z projektami, którymi zarządza
+                    var managerProjects = _rbacService.GetProjectsManagedBy(userId);
+                    reports = _progressReportRepository.GetAllProgressReports()
+                        .Where(report => managerProjects.Contains(report.ProjectId)).ToList();
+                }
+                else if (userRole == Role.Client)
+                {
+                    // Klient widzi tylko raporty przypisane do swoich projektów
+                    reports = _progressReportRepository.GetAllProgressReports()
+                        .Where(report => _projectRepository.GetProjectById(report.ProjectId)?.ClientId == userId).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("Nie masz uprawnień do przeglądania raportów postępu.");
+                    return;
+                }
+
+                if (!reports.Any())
+                {
+                    Console.WriteLine("Brak raportów postępu do wyświetlenia.");
                     return;
                 }
 
                 Console.WriteLine("--- Lista raportów postępu ---");
                 foreach (var report in reports)
                 {
-                    Console.WriteLine($"ID: {report.Id}, Tytuł: {report.Title}, Data: {report.CreatedAt}, Opis: {report.Content}");
+                    Console.WriteLine($"ID: {report.Id}, Tytuł: {report.Title}, Data: {report.CreatedAt}, Opis: {report.Content}, Procent ukończenia: {report.CompletionPercentage}");
                 }
             }
             catch (Exception ex)

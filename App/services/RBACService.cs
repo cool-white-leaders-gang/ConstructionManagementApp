@@ -218,5 +218,14 @@ namespace ConstructionManagementApp.App.Services
 
             return userProjectIds;
         }
+
+        public List<int> GetProjectsManagedBy(int managerId)
+        {
+            var allProjects = _projectRepository.GetAllProjects();
+            return allProjects
+                .Where(project => project.TeamId > 0 && _teamRepository.GetTeamById(project.TeamId)?.ManagerId == managerId)
+                .Select(project => project.Id)
+                .ToList();
+        }
     }
 }

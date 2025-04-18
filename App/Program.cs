@@ -47,7 +47,7 @@ namespace ConstructionManagementApp.App
             LogController logController = new LogController(logRepository);
             MaterialController materialController = new MaterialController(materialRepository, projectRepository ,authenticationService);
             MessageController messageController = new MessageController(userRepository, messageRepository, authenticationService);
-            ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService, projectRepository);
+            ProgressReportController progressReportController = new ProgressReportController(progressReportRepository, authenticationService, projectRepository, rbac);
             ProjectController projectController = new ProjectController(projectRepository, userRepository, budgetRepository, teamRepository, authenticationService);
             TaskController taskController = new TaskController(taskRepository, taskAssignmentRepository, authenticationService, projectRepository, rbac, userRepository);
             TeamController teamController = new TeamController(teamRepository, teamMembersRepository, userController, authenticationService);

@@ -35,7 +35,7 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 if (_userRepository.GetUserByUsername(clientUsername) == null)
                     throw new KeyNotFoundException($"Nie znaleziono użytkownika {clientUsername}");
-                else if(_userRepository.GetUserByUsername(clientUsername).Role != Role.Client)
+                else if (_userRepository.GetUserByUsername(clientUsername).Role != Role.Client)
                     throw new InvalidOperationException("Podany użytkownik nie jest klientem.");
                 if (_budgetRepository.GetBudgetById(budgetId) == null)
                     throw new KeyNotFoundException($"Nie znaleziono budżetu o ID: {budgetId}");
@@ -44,7 +44,7 @@ namespace ConstructionManagementApp.App.Controllers
                 int clientId = _userRepository.GetUserByUsername(clientUsername).Id;
                 int teamId = _teamRepository.GetTeamByName(teamName).Id;
                 var project = new Project(name, description, teamId, budgetId, clientId);
-                
+
                 _projectRepository.CreateProject(project);
                 ProjectAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy projekt o nazwie {name}"));
                 Console.WriteLine("Projekt został pomyślnie utworzony.");
@@ -75,7 +75,7 @@ namespace ConstructionManagementApp.App.Controllers
                 project.TeamId = teamId;
                 project.ClientId = clientId;
 
-                _projectRepository.UpdateProject(project); 
+                _projectRepository.UpdateProject(project);
                 ProjectUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano projekt o nazwie {name}"));
                 Console.WriteLine("Projekt został pomyślnie zaktualizowany.");
             }
@@ -99,14 +99,42 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void DisplayAllProjects()
+        public void DisplayProjectsForCurrentUser()
         {
             try
             {
-                var projects = _projectRepository.GetAllProjects();
-                if (projects.Count == 0)
+                var currentUser = _authenticationService.CurrentSession.User;
+                var userRole = currentUser.Role;
+                var userId = currentUser.Id;
+
+                List<Project> projects;
+
+                if (userRole == Role.Admin)
                 {
-                    Console.WriteLine("Brak projektów w systemie.");
+                    // Admin widzi wszystkie projekty
+                    projects = _projectRepository.GetAllProjects();
+                }
+                else if (userRole == Role.Manager)
+                {
+                    // Menedżer widzi projekty, którymi zarządza
+                    projects = _projectRepository.GetAllProjects()
+                        .Where(project => project.TeamId > 0 && _teamRepository.GetTeamById(project.TeamId)?.ManagerId == userId).ToList();
+                }
+                else if (userRole == Role.Client)
+                {
+                    // Klient widzi tylko swoje projekty
+                    projects = _projectRepository.GetAllProjects()
+                        .Where(project => project.ClientId == userId).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("Nie masz uprawnień do przeglądania projektów.");
+                    return;
+                }
+
+                if (!projects.Any())
+                {
+                    Console.WriteLine("Brak projektów do wyświetlenia.");
                     return;
                 }
 

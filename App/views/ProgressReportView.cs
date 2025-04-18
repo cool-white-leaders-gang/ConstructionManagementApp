@@ -27,7 +27,7 @@ namespace ConstructionManagementApp.App.Views
             {
                 Console.Clear();
                 Console.WriteLine("--- Zarządzanie raportami postępu ---");
-                Console.WriteLine("1. Wyświetl wszystkie raporty postępu");
+                Console.WriteLine("1. Wyświetl raporty postępu");
                 Console.WriteLine("2. Dodaj nowy raport postępu");
                 Console.WriteLine("3. Zaktualizuj raport postępu");
                 Console.WriteLine("4. Usuń raport postępu");
@@ -44,7 +44,7 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        if (HasPermission(Permission.ViewProgressReports)) DisplayAllProgressReports();
+                        if (HasPermission(Permission.ViewProgressReports)) DisplayReportsForCurrentUser();
                         break;
                     case 2:
                         if (HasPermission(Permission.CreateProgressReport)) AddProgressReport();
@@ -77,10 +77,11 @@ namespace ConstructionManagementApp.App.Views
             return true;
         }
 
-        private void DisplayAllProgressReports()
+        private void DisplayReportsForCurrentUser()
         {
             Console.Clear();
-            _progressReportController.DisplayAllProgressReports();
+            Console.WriteLine("--- Wyświetl raporty postępu ---");
+            _progressReportController.DisplayReportsForUser();
             ReturnToMenu();
         }
 

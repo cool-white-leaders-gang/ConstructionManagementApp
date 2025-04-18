@@ -204,10 +204,10 @@ namespace ConstructionManagementApp.App.Controllers
                 var tasks = _taskRepository.GetTasksByProjectIds(userProjectIds);
 
                 if (!tasks.Any())
-                    throw new InvalidOperationException("Nie jesteś przypisany do żadnych projektów.");
-
-                if (tasks.Count == 0)
-                    throw new InvalidOperationException("Brak zadań");
+                {
+                    Console.WriteLine("Brak zadań");
+                    return;
+                }
 
                 Console.WriteLine("--- Lista zadań ---");
                 foreach (var task in tasks)

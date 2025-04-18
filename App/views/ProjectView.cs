@@ -44,7 +44,7 @@ namespace ConstructionManagementApp.App.Views
                 switch (choice)
                 {
                     case 1:
-                        if (HasPermission(Permission.ViewProjects)) DisplayAllProjects();
+                        if (HasPermission(Permission.ViewProjects)) DisplayProjectsForCurrentUser();
                         break;
                     case 2:
                         if (HasPermission(Permission.CreateProject)) CreateProject();
@@ -77,10 +77,11 @@ namespace ConstructionManagementApp.App.Views
             return true;
         }
 
-        private void DisplayAllProjects()
+        private void DisplayProjectsForCurrentUser()
         {
             Console.Clear();
-            _projectController.DisplayAllProjects();
+            Console.WriteLine("--- Wyświetl projekty ---");
+            _projectController.DisplayProjectsForCurrentUser();
             ReturnToMenu();
         }
 
