@@ -1,10 +1,11 @@
 ﻿using System;
+using ConstructionManagementApp.App.Interfaces;
 using ConstructionManagementApp.App.Repositories;
 using ConstructionManagementApp.Events;
 
 namespace ConstructionManagementApp.Services
 {
-    internal class LogService
+    internal class LogService : ILogService
     {
         private readonly LogRepository _logRepository; 
 

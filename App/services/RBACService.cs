@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using ConstructionManagementApp.App.Enums;
+using ConstructionManagementApp.App.Interfaces;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Repositories;
 
 namespace ConstructionManagementApp.App.Services
 {
-    internal class RBACService
+    internal class RBACService : IRBACService
     {
         // Słownik przypisujący role do listy permisji
         private readonly Dictionary<Role, List<Permission>> _rolePermissions;

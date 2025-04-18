@@ -193,6 +193,38 @@ Menu sterowane liczbami – wpisz numer opcji i wciśnij `Enter`. Aplikacja prow
 
 ---
 
+### Jak testowano aplikację
+
+#### Czy są testy jednostkowe? (np. przy użyciu xUnit/NUnit)
+
+Tak, aplikacja została przetestowana za pomocą testów jednostkowych, wykorzystując framework **xUnit** oraz bibliotekę **Moq** do tworzenia mocków.
+
+##### Przykłady przetestowanych funkcjonalności:
+
+1. **AuthenticationServiceTests**:
+    - Testowanie logowania:
+        - Sprawdzenie poprawności logowania przy użyciu prawidłowych danych logowania.
+        - Weryfikacja zachowania systemu, gdy użytkownik nie istnieje.
+        - Weryfikacja zachowania systemu, gdy hasło jest nieprawidłowe.
+    - Testowanie wylogowania:
+        - Sprawdzenie, czy sesja jest poprawnie czyszczona po wylogowaniu.
+    - Pobieranie aktualnie zalogowanego użytkownika:
+        - Sprawdzenie poprawnego zwracania zalogowanego użytkownika.
+        - Weryfikacja, że zwracana jest wartość null, jeśli użytkownik nie jest zalogowany.
+
+2. **UserRepositoryTests**:
+    - Tworzenie użytkownika:
+        - Weryfikacja, czy użytkownik jest poprawnie dodawany do bazy danych.
+        - Sprawdzenie, czy zostanie zgłoszony wyjątek w przypadku próby utworzenia użytkownika z już istniejącym adresem e-mail.
+    - Pobieranie użytkownika po Id:
+        - Weryfikacja, czy metoda zwraca poprawnego użytkownika, jeśli istnieje w bazie danych.
+
+##### Technologie i narzędzia użyte w testach:
+- **xUnit**: Framework do pisania i uruchamiania testów jednostkowych.
+- **Moq**: Biblioteka do tworzenia obiektów mock w celu izolacji testowanych komponentów.
+- **PasswordHasher**: Narzędzie do hashowania i weryfikacji haseł, używane w testach logowania.
+- **AppDbContext**: Mock bazy danych używany w testach metod dostępu do danych.
+
 ## 🔍 Problemy i ograniczenia
 
 - ✏️ Aktualizacja wymaga podania wszystkich danych (nie tylko np. e-maila)
