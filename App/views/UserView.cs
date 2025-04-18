@@ -61,6 +61,8 @@ namespace ConstructionManagementApp.App.Views
                         if (HasPermission(Permission.ViewUsers)) SearchUser();
                         break;
                     case 6:
+                        Console.WriteLine("Naciśnij dowolny przycisk, aby kontynuować");
+
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:

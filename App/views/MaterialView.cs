@@ -56,6 +56,8 @@ namespace ConstructionManagementApp.App.Views
                         if (HasPermission(Permission.DeleteMaterial)) DeleteMaterial();
                         break;
                     case 5:
+                        Console.WriteLine("Naciśnij dowolny przycisk, aby kontynuować");
+                        
                         isRunning = false; // Powrót do menu głównego
                         break;
                     default:

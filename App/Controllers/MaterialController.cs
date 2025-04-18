@@ -163,7 +163,6 @@ namespace ConstructionManagementApp.App.Controllers
                 }
 
                 // Wyświetla listę materiałów.
-                Console.WriteLine("--- Lista materiałów ---");
                 foreach (var material in materials)
                 {
                     Console.WriteLine($"ID: {material.Id}, Nazwa: {material.Name}, Ilość: {material.Quantity}, Jednostka: {material.Unit}, Projekt ID: {material.ProjectId}");

@@ -166,7 +166,6 @@ namespace ConstructionManagementApp.App.Controllers
                     return;
                 }
 
-                Console.WriteLine("--- Lista raportów postępu ---");
                 foreach (var report in reports)
                 {
                     Console.WriteLine($"ID: {report.Id}, Tytuł: {report.Title}, Data: {report.CreatedAt}, Opis: {report.Content}, Procent ukończenia: {report.CompletionPercentage}");

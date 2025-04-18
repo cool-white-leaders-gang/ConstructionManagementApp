@@ -165,10 +165,9 @@ namespace ConstructionManagementApp.App.Controllers
                     return;
                 }
 
-                Console.WriteLine("--- Lista projektów ---");
                 foreach (var project in projects)
                 {
-                    var budget = _budgetRepository.GetBudgetById(project.Id);
+                    var budget = _budgetRepository.GetBudgetById(project.BudgetId);
                     Console.WriteLine($"ID: {project.Id}, Nazwa: {project.Name}, Opis: {project.Description}, Budżet: {budget.TotalAmount}");
                 }
             }

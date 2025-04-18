@@ -51,6 +51,8 @@ namespace ConstructionManagementApp.App.Views
                             if (HasPermission(Permission.ViewMessages)) SendMessageByUsername(currentUser.Id);
                             break;
                         case 3:
+                            Console.WriteLine("Naciśnij dowolny przycisk, aby kontynuować");
+
                             isRunning = false; // Powrót do menu głównego
                             break;
                         default:

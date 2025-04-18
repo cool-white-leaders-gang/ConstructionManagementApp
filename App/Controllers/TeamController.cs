@@ -180,7 +180,6 @@ namespace ConstructionManagementApp.App.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("--- Twoje zespoły ---");
                     foreach (var team in teams)
                     {
                         Console.WriteLine($"Nazwa: {team.Name}, Manager: {team.ManagerId}");
@@ -217,7 +216,6 @@ namespace ConstructionManagementApp.App.Controllers
                 }
 
                 // Wyświetlanie szczegółów zespołu
-                Console.WriteLine($"--- Szczegóły zespołu o Id {teamId} ---");
                 Console.WriteLine($"Nazwa zespołu: {team.Name}");
                 Console.WriteLine($"Manager Id: {team.ManagerId}");
                 Console.WriteLine("Członkowie zespołu:");

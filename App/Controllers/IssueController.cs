@@ -191,7 +191,6 @@ namespace ConstructionManagementApp.App.Controllers
                 }
 
                 // Wyświetlanie zgłoszeń
-                Console.WriteLine("--- Lista zgłoszeń ---");
                 foreach (var issue in issues)
                 {
                     Console.WriteLine($"ID: {issue.Id}, Tytuł: {issue.Title}, Priorytet: {issue.Priority}, Status: {issue.Status}, Data utworzenia: {issue.CreatedAt}");
