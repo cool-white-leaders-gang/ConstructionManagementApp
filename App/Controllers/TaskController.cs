@@ -6,7 +6,6 @@ using ConstructionManagementApp.App.Enums;
 using ConstructionManagementApp.App.Services;
 using ConstructionManagementApp.Events;
 using ConstructionManagementApp.App.Delegates;
-using ConstructionManagementApp.App.Exceptions;
 using ConstructionManagementApp.App.Models;
 
 
@@ -51,7 +50,7 @@ namespace ConstructionManagementApp.App.Controllers
                 int projectId = project.Id;
                 if (!_rbacService.IsProjectManager(_authenticationService.CurrentSession.User, projectId, _projectRepository))
                 {
-                    throw new AuthorizationException("Brak uprawnień. Tylko menedżerowie tego projektu lub administratorzy mogą dodawać zadania.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko menedżerowie tego projektu lub administratorzy mogą dodawać zadania.");
                 }
                 var task = new Task(title, description, priority, progress, projectId);
                 _taskRepository.AddTask(task);
@@ -82,7 +81,7 @@ namespace ConstructionManagementApp.App.Controllers
                 int projectId = project.Id;
                 if (!_rbacService.IsProjectManager(_authenticationService.CurrentSession.User, projectId, _projectRepository))
                 {
-                    throw new AuthorizationException("Brak uprawnień. Tylko menedżerowie tego projektu lub administratorzy mogą dodawać zadania.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko menedżerowie tego projektu lub administratorzy mogą dodawać zadania.");
                 }
                 task.Title = title;
                 task.Description = description;
@@ -116,7 +115,7 @@ namespace ConstructionManagementApp.App.Controllers
                     throw new KeyNotFoundException($"Nie znaleziono zadania o ID {id}.");
                 var assignedUsers = _taskAssignmentRepository.GetWorkersAssignedToTask(id);
                 if (!assignedUsers.Any(worker => worker.Id == _authenticationService.CurrentSession.User.Id))
-                    throw new AuthorizationException("Brak uprawnień. Tylko przypisani użytkownicy mogą rozpocząć zadanie.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko przypisani użytkownicy mogą rozpocząć zadanie.");
                 task.Progress = TaskProgress.Completed;
                 _taskRepository.UpdateTask(task);
                 Console.WriteLine("Zadania zostało pomyślnie ukończone");
@@ -145,7 +144,7 @@ namespace ConstructionManagementApp.App.Controllers
                     throw new KeyNotFoundException($"Nie znaleziono zadania o ID {id}");
                 var assignedUsers = _taskAssignmentRepository.GetWorkersAssignedToTask(id);
                 if (!assignedUsers.Any(worker => worker.Id == _authenticationService.CurrentSession.User.Id))
-                    throw new AuthorizationException("Brak uprawnień. Tylko przypisani użytkownicy mogą rozpocząć zadanie.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko przypisani użytkownicy mogą rozpocząć zadanie.");
                 task.Progress = TaskProgress.InProgress;
                 _taskRepository.UpdateTask(task);
                 Console.WriteLine("Zadanie zostało rozpoczęte");
@@ -178,7 +177,7 @@ namespace ConstructionManagementApp.App.Controllers
                 int projectId = project.Id;
                 if (!_rbacService.IsProjectManager(_authenticationService.CurrentSession.User, projectId, _projectRepository))
                 {
-                    throw new AuthorizationException("Brak uprawnień. Tylko menedżerowie tego projektu lub administratorzy mogą dodawać zadania.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko menedżerowie tego projektu lub administratorzy mogą dodawać zadania.");
                 }
                 _taskRepository.DeleteTaskById(id);
                 Console.WriteLine("Zadanie zostało pomyślnie usunięte.");
@@ -229,12 +228,12 @@ namespace ConstructionManagementApp.App.Controllers
                 if (task == null)
                     throw new KeyNotFoundException($"Nie znaleziono zadania o ID {taskId}.");
                 if (!_rbacService.IsProjectManager(_authenticationService.CurrentSession.User, task.ProjectId, _projectRepository))
-                    throw new AuthorizationException("Brak uprawnień. Tylko manager projektu może przypisywać pracowników do zadania.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko manager projektu może przypisywać pracowników do zadania.");
                 var worker = _userRepository.GetUserByUsername(username);
                 if (worker == null)
                     throw new KeyNotFoundException($"Nie znaleziono użytkownika o nazwie {username}.");
                 if (!_rbacService.IsWorkerInProjectTeam(worker, task.ProjectId, _projectRepository))
-                    throw new AuthorizationException("Brak uprawnień. Pracownik musi być członkiem zespołu przypisanego do projektu.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Pracownik musi być członkiem zespołu przypisanego do projektu.");
                 _taskAssignmentRepository.AssignWorkerToTask(taskId, username);
                 Console.WriteLine($"Użytkownik o nazwie {username} został przypisany do zadania o ID {taskId}.");
                 TaskAssigned?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Przypisano użytkownika {username} do zadania o ID {taskId}"));
@@ -253,7 +252,7 @@ namespace ConstructionManagementApp.App.Controllers
                 if (task == null)
                     throw new KeyNotFoundException($"Nie znaleziono zadania o ID {taskId}.");
                 if (!_rbacService.IsProjectManager(_authenticationService.CurrentSession.User, task.ProjectId, _projectRepository))
-                    throw new AuthorizationException("Brak uprawnień. Tylko manager projektu może usuwać pracowników z zadania.");
+                    throw new UnauthorizedAccessException("Brak uprawnień. Tylko manager projektu może usuwać pracowników z zadania.");
                 var worker = _userRepository.GetUserByUsername(username);
                 if (worker == null)
                     throw new KeyNotFoundException($"Nie znaleziono użytkownika o nazwie {username}.");
