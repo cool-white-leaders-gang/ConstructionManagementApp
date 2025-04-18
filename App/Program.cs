@@ -15,8 +15,10 @@ namespace ConstructionManagementApp.App
 {
     internal class Program
     {
+        
         static void Main(string[] args)
         {
+            
             AppDbContext Context = new AppDbContext();
 
             // Initialize repositories

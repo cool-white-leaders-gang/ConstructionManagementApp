@@ -97,7 +97,7 @@ namespace ConstructionManagementApp.App.Services
                     Role.Worker, new List<Permission>
                     {
                         // Zadania
-                        Permission.ViewTasks, Permission.CompleteTask,
+                        Permission.ViewTasks, Permission.CompleteTask, Permission.StartTask,
 
                         // Materiały
                         Permission.ViewMaterials,
@@ -106,7 +106,7 @@ namespace ConstructionManagementApp.App.Services
                         Permission.ViewEquipment,
 
                         // Raporty postępu
-                        Permission.CreateProgressReport, Permission.ViewProgressReports,
+                        Permission.CreateProgressReport,
 
                         // Powiadomienia
                         Permission.ViewMessages, Permission.SendMessage,

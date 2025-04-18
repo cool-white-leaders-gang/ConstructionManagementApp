@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ConstructionManagementApp.App.Models;
 using ConstructionManagementApp.App.Enums;
-using Task = ConstructionManagementApp.App.Models.Task; // Alias for Task model
+using Task = ConstructionManagementApp.App.Models.Task; 
 
 namespace ConstructionManagementApp.App.Database
 {
@@ -24,15 +24,23 @@ namespace ConstructionManagementApp.App.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Connection details (ensure these are correct for your environment)
-            string server = "localhost";
-            string database = "construction_management";
-            string user = "root";
-            string password = ""; // Consider using a configuration provider for sensitive data
-            optionsBuilder.UseMySql($"server={server};database={database};user={user};password={password};", new MySqlServerVersion(new Version(10, 4, 32))); // Match server version from SQL dump
-            if (!optionsBuilder.IsConfigured)
+            try
             {
-                optionsBuilder.EnableSensitiveDataLogging(); // Enable sensitive data logging
+                string server = "localhost";
+                string database = "construction_management";
+                string user = "root";
+                string password = ""; 
+
+                optionsBuilder.UseMySql($"server={server};database={database};user={user};password={password};", new MySqlServerVersion(new Version(10, 4, 32)));
+
+                if (!optionsBuilder.IsConfigured)
+                {
+                    optionsBuilder.EnableSensitiveDataLogging(); // Logowanie szczegółowe
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Nie można nawiązać połączenia z bazą danych. Upewnij się, że serwer MySQL jest uruchomiony.", ex);
             }
         }
 

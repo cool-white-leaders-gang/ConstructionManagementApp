@@ -23,6 +23,7 @@ namespace ConstructionManagementApp.App.Enums
         RemoveFromTask,
         ViewTaskAssignment,
         CompleteTask,
+        StartTask,
 
         // Materiały
         CreateMaterial,     // Dodawanie materiału
