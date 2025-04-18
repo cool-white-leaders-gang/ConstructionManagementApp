@@ -8,20 +8,28 @@ using ConstructionManagementApp.App.Delegates;
 
 namespace ConstructionManagementApp.App.Controllers
 {
+    // Klasa kontrolera do zarządzania budżetami
     internal class BudgetController
     {
+        // Repozytorium do operacji na danych budżetu
         private readonly BudgetRepository _budgetRepository;
+
+        // Serwis autoryzacji użytkownika
         private readonly AuthenticationService _authenticationService;
+
+        // Zdarzenia wykorzystywane do logowania operacji
         public event LogEventHandler BudgetAdded;
         public event LogEventHandler BudgetDeleted;
         public event LogEventHandler BudgetUpdated;
 
+        // Konstruktor kontrolera, inicjalizuje repozytorium i serwis autoryzacji
         public BudgetController(BudgetRepository budgetRepository, AuthenticationService authenticationService)
         {
             _budgetRepository = budgetRepository;
             _authenticationService = authenticationService;
         }
 
+        // Metoda pobierająca budżet na podstawie ID
         public Budget GetBudgetById(int budgetId)
         {
             try
@@ -42,16 +50,19 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        
-
+        // Metoda dodająca nowy budżet
         public void AddBudget(decimal totalAmount)
         {
             try
             {
-                var budget = new Budget(totalAmount);
-                _budgetRepository.AddBudget(budget);
+                var budget = new Budget(totalAmount); // Tworzenie nowego budżetu
+                _budgetRepository.AddBudget(budget);  // Dodanie do repozytorium
                 Console.WriteLine("Budżet został pomyślnie dodany.");
-                BudgetAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy budżet"));
+
+                // Wywołanie zdarzenia logowania
+                BudgetAdded?.Invoke(this, new LogEventArgs(
+                    _authenticationService.CurrentSession.User.Username,
+                    $"Dodano nowy budżet"));
             }
             catch (ArgumentException ex)
             {
@@ -63,6 +74,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Metoda aktualizująca istniejący budżet
         public void UpdateBudget(int budgetId, decimal totalAmount, decimal spentAmount)
         {
             try
@@ -71,12 +83,17 @@ namespace ConstructionManagementApp.App.Controllers
                 if (budget == null)
                     throw new KeyNotFoundException($"Nie znaleziono budżetu o ID {budgetId}.");
 
+                // Aktualizacja danych budżetu
                 budget.TotalAmount = totalAmount;
                 budget.SpentAmount = spentAmount;
 
-                _budgetRepository.UpdateBudget(budget);
+                _budgetRepository.UpdateBudget(budget); // Zapis zmian
                 Console.WriteLine("Budżet został pomyślnie zaktualizowany.");
-                BudgetUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Budżet o ID {budgetId} został zaktualizowany."));
+
+                // Wywołanie zdarzenia logowania
+                BudgetUpdated?.Invoke(this, new LogEventArgs(
+                    _authenticationService.CurrentSession.User.Username,
+                    $"Budżet o ID {budgetId} został zaktualizowany."));
             }
             catch (KeyNotFoundException ex)
             {
@@ -92,13 +109,18 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Metoda usuwająca budżet o danym ID
         public void DeleteBudget(int budgetId)
         {
             try
             {
-                _budgetRepository.DeleteBudgetById(budgetId);
+                _budgetRepository.DeleteBudgetById(budgetId); // Usunięcie budżetu
                 Console.WriteLine("Budżet został pomyślnie usunięty.");
-                BudgetDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Budżet o ID {budgetId} został usunięty."));
+
+                // Wywołanie zdarzenia logowania
+                BudgetDeleted?.Invoke(this, new LogEventArgs(
+                    _authenticationService.CurrentSession.User.Username,
+                    $"Budżet o ID {budgetId} został usunięty."));
             }
             catch (KeyNotFoundException ex)
             {
@@ -110,6 +132,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Metoda wyświetlająca wszystkie budżety
         public void DisplayAllBudgets()
         {
             try

@@ -14,16 +14,20 @@ namespace ConstructionManagementApp.App.Controllers
     {
         private readonly UserRepository _userRepository;
         private readonly AuthenticationService _authenticationService;
+
+        // Zdarzenia do logowania działań związanych z użytkownikami
         public event LogEventHandler UserAdded;
         public event LogEventHandler UserUpdated;
         public event LogEventHandler UserDeleted;
 
+        // Konstruktor kontrolera, inicjalizujący repozytoria i serwisy
         public UserController(UserRepository userRepository, AuthenticationService authenticationService)
         {
             _userRepository = userRepository;
             _authenticationService = authenticationService;
         }
 
+        // Pobranie użytkownika po jego ID
         public User GetUserById(int userId)
         {
             try
@@ -40,6 +44,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Pobranie użytkownika po nazwie użytkownika
         public User GetUserByUsername(string username)
         {
             try
@@ -56,6 +61,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Pobranie użytkownika po adresie e-mail
         public User GetUserByEmail(string email)
         {
             try
@@ -76,15 +82,18 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Dodanie nowego użytkownika
         public void AddUser(string username, string email, string passwordHash, Role role)
         {
             try
             {
-                var user = new User(username, email,PasswordHasher.HashPassword(passwordHash), role);
+                // Tworzenie użytkownika i dodanie do repozytorium
+                var user = new User(username, email, PasswordHasher.HashPassword(passwordHash), role);
                 _userRepository.CreateUser(user);
                 Console.WriteLine("Użytkownik został pomyślnie dodany.");
+
+                // Logowanie akcji dodania użytkownika
                 UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowego użytkownika o nazwie {username}"));
-                
             }
             catch (ArgumentException ex)
             {
@@ -94,9 +103,9 @@ namespace ConstructionManagementApp.App.Controllers
             {
                 Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
             }
-
         }
 
+        // Aktualizacja danych użytkownika
         public void UpdateUser(string userNameUpdate, string username, string email, string passwordHash, Role role)
         {
             try
@@ -105,14 +114,17 @@ namespace ConstructionManagementApp.App.Controllers
                 if (user == null)
                     throw new KeyNotFoundException($"Nie znaleziono użytkownika o nazwie {userNameUpdate}.");
 
+                // Aktualizacja danych użytkownika
                 user.Username = username;
                 user.Email = email;
                 user.PasswordHash = passwordHash;
                 user.Role = role;
- 
+
                 _userRepository.UpdateUser(user);
                 Console.WriteLine("Dane użytkownika zostały pomyślnie zaktualizowane.");
-                UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano użytkownika o nazwie {userNameUpdate}"));
+
+                // Logowanie akcji aktualizacji użytkownika
+                UserUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano użytkownika o nazwie {userNameUpdate}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -128,13 +140,17 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Usunięcie użytkownika
         public void DeleteUser(string username)
         {
             try
             {
+                // Usunięcie użytkownika z repozytorium
                 _userRepository.DeleteUserByName(username);
                 Console.WriteLine("Użytkownik został pomyślnie usunięty.");
-                UserAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika o nazwie {username}"));
+
+                // Logowanie akcji usunięcia użytkownika
+                UserDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika o nazwie {username}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -146,6 +162,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Wyświetlenie wszystkich użytkowników
         public void DisplayAllUsers()
         {
             try

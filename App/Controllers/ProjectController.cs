@@ -16,10 +16,13 @@ namespace ConstructionManagementApp.App.Controllers
         private readonly BudgetRepository _budgetRepository;
         private readonly TeamRepository _teamRepository;
         private readonly AuthenticationService _authenticationService;
+
+        // Eventy do logowania działań na projektach
         public event LogEventHandler ProjectAdded;
         public event LogEventHandler ProjectDeleted;
         public event LogEventHandler ProjectUpdated;
 
+        // Konstruktor
         public ProjectController(ProjectRepository projectRepository, UserRepository userRepository, BudgetRepository budgetRepository, TeamRepository teamRepository, AuthenticationService authenticationService)
         {
             _projectRepository = projectRepository;
@@ -29,23 +32,34 @@ namespace ConstructionManagementApp.App.Controllers
             _authenticationService = authenticationService;
         }
 
+        // Tworzenie nowego projektu
         public void CreateProject(string name, string description, string teamName, int budgetId, string clientUsername)
         {
             try
             {
+                // Walidacja — klient musi istnieć i mieć rolę Client
                 if (_userRepository.GetUserByUsername(clientUsername) == null)
                     throw new KeyNotFoundException($"Nie znaleziono użytkownika {clientUsername}");
                 else if (_userRepository.GetUserByUsername(clientUsername).Role != Role.Client)
                     throw new InvalidOperationException("Podany użytkownik nie jest klientem.");
+
+                // Sprawdzenie budżetu
                 if (_budgetRepository.GetBudgetById(budgetId) == null)
                     throw new KeyNotFoundException($"Nie znaleziono budżetu o ID: {budgetId}");
+
+                // Sprawdzenie zespołu
                 if (_teamRepository.GetTeamByName(teamName) == null)
                     throw new KeyNotFoundException($"Nie znaleziono zespołu o nazwie: {teamName}");
+
+                // Pobranie ID klienta i zespołu
                 int clientId = _userRepository.GetUserByUsername(clientUsername).Id;
                 int teamId = _teamRepository.GetTeamByName(teamName).Id;
-                var project = new Project(name, description, teamId, budgetId, clientId);
 
+                // Utworzenie i zapisanie projektu
+                var project = new Project(name, description, teamId, budgetId, clientId);
                 _projectRepository.CreateProject(project);
+
+                // Logowanie operacji
                 ProjectAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy projekt o nazwie {name}"));
                 Console.WriteLine("Projekt został pomyślnie utworzony.");
             }
@@ -55,27 +69,35 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Aktualizacja istniejącego projektu
         public void UpdateProject(string projectName, string name, string description, string teamName, int budgetId, string clientUsername)
         {
             try
             {
+                // Pobranie istniejącego projektu
                 var project = _projectRepository.GetProjectByName(projectName);
                 if (project == null)
                     throw new KeyNotFoundException($"Nie znaleziono projektu o nazwie {projectName}.");
-                int teamId = _teamRepository.GetTeamByName(teamName).Id;
+
+                // Walidacja zespołu
                 if (_teamRepository.GetTeamByName(teamName) == null)
                     throw new KeyNotFoundException($"Nie znaleziono zespołu o nazwie {teamName}");
-                int clientId = _userRepository.GetUserByUsername(clientUsername).Id;
-                if (_userRepository.GetUserByUsername(clientUsername).Role != Role.Client || _userRepository.GetUserByUsername(clientUsername) == null)
+
+                // Walidacja klienta
+                if (_userRepository.GetUserByUsername(clientUsername) == null || _userRepository.GetUserByUsername(clientUsername).Role != Role.Client)
                     throw new KeyNotFoundException($"Nie znaleziono użytkownika {clientUsername}, który jest klientem");
 
+                // Aktualizacja pól projektu
                 project.Name = name;
                 project.Description = description;
                 project.BudgetId = budgetId;
-                project.TeamId = teamId;
-                project.ClientId = clientId;
+                project.TeamId = _teamRepository.GetTeamByName(teamName).Id;
+                project.ClientId = _userRepository.GetUserByUsername(clientUsername).Id;
 
+                // Aktualizacja w repozytorium
                 _projectRepository.UpdateProject(project);
+
+                // Logowanie operacji
                 ProjectUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano projekt o nazwie {name}"));
                 Console.WriteLine("Projekt został pomyślnie zaktualizowany.");
             }
@@ -85,12 +107,15 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Usuwanie projektu po nazwie
         public void DeleteProject(string projectName)
         {
             try
             {
                 _projectRepository.DeleteProjectByName(projectName);
                 Console.WriteLine("Projekt został pomyślnie usunięty.");
+
+                // Logowanie usunięcia
                 ProjectDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto projekt o nazwie {projectName}"));
             }
             catch (Exception ex)
@@ -99,6 +124,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Wyświetlanie projektów dostępnych dla aktualnego użytkownika
         public void DisplayProjectsForCurrentUser()
         {
             try
@@ -106,7 +132,6 @@ namespace ConstructionManagementApp.App.Controllers
                 var currentUser = _authenticationService.CurrentSession.User;
                 var userRole = currentUser.Role;
                 var userId = currentUser.Id;
-
                 List<Project> projects;
 
                 if (userRole == Role.Admin)
@@ -116,15 +141,17 @@ namespace ConstructionManagementApp.App.Controllers
                 }
                 else if (userRole == Role.Manager)
                 {
-                    // Menedżer widzi projekty, którymi zarządza
+                    // Manager widzi tylko projekty zarządzane przez swój zespół
                     projects = _projectRepository.GetAllProjects()
-                        .Where(project => project.TeamId > 0 && _teamRepository.GetTeamById(project.TeamId)?.ManagerId == userId).ToList();
+                        .Where(project => project.TeamId > 0 && _teamRepository.GetTeamById(project.TeamId)?.ManagerId == userId)
+                        .ToList();
                 }
                 else if (userRole == Role.Client)
                 {
-                    // Klient widzi tylko swoje projekty
+                    // Klient widzi wyłącznie swoje projekty
                     projects = _projectRepository.GetAllProjects()
-                        .Where(project => project.ClientId == userId).ToList();
+                        .Where(project => project.ClientId == userId)
+                        .ToList();
                 }
                 else
                 {

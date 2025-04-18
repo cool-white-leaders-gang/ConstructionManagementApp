@@ -15,13 +15,15 @@ namespace ConstructionManagementApp.App.Controllers
         private readonly TeamMembersRepository _teamMembersRepository;
         private readonly UserController _userController;
         private readonly AuthenticationService _authenticationService;
+
+        // Zdarzenia do logowania działań związanych z zespołami
         public event LogEventHandler TeamAdded;
         public event LogEventHandler TeamUpdated;
         public event LogEventHandler TeamDeleted;
         public event LogEventHandler UserAddedToTeam;
         public event LogEventHandler UserRemovedFromTeam;
 
-        // Konstruktor kontrolera
+        // Konstruktor kontrolera, inicjalizujący repozytoria i serwisy
         public TeamController(TeamRepository teamRepository, TeamMembersRepository teamMembersRepository, UserController userController, AuthenticationService authenticationService)
         {
             _teamRepository = teamRepository;
@@ -30,11 +32,12 @@ namespace ConstructionManagementApp.App.Controllers
             _authenticationService = authenticationService;
         }
 
-        // Dodaj nowy zespół
+        // Tworzenie nowego zespołu i przypisanie menadżera
         public void CreateTeam(string name, string managerName)
         {
             try
             {
+                // Pobranie użytkownika (menadżera) po nazwie
                 User manager = _userController.GetUserByUsername(managerName);
                 if (manager == null)
                     throw new KeyNotFoundException($"Nie znaleziono menadżera o podanej nazwie: {managerName}");
@@ -43,9 +46,11 @@ namespace ConstructionManagementApp.App.Controllers
                     throw new InvalidOperationException($"Użytkownik {managerName} ma inną rolę");
                 }
 
+                // Tworzenie zespołu
                 var team = new Team(name, manager.Id);
                 _teamRepository.CreateTeam(team);
                 Console.WriteLine("Zespół został pomyślnie utworzony.");
+                // Logowanie akcji dodania zespołu
                 TeamAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy zespół o nazwie {name}"));
             }
             catch (Exception ex)
@@ -54,11 +59,12 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Zaktualizuj zespół
+        // Aktualizacja danych zespołu
         public void UpdateTeam(int teamId, string name, int managerId)
         {
             try
             {
+                // Pobranie zespołu po Id
                 var team = _teamRepository.GetTeamById(teamId);
                 if (team == null)
                 {
@@ -66,11 +72,13 @@ namespace ConstructionManagementApp.App.Controllers
                     return;
                 }
 
+                // Aktualizacja nazwy i menadżera zespołu
                 team.Name = name;
                 team.ManagerId = managerId;
 
                 _teamRepository.UpdateTeam(team);
                 Console.WriteLine("Zespół został pomyślnie zaktualizowany.");
+                // Logowanie akcji aktualizacji zespołu
                 TeamUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano zespół o ID {teamId} i nazwie {name}"));
             }
             catch (Exception ex)
@@ -79,13 +87,15 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Usuń zespół
+        // Usunięcie zespołu po jego ID
         public void DeleteTeam(int teamId)
         {
             try
             {
+                // Usunięcie zespołu
                 _teamRepository.DeleteTeamById(teamId);
                 Console.WriteLine("Zespół został pomyślnie usunięty.");
+                // Logowanie akcji usunięcia zespołu
                 TeamDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto zespół o ID {teamId}"));
             }
             catch (Exception ex)
@@ -94,7 +104,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Dodaj użytkownika do zespołu
+        // Dodanie użytkownika do zespołu
         public void AddUserToTeam(int teamId, string userName)
         {
             try
@@ -107,6 +117,7 @@ namespace ConstructionManagementApp.App.Controllers
                     throw new UnauthorizedAccessException("Tylko administrator lub menadżer zespołu może dodawać członków do zespołu.");
                 _teamMembersRepository.AddMemberToTeam(teamId, userName);
                 Console.WriteLine($"Użytkownik o Id {userName} został dodany do zespołu o Id {teamId}.");
+                // Logowanie akcji dodania użytkownika do zespołu
                 UserAddedToTeam?.Invoke(this, new LogEventArgs(currentUser.Username, $"Dodano użytkownika {userName} do zespołu o ID {teamId}"));
             }
             catch (UnauthorizedAccessException ex)
@@ -119,7 +130,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Usuń użytkownika z zespołu
+        // Usunięcie użytkownika z zespołu
         public void RemoveUserFromTeam(int teamId, string userName)
         {
             try
@@ -129,9 +140,10 @@ namespace ConstructionManagementApp.App.Controllers
                 if (team == null)
                     throw new KeyNotFoundException($"Nie znaleziono zespołu o ID {teamId}");
                 if (currentUser.Role != Role.Admin && currentUser.Id != team.ManagerId)
-                    throw new UnauthorizedAccessException("Tylko administrator lub menadżer zespołu może usuwać członków do zespołu.");
+                    throw new UnauthorizedAccessException("Tylko administrator lub menadżer zespołu może usuwać członków z zespołu.");
                 _teamMembersRepository.RemoveMemberFromTeam(teamId, userName);
                 Console.WriteLine($"Użytkownik o {userName} został usunięty z zespołu o Id {teamId}.");
+                // Logowanie akcji usunięcia użytkownika z zespołu
                 UserRemovedFromTeam?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto użytkownika {userName} z zespołu o ID {teamId}"));
             }
             catch (Exception ex)
@@ -140,7 +152,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Wyświetl wszystkie zespoły
+        // Wyświetlenie zespołów, do których należy użytkownik
         public void DisplayTeamsForUser()
         {
             try
@@ -149,19 +161,18 @@ namespace ConstructionManagementApp.App.Controllers
                 List<Team> teams;
                 if (currentUser.Role == Enums.Role.Admin)
                 {
+                    // Jeśli użytkownik jest administratorem, pokazujemy wszystkie zespoły
                     teams = _teamRepository.GetAllTeams();
                 }
                 else
                 {
-                    // Filtrujemy zespoły, gdzie użytkownik jest Managerem lub członkiem
-
+                    // Filtrujemy zespoły, w których użytkownik jest menadżerem lub członkiem
                     teams = _teamRepository.GetAllTeams()
                     .Where(team => team.ManagerId == currentUser.Id ||
                                    _teamMembersRepository.GetMembersOfTeam(team.Id)
                                        .Any(member => member.Id == currentUser.Id))
                     .ToList();
                 }
-                
 
                 if (teams.Count == 0)
                 {
@@ -182,7 +193,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Wyświetl szczegóły zespołu po Id
+        // Wyświetlenie szczegółów zespołu na podstawie jego ID
         public void DisplayTeamById(int teamId)
         {
             try
@@ -196,7 +207,7 @@ namespace ConstructionManagementApp.App.Controllers
                     return;
                 }
 
-                // Sprawdzenie, czy użytkownik ma dostęp do zespołu
+                // Sprawdzanie, czy użytkownik ma dostęp do zespołu
                 if (currentUser.Role != Role.Admin &&
                     team.ManagerId != currentUser.Id &&
                     !_teamMembersRepository.GetMembersOfTeam(teamId).Any(member => member.Id == currentUser.Id))
@@ -230,7 +241,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        // Wyświetl użytkowników w zespole
+        // Wyświetlenie użytkowników w danym zespole
         public void DisplayUsersInTeam(int teamId)
         {
             try
@@ -244,6 +255,7 @@ namespace ConstructionManagementApp.App.Controllers
                     return;
                 }
 
+                // Sprawdzenie, czy użytkownik ma uprawnienia do wyświetlania członków zespołu
                 if (currentUser.Role != Role.Admin && team.ManagerId != currentUser.Id && !_teamMembersRepository.GetMembersOfTeam(teamId).Any(member => member.Id == currentUser.Id))
                 {
                     throw new UnauthorizedAccessException("Nie masz uprawnień do wyświetlenia członków tego zespołu.");
@@ -266,9 +278,5 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine($"Błąd podczas pobierania użytkowników w zespole: {ex.Message}");
             }
         }
-
-        
-
-        
     }
 }

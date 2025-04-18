@@ -15,10 +15,13 @@ namespace ConstructionManagementApp.App.Controllers
         private readonly AuthenticationService _authenticationService;
         private readonly ProjectRepository _projectRepository;
         private readonly RBACService _rbacService;
+
+        // Eventy logujące akcje na raportach postępu
         public event LogEventHandler ProgressReportAdded;
         public event LogEventHandler ProgressReportDeleted;
         public event LogEventHandler ProgressReportUpdated;
 
+        // Konstruktor controller-a inicjalizujący zależności
         public ProgressReportController(ProgressReportRepository progressReportRepository, AuthenticationService authenticationService, ProjectRepository projectRepository, RBACService rBACService)
         {
             _progressReportRepository = progressReportRepository;
@@ -27,18 +30,29 @@ namespace ConstructionManagementApp.App.Controllers
             _rbacService = rBACService;
         }
 
+        // Dodawanie raportu postępu do projektu
         public void AddProgressReport(string title, string content, string projectName, int completionPercentage)
         {
             try
             {
+                // Pobieranie projektu po nazwie
                 var project = _projectRepository.GetProjectByName(projectName);
                 if (project == null)
                     throw new KeyNotFoundException($"Nie udało się znaleźć projektu o nazwie {projectName}");
+
                 int projectId = project.Id;
+
+                // Tworzenie nowego obiektu raportu
                 ProgressReport report = new ProgressReport(title, content, _authenticationService.CurrentSession.User.Id, projectId, completionPercentage);
+
+                // Dodanie raportu do repozytorium
                 _progressReportRepository.AddProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie dodany.");
-                ProgressReportAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowy raport postępu o tytule {title}"));
+
+                // Wywołanie eventu logowania
+                ProgressReportAdded?.Invoke(this, new LogEventArgs(
+                    _authenticationService.CurrentSession.User.Username,
+                    $"Dodano nowy raport postępu o tytule {title}"));
             }
             catch (ArgumentException ex)
             {
@@ -50,21 +64,28 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Aktualizacja istniejącego raportu postępu
         public void UpdateProgressReport(int reportId, string title, string description, int completionPercentage)
         {
             try
             {
+                // Wyszukiwanie raportu po ID
                 var report = _progressReportRepository.GetProgressReportById(reportId);
                 if (report == null)
                     throw new KeyNotFoundException($"Nie znaleziono raportu postępu o ID {reportId}.");
 
+                // Aktualizacja właściwości raportu
                 report.Title = title;
                 report.Content = description;
                 report.CompletionPercentage = completionPercentage;
 
                 _progressReportRepository.UpdateProgressReport(report);
                 Console.WriteLine("Raport postępu został pomyślnie zaktualizowany.");
-                ProgressReportUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano raport postępu o ID {reportId} i tytule {title}"));
+
+                // Wywołanie eventu logowania
+                ProgressReportUpdated?.Invoke(this, new LogEventArgs(
+                    _authenticationService.CurrentSession.User.Username,
+                    $"Zaktualizowano raport postępu o ID {reportId} i tytule {title}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -80,13 +101,18 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Usuwanie raportu postępu po ID
         public void DeleteProgressReport(int reportId)
         {
             try
             {
                 _progressReportRepository.DeleteProgressReportById(reportId);
                 Console.WriteLine("Raport postępu został pomyślnie usunięty.");
-                ProgressReportDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto raport postępu o ID {reportId}"));
+
+                // Logowanie usunięcia
+                ProgressReportDeleted?.Invoke(this, new LogEventArgs(
+                    _authenticationService.CurrentSession.User.Username,
+                    $"Usunięto raport postępu o ID {reportId}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -98,6 +124,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Wyświetlanie raportów postępu — zależnie od roli użytkownika
         public void DisplayReportsForUser()
         {
             try
@@ -114,16 +141,18 @@ namespace ConstructionManagementApp.App.Controllers
                 }
                 else if (userRole == Role.Manager)
                 {
-                    // Menedżer widzi raporty powiązane z projektami, którymi zarządza
+                    // Manager widzi tylko raporty z projektów, którymi zarządza
                     var managerProjects = _rbacService.GetProjectsManagedBy(userId);
                     reports = _progressReportRepository.GetAllProgressReports()
-                        .Where(report => managerProjects.Contains(report.ProjectId)).ToList();
+                        .Where(report => managerProjects.Contains(report.ProjectId))
+                        .ToList();
                 }
                 else if (userRole == Role.Client)
                 {
-                    // Klient widzi tylko raporty przypisane do swoich projektów
+                    // Klient widzi raporty dla projektów, w których jest klientem
                     reports = _progressReportRepository.GetAllProgressReports()
-                        .Where(report => _projectRepository.GetProjectById(report.ProjectId)?.ClientId == userId).ToList();
+                        .Where(report => _projectRepository.GetProjectById(report.ProjectId)?.ClientId == userId)
+                        .ToList();
                 }
                 else
                 {

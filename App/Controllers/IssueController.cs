@@ -10,16 +10,20 @@ using ConstructionManagementApp.App.Delegates;
 
 namespace ConstructionManagementApp.App.Controllers
 {
+    // Kontroler odpowiedzialny za zarządzanie zgłoszeniami w systemie.
     internal class IssueController
     {
         private readonly IssueRepository _issueRepository;
         private readonly AuthenticationService _authenticationService;
         private readonly ProjectRepository _projectRepository;
         private readonly RBACService _rbacService;
+
+        // Zdarzenia logujące operacje na zgłoszeniach
         public event LogEventHandler IssueAdded;
         public event LogEventHandler IssueDeleted;
         public event LogEventHandler IssueUpdated;
 
+        // Konstruktor przypisujący zależności
         public IssueController(IssueRepository issueRepository, AuthenticationService authenticationService, ProjectRepository projectRepository, RBACService rbacService)
         {
             _issueRepository = issueRepository;
@@ -28,27 +32,35 @@ namespace ConstructionManagementApp.App.Controllers
             _rbacService = rbacService;
         }
 
+        // Dodaje nowe zgłoszenie do projektu
         public void AddIssue(string title, string content, string projectName, TaskPriority priority)
         {
             try
             {
                 var currentUser = _authenticationService.CurrentSession.User;
 
+                // Pobranie projektu na podstawie nazwy
                 var project = _projectRepository.GetProjectByName(projectName);
                 if (project == null)
                     throw new KeyNotFoundException($"Nie udało się znaleźć projektu o nazwie {projectName}");
+
                 int projectId = project.Id;
 
+                // Sprawdzenie uprawnień: pracownik zespołu lub manager
                 var isWorkerInProject = _rbacService.IsWorkerInProjectTeam(currentUser, projectId, _projectRepository);
                 var isManagerOfProject = _rbacService.IsProjectManager(currentUser, projectId, _projectRepository);
 
                 if (!isWorkerInProject || !isManagerOfProject)
                     throw new UnauthorizedAccessException("Nie masz uprawnień do dodawania zgłoszeń do tego projektu.");
 
-                var issue = new Issue(title, content, _authenticationService.CurrentSession.User.Id, projectId, priority);
+                // Tworzenie zgłoszenia i zapis do repozytorium
+                var issue = new Issue(title, content, currentUser.Id, projectId, priority);
                 _issueRepository.AddIssue(issue);
+
                 Console.WriteLine("Zgłoszenie zostało pomyślnie dodane.");
-                IssueAdded?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Dodano nowe zgłoszenie o tytule {title}"));
+
+                // Logowanie operacji
+                IssueAdded?.Invoke(this, new LogEventArgs(currentUser.Username, $"Dodano nowe zgłoszenie o tytule {title}"));
             }
             catch (ArgumentException ex)
             {
@@ -60,26 +72,36 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Aktualizuje istniejące zgłoszenie (priorytet i status)
         public void UpdateIssue(int issueId, TaskPriority priority, IssueStatus status)
         {
             try
             {
                 var currentUser = _authenticationService.CurrentSession.User;
+
+                // Pobranie zgłoszenia po ID
                 var issue = _issueRepository.GetIssueById(issueId);
                 if (issue == null)
                     throw new KeyNotFoundException($"Nie znaleziono zgłoszenia o ID {issueId}.");
 
-                if(!_rbacService.IsProjectManager(currentUser, issue.ProjectId, _projectRepository))
+                // Sprawdzenie czy użytkownik jest managerem projektu zgłoszenia
+                if (!_rbacService.IsProjectManager(currentUser, issue.ProjectId, _projectRepository))
                     throw new UnauthorizedAccessException("Nie masz uprawnień do aktualizowania zgłoszeń w tym projekcie");
 
+                // Aktualizacja wartości
                 issue.Priority = priority;
                 issue.Status = status;
+
+                // Jeśli zgłoszenie zostało rozwiązane, zapisz datę rozwiązania
                 if (status == IssueStatus.Resolved)
                     issue.ResolvedAt = DateTime.Now;
 
                 _issueRepository.UpdateIssue(issue);
+
                 Console.WriteLine("Zgłoszenie zostało pomyślnie zaktualizowane.");
-                IssueUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Zaktualizowano zgłoszenie o ID {issueId} i nazwie {issue.Title}"));
+
+                // Logowanie operacji
+                IssueUpdated?.Invoke(this, new LogEventArgs(currentUser.Username, $"Zaktualizowano zgłoszenie o ID {issueId} i nazwie {issue.Title}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -95,21 +117,28 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Usuwa zgłoszenie z repozytorium
         public void DeleteIssue(int issueId)
         {
             try
             {
                 var currentUser = _authenticationService.CurrentSession.User;
+
+                // Pobranie zgłoszenia do usunięcia
                 var issue = _issueRepository.GetIssueById(issueId);
                 if (issue == null)
                     throw new KeyNotFoundException($"Nie znaleziono zgłoszenia o ID {issueId}.");
 
+                // Sprawdzenie czy użytkownik ma uprawnienia managerskie
                 if (!_rbacService.IsProjectManager(currentUser, issue.ProjectId, _projectRepository))
                     throw new UnauthorizedAccessException("Nie masz uprawnień do usuwania zgłoszeń w tym projekcie");
 
+                // Usunięcie zgłoszenia
                 _issueRepository.DeleteIssueById(issueId);
                 Console.WriteLine("Zgłoszenie zostało pomyślnie usunięte.");
-                IssueDeleted?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Usunięto zgłoszenie o ID {issueId}"));
+
+                // Logowanie operacji
+                IssueDeleted?.Invoke(this, new LogEventArgs(currentUser.Username, $"Usunięto zgłoszenie o ID {issueId}"));
             }
             catch (KeyNotFoundException ex)
             {
@@ -121,6 +150,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
+        // Wyświetla listę zgłoszeń odpowiednich dla aktualnie zalogowanego użytkownika
         public void DisplayIssuesForUser()
         {
             try
@@ -130,24 +160,22 @@ namespace ConstructionManagementApp.App.Controllers
                 var userId = currentUser.Id;
                 List<Issue> issues;
 
+                // Rola decyduje o zakresie widoczności zgłoszeń
                 if (userRole == Role.Admin)
                 {
-                    // Admin sees all issues
-                    issues = _issueRepository.GetAllIssues();
+                    issues = _issueRepository.GetAllIssues();  // Admin widzi wszystkie zgłoszenia
                 }
                 else if (userRole == Role.Manager)
                 {
-                    // Manager sees issues related to projects they manage
                     var managerProjects = _rbacService.GetProjectsManagedBy(userId);
                     issues = _issueRepository.GetAllIssues()
-                        .Where(issue => managerProjects.Contains(issue.ProjectId)).ToList();
+                        .Where(issue => managerProjects.Contains(issue.ProjectId)).ToList();  // Manager widzi swoje projekty
                 }
                 else if (userRole == Role.Worker)
                 {
-                    // Worker sees issues in projects they are part of
                     var workerProjects = _rbacService.GetProjectsForUserOrManagedBy(currentUser, _projectRepository);
                     issues = _issueRepository.GetAllIssues()
-                        .Where(issue => workerProjects.Contains(issue.ProjectId)).ToList();
+                        .Where(issue => workerProjects.Contains(issue.ProjectId)).ToList();  // Pracownik widzi swoje zgłoszenia
                 }
                 else
                 {
@@ -155,12 +183,14 @@ namespace ConstructionManagementApp.App.Controllers
                     return;
                 }
 
+                // Jeśli brak zgłoszeń
                 if (!issues.Any())
                 {
                     Console.WriteLine("Brak zgłoszeń do wyświetlenia.");
                     return;
                 }
 
+                // Wyświetlanie zgłoszeń
                 Console.WriteLine("--- Lista zgłoszeń ---");
                 foreach (var issue in issues)
                 {
