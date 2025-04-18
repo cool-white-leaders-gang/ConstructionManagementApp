@@ -213,3 +213,7 @@ Menu sterowane liczbami – wpisz numer opcji i wciśnij `Enter`. Aplikacja prow
 - **Patryk Stafecki** – [GitHub](https://github.com/stafecki)
 
 ---
+
+## 📜 Szczegółowa dokumentacja
+
+-[link do dokumentacji](https://github.com/cool-white-leaders-gang/ConstructionManagementApp/blob/main/documents/Construction_management_documentation.docx.docx) **(Nie odpala się na GitHubie)**
