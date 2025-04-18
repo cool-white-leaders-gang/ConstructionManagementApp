@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2025 at 11:20 PM
+-- Generation Time: Apr 17, 2025 at 11:19 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -33,14 +33,6 @@ CREATE TABLE `budgets` (
   `spentAmount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `budgets`
---
-
-INSERT INTO `budgets` (`id`, `totalAmount`, `spentAmount`) VALUES
-(1, 50000.00, 10000.00),
-(3, 10000000.00, 0.00);
-
 -- --------------------------------------------------------
 
 --
@@ -53,14 +45,6 @@ CREATE TABLE `equipment` (
   `status` varchar(50) NOT NULL,
   `projectId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `equipment`
---
-
-INSERT INTO `equipment` (`id`, `name`, `status`, `projectId`) VALUES
-(1, 'mały dźwig', 'InUse', 1),
-(2, 'koparka', 'Available', 2);
 
 -- --------------------------------------------------------
 
@@ -80,14 +64,6 @@ CREATE TABLE `issues` (
   `title` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `issues`
---
-
-INSERT INTO `issues` (`id`, `content`, `createdAt`, `createdByUserId`, `projectId`, `Priority`, `status`, `resolvedAT`, `title`) VALUES
-(1, 'opóżnienie ze sprzętem', '2025-04-18 23:09:31', 3, 1, 'High', 'InProgress', NULL, ''),
-(2, 'za duży koszt, trzeba zwiększyć budżet', '2025-04-18 23:17:47', 2, 2, 'High', 'Open', NULL, '');
-
 -- --------------------------------------------------------
 
 --
@@ -100,13 +76,6 @@ CREATE TABLE `logs` (
   `message` text NOT NULL,
   `timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `logs`
---
-
-INSERT INTO `logs` (`id`, `userName`, `message`, `timestamp`) VALUES
-(1, 'Admin', 'Użytkownik zalogował się do systemu', '2025-04-18 23:01:48');
 
 -- --------------------------------------------------------
 
@@ -121,14 +90,6 @@ CREATE TABLE `materials` (
   `unit` varchar(50) NOT NULL,
   `projectId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `materials`
---
-
-INSERT INTO `materials` (`id`, `name`, `quantity`, `unit`, `projectId`) VALUES
-(1, 'deski', 200, 'szt', 1),
-(2, 'śruby', 1000, 'szt', 1);
 
 -- --------------------------------------------------------
 
@@ -160,14 +121,6 @@ CREATE TABLE `progressreports` (
   `CompletionPercentage` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `progressreports`
---
-
-INSERT INTO `progressreports` (`id`, `title`, `content`, `createdAt`, `createdByUserId`, `projectId`, `CompletionPercentage`) VALUES
-(1, 'Materiały', 'Zakupiono materiały na budowę domku', '2025-04-18 23:07:29', 2, 1, 10),
-(2, 'Materiały na wieżowiec', 'Ogłoszono przetarg', '2025-04-18 23:16:49', 2, 2, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -183,14 +136,6 @@ CREATE TABLE `projects` (
   `clientId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `projects`
---
-
-INSERT INTO `projects` (`id`, `name`, `description`, `teamId`, `budgetId`, `clientId`) VALUES
-(1, 'Domek na drzewie', 'Budowa domku na drzewie', 1, 1, 4),
-(2, 'Wieżowiec', 'Budowa najwyższego wieżowca w Polsce', 2, 3, 4);
-
 -- --------------------------------------------------------
 
 --
@@ -201,14 +146,6 @@ CREATE TABLE `taskassignments` (
   `TaskId` int(11) NOT NULL,
   `UserId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `taskassignments`
---
-
-INSERT INTO `taskassignments` (`TaskId`, `UserId`) VALUES
-(1, 3),
-(2, 3);
 
 -- --------------------------------------------------------
 
@@ -225,14 +162,6 @@ CREATE TABLE `tasks` (
   `projectId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `tasks`
---
-
-INSERT INTO `tasks` (`Id`, `Title`, `Description`, `Priority`, `Progress`, `projectId`) VALUES
-(1, 'Zebrać pomiary', 'Zebrać pomiary takie jak: wysokość drzewa, obwód', 'Medium', 'InProgress', 1),
-(2, 'materiały', 'zakupić potrzebne materiały', 'High', 'New', 2);
-
 -- --------------------------------------------------------
 
 --
@@ -243,14 +172,6 @@ CREATE TABLE `teammembers` (
   `TeamId` int(11) NOT NULL,
   `UserId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `teammembers`
---
-
-INSERT INTO `teammembers` (`TeamId`, `UserId`) VALUES
-(1, 3),
-(2, 3);
 
 -- --------------------------------------------------------
 
@@ -263,14 +184,6 @@ CREATE TABLE `teams` (
   `Name` varchar(255) NOT NULL,
   `ManagerId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `teams`
---
-
-INSERT INTO `teams` (`Id`, `Name`, `ManagerId`) VALUES
-(1, 'alpha', 2),
-(2, 'beta', 2);
 
 -- --------------------------------------------------------
 
@@ -285,16 +198,6 @@ CREATE TABLE `users` (
   `passwordHash` char(64) NOT NULL,
   `role` enum('Admin','Manager','Worker','Client') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `username`, `email`, `passwordHash`, `role`) VALUES
-(1, 'Admin', 'admin@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Admin'),
-(2, 'Manager', 'manager@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Manager'),
-(3, 'Majster', 'majster@construction.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Worker'),
-(4, 'klient', 'klinet@email.com', 'pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=', 'Client');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -401,31 +304,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `budgets`
 --
 ALTER TABLE `budgets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `equipment`
 --
 ALTER TABLE `equipment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `issues`
 --
 ALTER TABLE `issues`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -437,31 +340,31 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `progressreports`
 --
 ALTER TABLE `progressreports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
