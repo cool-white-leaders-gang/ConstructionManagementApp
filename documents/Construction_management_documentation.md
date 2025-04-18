@@ -9,7 +9,7 @@
 
 ## 🎯 Cel
 
-Stworzenie kompleksowego narzędzia dla firm budowlanych, które chcą efektywnie zarządzać projektami, zespołami, budżetami oraz dokumentacją – wszystko w jednym miejscu.
+Stworzenie kompleksowego narzędzia dla firm budowlanych, które chcą efektywnie zarządzać projektami, zespołami, budżetami, dokumentacją oraz narzędzia umożliwiającego efektywne planowanie i komunikację między zespołami, a klientem – wszystko w jednym miejscu.
 
 ---
 
@@ -49,23 +49,27 @@ App/
 4. Przygotuj bazę danych (`Update-Database`)  
 5. Uruchom projekt (`F5`)
 
+[Instrukcja krok po kroku](https://github.com/cool-white-leaders-gang/ConstructionManagementApp/blob/main/README.md)
+
 ---
 
 ## 🧩 Funkcjonalności
 
 ### 🔨 Zarządzanie projektami
 - Tworzenie/edycja/usuwanie projektów
-- Przypisywanie zespołów i budżetów
+- Przypisywanie zespołów i budżetów do projektów
 - Monitorowanie postępu
 
 ### ✅ Zadania
-- CRUD na zadaniach
+- CRUD na zadaniach w ramach projektów
 - Priorytety, statusy
 - Przypisywanie użytkowników
+- Wyświetlanie listy zadań przypisanych do użytkownika lub projektu
 
 ### 👤 Użytkownicy i role
+- Obsługa sesji użytkowników
 - RBAC (Role-Based Access Control)
-- Logowanie / sesje
+- Logowanie
 - Przypisywanie ról (menedżer, pracownik)
 
 ### 💰 Budżet
@@ -80,9 +84,63 @@ App/
 ## 🧑‍💻 Interfejs użytkownika
 
 - Logowanie
-- Widoki projektów, zadań, raportów
-- Operacje CRUD z logami
-- Obsługa błędów i walidacja danych
+
+![Ekran logowania](../images/panel-logowania.jpg)
+![log](../images/log-logowanie.jpg)
+
+```Log po zalogowaniu```
+- Główne menu
+
+![glowne menu](../images/menu-glowne.jpg)
+
+- Ekran zarządzania 
+
+
+![ekran zarzadzania](../images/ekran-zarzadzania.jpg)
+- Wypisywanie tabeli
+![wypisywanie](../images/wypisanie.jpg)
+
+- Dodawanie do tabeli
+![dodawanie](../images/dodawanie.jpg)
+![dodawanie w bazie danych](../images/dodawanie-baza.jpg)
+```użytkownik dodany do bazy```
+
+							
+	![dodawanie log](../images/dodawanie-log.jpg)
+<br>
+```Log po dodaniu```
+
+- Aktualizacja tabeli
+![aktualizacja](../images/aktualizacja.jpg)
+![aktualizacja w bazie danych](../images/aktualizacja-baza.jpg)
+```użytkownik zaktualizowany w bazie```
+
+							
+	![aktualizacja log](../images/aktualizacja-log.jpg)
+<br>
+```Log po aktualizacji```
+
+- Usuwanie z tabeli
+![usuwanie](../images/usuwanie.jpg)
+![usuwanie w bazie danych](../images/usuwanie-baza.jpg)
+```użytkownik usuniety z bazy```
+
+							
+	![usuwanie log](../images/usuwanie-log.jpg)
+<br>
+```Log po usunieciu```
+
+
+
+
+- Przykładowy ekran po wpisaniu danych niezgodnych z logiką aplikacji (zespołami może zarządzać użytkownik, który ma rolę managera) 
+![blad o nieistniejącym uzytkowniku](../images/blad-manager.jpg)
+
+- Przykładowy ekran po wpisaniu nieprawidłowych lub nieistniejacyh danych 
+![błąd o niezgodności](../images/blad-nie-istnieje.jpg)
+
+
+
 
 ---
 
@@ -156,4 +214,6 @@ Menu sterowane liczbami – wpisz numer opcji i wciśnij `Enter`. Aplikacja prow
 
 ---
 
-Gotowe do wrzuty na GitHub lub jako plik `README.md`. Chcesz, żebym to od razu wrzucił w markdown do pobrania?
+## 📜 Szczegółowa dokumentacja
+
+-[link do dokumentacji](https://github.com/cool-white-leaders-gang/ConstructionManagementApp/blob/main/documents/Construction_management_documentation.docx.docx) **(Nie odpala się na GitHubie)**
