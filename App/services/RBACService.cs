@@ -11,6 +11,7 @@ namespace ConstructionManagementApp.App.Services
     {
         // Słownik przypisujący role do listy permisji
         private readonly Dictionary<Role, List<Permission>> _rolePermissions;
+
         private readonly TeamRepository _teamRepository;
         private readonly ProjectRepository _projectRepository;
         private readonly TeamMembersRepository _teamMembersRepository;

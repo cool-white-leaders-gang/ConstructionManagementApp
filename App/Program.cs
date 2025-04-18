@@ -45,7 +45,7 @@ namespace ConstructionManagementApp.App
             UserController userController = new UserController(userRepository, authenticationService);
             BudgetController budgetController = new BudgetController(budgetRepository, authenticationService);
             EquipmentController equipmentController = new EquipmentController(equipmentRepository, projectRepository, authenticationService, rbac);
-            IssueController issueController = new IssueController(issueRepository, authenticationService, projectRepository);
+            IssueController issueController = new IssueController(issueRepository, authenticationService, projectRepository, rbac);
             LogController logController = new LogController(logRepository);
             MaterialController materialController = new MaterialController(materialRepository, projectRepository ,authenticationService, rbac);
             MessageController messageController = new MessageController(userRepository, messageRepository, authenticationService);

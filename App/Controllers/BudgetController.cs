@@ -42,43 +42,7 @@ namespace ConstructionManagementApp.App.Controllers
             }
         }
 
-        public void SpendBudget(int budgetId, decimal amount)
-        {
-            try
-            {
-                var budget = _budgetRepository.GetBudgetById(budgetId);
-                if (budget == null)
-                    throw new KeyNotFoundException($"Nie znaleziono budżetu o ID {budgetId}.");
-
-                if (amount <= 0)
-                    throw new ArgumentException("Kwota do wydania musi być większa od zera.");
-
-                if (budget.TotalAmount - budget.SpentAmount < amount)
-                    throw new InvalidOperationException("Nie można wydać więcej niż dostępna kwota w budżecie.");
-
-                budget.SpentAmount += amount;
-                _budgetRepository.UpdateBudget(budget);
-
-                Console.WriteLine($"Kwota {amount:C} została wydana z budżetu. Pozostała kwota: {budget.TotalAmount - budget.SpentAmount:C}");
-                BudgetUpdated?.Invoke(this, new LogEventArgs(_authenticationService.CurrentSession.User.Username, $"Kwota {amount:C} została wydana z budżetu o id {budgetId}."));
-            }
-            catch (KeyNotFoundException ex)
-            {
-                Console.WriteLine($"Błąd podczas wyszukiwanie budżetu: {ex.Message}");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Błąd podczas ustawiania kwoty: {ex.Message}");
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine($"Błąd podczs ustawiania wydatków: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Nieoczekiwany błąd: {ex.Message}");
-            }
-        }
+        
 
         public void AddBudget(decimal totalAmount)
         {

@@ -141,7 +141,8 @@ namespace ConstructionManagementApp.App.Controllers
                 Console.WriteLine("--- Lista projektów ---");
                 foreach (var project in projects)
                 {
-                    Console.WriteLine($"ID: {project.Id}, Nazwa: {project.Name}, Opis: {project.Description}");
+                    var budget = _budgetRepository.GetBudgetById(project.Id);
+                    Console.WriteLine($"ID: {project.Id}, Nazwa: {project.Name}, Opis: {project.Description}, Budżet: {budget.TotalAmount}");
                 }
             }
             catch (Exception ex)
